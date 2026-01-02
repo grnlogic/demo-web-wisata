@@ -14,6 +14,9 @@
     "db:studio": "prisma studio",
     "db:check": "tsx scripts/check-db.ts"
   },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
     "@prisma/client": "^5.22.0",
