@@ -223,9 +223,7 @@ export default function TentangKKNPage() {
             >
               <div
                 className={`flex flex-col ${
-                  index % 2 === 0
-                    ? "md:flex-row"
-                    : "md:flex-row-reverse"
+                  index % 2 === 0 ? "md:flex-row" : "md:flex-row-reverse"
                 } items-center gap-8`}
               >
                 {/* Photo Section */}
@@ -244,7 +242,11 @@ export default function TentangKKNPage() {
                 </div>
 
                 {/* Info Section */}
-                <div className={`flex-1 ${index % 2 === 0 ? "text-left" : "md:text-right"} text-center`}>
+                <div
+                  className={`flex-1 ${
+                    index % 2 === 0 ? "text-left" : "md:text-right"
+                  } text-center`}
+                >
                   <div
                     className={`inline-block px-5 py-2 rounded-full bg-gradient-to-r ${member.gradient} text-white text-sm font-medium shadow-lg mb-3`}
                   >
@@ -254,7 +256,8 @@ export default function TentangKKNPage() {
                     {member.name}
                   </h3>
                   <p className="text-slate-600 leading-relaxed">
-                    Bertanggung jawab dalam mengelola dan mengkoordinasikan seluruh kegiatan di bidang {member.position.toLowerCase()}.
+                    Bertanggung jawab dalam mengelola dan mengkoordinasikan
+                    seluruh kegiatan di bidang {member.position.toLowerCase()}.
                   </p>
                 </div>
 

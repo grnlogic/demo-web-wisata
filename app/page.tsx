@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import React from "react";
 import Link from "next/link";
 import {
   MapPin,
@@ -648,7 +649,7 @@ const recommendedPackages = [
 ];
 
 type BadgeProps = {
-  icon: (props: SVGProps<SVGSVGElement>) => JSX.Element;
+  icon: React.ComponentType<{ className?: string }>;
   label: string;
 };
 
