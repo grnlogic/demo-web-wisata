@@ -1,0 +1,99 @@
+
+prisma:query SELECT "public"."admins"."id", "public"."admins"."nama", "public"."admins"."username" FROM "public"."admins" WHERE "public"."admins"."id" IN ($1) OFFSET $2
+ GET /api/admin/event? 200 in 50ms (compile: 12ms, render: 38ms)
+Error: Route "/api/admin/event/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at DELETE (app\api\admin\event\[id]\route.ts:138:27)
+  136 |     // Check if event exists
+  137 |     const existingEvent = await prisma.event.findUnique({
+> 138 |       where: { id: params.id },
+      |                           ^
+  139 |     });
+  140 |
+  141 |     if (!existingEvent) {
+prisma:query SELECT 1
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].event.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__f584fa6b._.js:356:165
+
+  353     });
+  354 }
+  355 // Check if event exists
+→ 356 const existingEvent = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].event.findUnique({
+        where: {
+          id: undefined,
+      ?   slug?: String,
+      ?   AND?: EventWhereInput | EventWhereInput[],
+      ?   OR?: EventWhereInput[],
+      ?   NOT?: EventWhereInput | EventWhereInput[],
+      ?   nama?: StringFilter | String,
+      ?   deskripsi?: StringFilter | String,
+      ?   lokasi?: StringFilter | String,
+      ?   tanggalMulai?: DateTimeFilter | DateTime,
+      ?   tanggalSelesai?: DateTimeFilter | DateTime,
+      ?   jamMulai?: StringNullableFilter | String | Null,
+      ?   jamSelesai?: StringNullableFilter | String | Null,
+      ?   gambar?: StringNullableFilter | String | Null,
+      ?   thumbnail?: StringNullableFilter | String | Null,
+      ?   kontakPerson?: StringNullableFilter | String | Null,
+      ?   nomorTelepon?: StringNullableFilter | String | Null,
+      ?   hargaTiket?: StringNullableFilter | String | Null,
+      ?   status?: EnumStatusPublishFilter | StatusPublish,
+      ?   featured?: BoolFilter | Boolean,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   updatedAt?: DateTimeFilter | DateTime,
+      ?   createdBy?: StringFilter | String,
+      ?   admin?: AdminRelationFilter | AdminWhereInput
+        }
+      })
+
+Argument `where` of type EventWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.   
+file:///D:/Coding/wisata_pangandaran/node_modules/@prisma/client/runtime/library.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: TypeError [ERR_INVALID_ARG_TYPE]: The "payload" argument must be of type object. Received null
+Error deleting event: Error [PrismaClientValidationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].event.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__f584fa6b._.js:356:165
+
+  353     });
+  354 }
+  355 // Check if event exists
+→ 356 const existingEvent = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].event.findUnique({
+        where: {
+          id: undefined,
+      ?   slug?: String,
+      ?   AND?: EventWhereInput | EventWhereInput[],
+      ?   OR?: EventWhereInput[],
+      ?   NOT?: EventWhereInput | EventWhereInput[],
+      ?   nama?: StringFilter | String,
+      ?   deskripsi?: StringFilter | String,
+      ?   lokasi?: StringFilter | String,
+      ?   tanggalMulai?: DateTimeFilter | DateTime,
+      ?   tanggalSelesai?: DateTimeFilter | DateTime,
+      ?   jamMulai?: StringNullableFilter | String | Null,
+      ?   jamSelesai?: StringNullableFilter | String | Null,
+      ?   gambar?: StringNullableFilter | String | Null,
+      ?   thumbnail?: StringNullableFilter | String | Null,
+      ?   kontakPerson?: StringNullableFilter | String | Null,
+      ?   nomorTelepon?: StringNullableFilter | String | Null,
+      ?   hargaTiket?: StringNullableFilter | String | Null,
+      ?   status?: EnumStatusPublishFilter | StatusPublish,
+      ?   featured?: BoolFilter | Boolean,
+      ?   createdAt?: DateTimeFilter | DateTime,
+      ?   updatedAt?: DateTimeFilter | DateTime,
+      ?   createdBy?: StringFilter | String,
+      ?   admin?: AdminRelationFilter | AdminWhereInput
+        }
+      })
+
+Argument `where` of type EventWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.   
+    at <unknown> (app\api\admin\event\[id]\route.ts:137:46)
+    at async DELETE (app\api\admin\event\[id]\route.ts:137:27)
+  135 |
+  136 |     // Check if event exists
+> 137 |     const existingEvent = await prisma.event.findUnique({
+      |                                              ^
+  138 |       where: { id: params.id },
+  139 |     });
+  140 | {
+  clientVersion: '5.22.0'
+}
+ DELETE /api/admin/event/cmjuxj5lg000hlnk9iva4wso1 500 in 1350ms (compile: 970ms, render: 380ms)
+

@@ -3,6 +3,34 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'newsdata.io',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.newsdata.io',
+      },
+      {
+        protocol: 'https',
+        hostname: 'news.mypangandaran.com',
+      },
+      {
+        protocol: 'https',
+        hostname: '**.mypangandaran.com',
+      },
+    ],
+  },
 };
 
 export default nextConfig;

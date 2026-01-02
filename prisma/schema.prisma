@@ -1,0 +1,435 @@
+// Prisma Schema for Wisata Pangandaran
+// Website Travel & Tourism Information Platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ========================================
+// AUTHENTICATION & USER MANAGEMENT
+// ========================================
+
+model Admin {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  nama      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  destinasiCreated Destinasi[]
+  eventCreated     Event[]
+  galeriUploaded   Galeri[]
+  infoUpdated      InformasiUmum[]
+  beritaCreated    Berita[]
+  profilUkmCreated ProfilUkm[]
+
+  @@map("admins")
+}
+
+// ========================================
+// DESTINASI WISATA
+// ========================================
+
+model Destinasi {
+  id            String            @id @default(cuid())
+  nama          String
+  slug          String            @unique
+  deskripsi     String            @db.Text
+  kategori      KategoriDestinasi
+  lokasi        String
+  alamat        String            @db.Text
+  koordinat     String? // Format: "lat,lng"
+  googleMapsUrl String?           @db.Text
+
+  // Rating dari Google Maps
+  rating       Float? @default(0)
+  jumlahReview Int?   @default(0)
+
+  // SEO
+  metaTitle       String?
+  metaDescription String? @db.Text
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+  urutan   Int           @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  admin     Admin    @relation(fields: [createdBy], references: [id])
+
+  // Relations
+  images    DestinasiImage[]
+  harga     DestinasiHarga[]
+  fasilitas DestinasiDetail[]
+
+  @@map("destinasi")
+}
+
+model DestinasiImage {
+  id          String   @id @default(cuid())
+  destinasiId String
+  url         String   @db.Text
+  caption     String?
+  isPrimary   Boolean  @default(false)
+  urutan      Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  destinasi Destinasi @relation(fields: [destinasiId], references: [id], onDelete: Cascade)
+
+  @@map("destinasi_images")
+}
+
+model DestinasiHarga {
+  id          String  @id @default(cuid())
+  destinasiId String
+  jenisHarga  String // "Tiket Masuk", "Paket Snorkeling", "Sewa Wahana", dll
+  harga       Int
+  keterangan  String? @db.Text
+  urutan      Int     @default(0)
+
+  destinasi Destinasi @relation(fields: [destinasiId], references: [id], onDelete: Cascade)
+
+  @@map("destinasi_harga")
+}
+
+model DestinasiDetail {
+  id          String      @id @default(cuid())
+  destinasiId String
+  jenis       JenisDetail
+  judul       String
+  konten      String      @db.Text
+  urutan      Int         @default(0)
+
+  destinasi Destinasi @relation(fields: [destinasiId], references: [id], onDelete: Cascade)
+
+  @@map("destinasi_detail")
+}
+
+// ========================================
+// EVENT & AGENDA
+// ========================================
+
+model Event {
+  id             String   @id @default(cuid())
+  nama           String
+  slug           String   @unique
+  deskripsi      String   @db.Text
+  lokasi         String
+  alamat         String   @db.Text
+  koordinat      String? // Format: "lat,lng"
+  googleMapsUrl  String?  @db.Text
+  tanggalMulai   DateTime
+  tanggalSelesai DateTime
+  jamMulai       String?
+  jamSelesai     String?
+
+  // Media
+  gambar    String? @db.Text
+  thumbnail String? @db.Text
+
+  // Contact & Info
+  kontakPerson String?
+  nomorTelepon String?
+  hargaTiket   String? @db.Text
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  admin     Admin    @relation(fields: [createdBy], references: [id])
+
+  @@map("events")
+}
+
+// ========================================
+// GALERI
+// ========================================
+
+model Galeri {
+  id        String         @id @default(cuid())
+  judul     String
+  deskripsi String?        @db.Text
+  url       String         @db.Text
+  thumbnail String?        @db.Text
+  kategori  KategoriGaleri
+  tags      String[]       @default([])
+
+  // Media type
+  tipeMedia TipeMedia @default(IMAGE)
+
+  featured Boolean @default(false)
+  urutan   Int     @default(0)
+
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  uploadedBy String
+  admin      Admin    @relation(fields: [uploadedBy], references: [id])
+
+  @@map("galeri")
+}
+
+// ========================================
+// INFORMASI UMUM PANGANDARAN
+// ========================================
+
+model InformasiUmum {
+  id       String       @id @default(cuid())
+  kategori KategoriInfo
+  judul    String
+  slug     String       @unique
+  konten   String       @db.Text
+  icon     String?
+  gambar   String?      @db.Text
+  urutan   Int          @default(0)
+
+  status StatusPublish @default(PUBLISHED)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  admin     Admin    @relation(fields: [createdBy], references: [id])
+
+  @@map("informasi_umum")
+}
+
+// ========================================
+// KULINER & TEMPAT MAKAN
+// ========================================
+
+model Kuliner {
+  id            String  @id @default(cuid())
+  nama          String
+  slug          String  @unique
+  deskripsi     String  @db.Text
+  kategori      String // "Restoran", "Warung", "Cafe", dll
+  lokasi        String
+  alamat        String  @db.Text
+  koordinat     String?
+  googleMapsUrl String? @db.Text
+
+  // Harga range
+  hargaMin Int?
+  hargaMax Int?
+
+  // Kontak
+  nomorTelepon String?
+  jamBuka      String?
+
+  // Media
+  gambar String[] @default([])
+
+  rating Float? @default(0)
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("kuliner")
+}
+
+// ========================================
+// SETTINGS & CONFIGURATION
+// ========================================
+
+model Settings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String   @db.Text
+  description String?
+  updatedAt   DateTime @updatedAt
+
+  @@map("settings")
+}
+
+// ========================================
+// BERITA & ARTIKEL
+// ========================================
+
+model Berita {
+  id          String   @id @default(cuid())
+  judul       String
+  slug        String   @unique
+  konten      String   @db.Text
+  ringkasan   String?  @db.Text
+  kategori    String // "Pengumuman", "Tips Wisata", "Berita Lokal", dll
+  gambarUtama String?  @db.Text
+  tags        String[] @default([])
+
+  // External source fields for synced news
+  sourceUrl   String? @db.Text // Link to original article
+  sourceImage String? @db.Text // Original image from news source
+  isExternal  Boolean @default(false) // True if synced from external API
+
+  views Int @default(0)
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+
+  publishedAt DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  createdBy   String
+  admin       Admin     @relation(fields: [createdBy], references: [id])
+
+  @@map("berita")
+}
+
+// ========================================
+// PROFIL UKM LOKAL
+// ========================================
+
+model ProfilUkm {
+  id        String  @id @default(cuid())
+  namaUsaha String
+  slug      String  @unique
+  deskripsi String  @db.Text
+  kategori  String // "Kuliner", "Kerajinan", "Jasa Wisata", dll
+  pemilik   String
+  lokasi    String
+  alamat    String  @db.Text
+  koordinat String?
+
+  // Kontak
+  nomorTelepon String?
+  email        String?
+  instagram    String?
+  facebook     String?
+  whatsapp     String?
+  website      String?
+
+  // Media
+  logo   String?  @db.Text
+  gambar String[] @default([])
+
+  // Produk/Layanan
+  produkLayanan String[] @default([])
+  hargaRata     String?
+
+  jamOperasional String?
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+  verified Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  createdBy String
+  admin     Admin    @relation(fields: [createdBy], references: [id])
+
+  @@map("profil_ukm")
+}
+
+// ========================================
+// REKOMENDASI DESTINASI
+// ========================================
+
+model Rekomendasi {
+  id             String  @id @default(cuid())
+  judul          String
+  slug           String  @unique
+  deskripsi      String  @db.Text
+  tema           String // "Petualangan", "Romantis", "Keluarga", "Budget Friendly", dll
+  durasi         String? // "1 Hari", "2 Hari 1 Malam", dll
+  estimasiBudget String?
+
+  // Array of destination IDs in order
+  destinasiIds String[] @default([])
+
+  gambarUtama String? @db.Text
+
+  status   StatusPublish @default(DRAFT)
+  featured Boolean       @default(false)
+  urutan   Int           @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("rekomendasi")
+}
+
+// ========================================
+// SETTINGS & CONFIGURATION
+// ========================================
+
+// ========================================
+// ENUMS
+// ========================================
+
+enum KategoriDestinasi {
+  PANTAI
+  CAGAR_ALAM
+  GOA
+  WISATA_BUDAYA
+  WISATA_BAHARI
+  WAHANA_AIR
+  KAMPUNG_TURIS
+  LAINNYA
+
+  @@map("kategori_destinasi")
+}
+
+enum JenisDetail {
+  FASILITAS
+  AKTIVITAS
+  TIPS
+  ATURAN
+  AKSES
+  LAINNYA
+
+  @@map("jenis_detail")
+}
+
+enum KategoriGaleri {
+  PANTAI
+  KULINER
+  BUDAYA
+  WAHANA
+  EVENT
+  SUNSET
+  SUNRISE
+  UNDERWATER
+  LAINNYA
+
+  @@map("kategori_galeri")
+}
+
+enum TipeMedia {
+  IMAGE
+  VIDEO
+
+  @@map("tipe_media")
+}
+
+enum KategoriInfo {
+  SEJARAH
+  GEOGRAFI
+  TRANSPORTASI
+  AKOMODASI
+  TIPS_WISATA
+  KONTAK_PENTING
+  FAQ
+  LAINNYA
+
+  @@map("kategori_info")
+}
+
+enum StatusPublish {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+
+  @@map("status_publish")
+}
