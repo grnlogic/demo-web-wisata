@@ -17,6 +17,7 @@ const footerLinks = {
   ],
   informasi: [
     { name: "Tentang Pangandaran", href: "/tentang" },
+    { name: "Tentang KKN 126", href: "/tentang-kkn" },
     { name: "Event & Agenda", href: "/event" },
     { name: "Galeri", href: "/galeri" },
     { name: "Kontak", href: "/kontak" },
@@ -47,8 +48,9 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-slate-300 text-sm mb-4">
-              Portal informasi wisata terpercaya untuk menjelajahi keindahan
-              Pangandaran, dari pantai hingga budaya lokal.
+              Portal informasi wisata Pangandaran hasil kolaborasi dengan KKN
+              126. Menjelajahi keindahan Pangandaran, dari pantai hingga budaya
+              lokal.
             </p>
             <div className="flex space-x-3">
               <a

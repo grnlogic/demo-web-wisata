@@ -1,0 +1,5 @@
+kvm password
+
+Fajar-geran2005
+
+ssh pangandaran@72.62.125.104
