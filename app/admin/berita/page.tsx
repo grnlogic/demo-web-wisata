@@ -10,6 +10,9 @@ import {
   Trash2,
   Eye,
   ExternalLink,
+  Download,
+  RefreshCw,
+  AlertTriangle,
 } from "lucide-react";
 import { format } from "date-fns";
 import { id as idLocale } from "date-fns/locale";
@@ -41,12 +44,15 @@ export default function AdminBeritaPage() {
   const router = useRouter();
   const [berita, setBerita] = useState<Berita[]>([]);
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const [search, setSearch] = useState("");
   const [kategoriFilter, setKategoriFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
   useEffect(() => {
     fetchBerita();
+    autoArchiveOldNews(); // Auto-archive expired news on load
   }, [search, kategoriFilter, statusFilter]);
 
   const fetchBerita = async () => {
@@ -70,6 +76,16 @@ export default function AdminBeritaPage() {
     }
   };
 
+  const autoArchiveOldNews = async () => {
+    try {
+      await fetch("/api/admin/berita/archive", {
+        method: "POST",
+      });
+    } catch (error) {
+      console.error("Error auto-archiving news:", error);
+    }
+  };
+
   const handleDelete = async (id: string, judul: string) => {
     if (!confirm(`Apakah Anda yakin ingin menghapus berita "${judul}"?`))
       return;
@@ -88,6 +104,68 @@ export default function AdminBeritaPage() {
     }
   };
 
+  const handleImportNews = async () => {
+    if (
+      !confirm(
+        "Import berita terbaru dari API? Berita baru akan masuk sebagai DRAFT."
+      )
+    )
+      return;
+
+    setImporting(true);
+    try {
+      const response = await fetch("/api/admin/berita/import", {
+        method: "POST",
+      });
+
+      if (!response.ok) throw new Error("Gagal import berita");
+
+      const result = await response.json();
+      alert(
+        `Berhasil import ${result.imported} berita, ${result.skipped} dilewati`
+      );
+      fetchBerita();
+    } catch (error) {
+      alert("Gagal import berita dari API");
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const handleDeleteAll = async () => {
+    if (
+      !confirm(
+        "⚠️ PERINGATAN! Apakah Anda yakin ingin menghapus SEMUA berita? Tindakan ini tidak dapat dibatalkan!"
+      )
+    )
+      return;
+
+    // Double confirmation
+    if (
+      !confirm(
+        "Konfirmasi terakhir: Hapus semua berita? Ketik OK untuk melanjutkan."
+      )
+    )
+      return;
+
+    setDeleting(true);
+    try {
+      const response = await fetch("/api/admin/berita/delete-all", {
+        method: "DELETE",
+      });
+
+      if (!response.ok) throw new Error("Gagal menghapus semua berita");
+
+      const result = await response.json();
+      alert(result.message);
+      fetchBerita();
+    } catch (error) {
+      alert("Gagal menghapus semua berita");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -98,13 +176,49 @@ export default function AdminBeritaPage() {
             Kelola artikel dan berita wisata Pangandaran
           </p>
         </div>
-        <button
-          onClick={() => router.push("/admin/berita/create")}
-          className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Tambah Berita</span>
-        </button>
+        <div className="flex gap-3">
+          <button
+            onClick={handleDeleteAll}
+            disabled={deleting || berita.length === 0}
+            className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {deleting ? (
+              <>
+                <RefreshCw className="w-5 h-5 animate-spin" />
+                <span>Menghapus...</span>
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="w-5 h-5" />
+                <span>Hapus Semua</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={handleImportNews}
+            disabled={importing}
+            className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-semibold transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {importing ? (
+              <>
+                <RefreshCw className="w-5 h-5 animate-spin" />
+                <span>Importing...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5" />
+                <span>Import Berita</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => router.push("/admin/berita/create")}
+            className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Tambah Berita</span>
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}

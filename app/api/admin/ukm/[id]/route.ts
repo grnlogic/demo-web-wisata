@@ -7,7 +7,7 @@ import slugify from "slugify";
 // GET - Fetch single UKM by ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -15,8 +15,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const ukm = await prisma.profilUkm.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         admin: {
           select: {
@@ -44,7 +45,7 @@ export async function GET(
 // PUT - Update UKM
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -52,11 +53,12 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const data = await request.json();
 
     // Check if UKM exists
     const existingUkm = await prisma.profilUkm.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingUkm) {
@@ -75,14 +77,14 @@ export async function PUT(
         const existingSlug = await prisma.profilUkm.findUnique({
           where: { slug },
         });
-        if (!existingSlug || existingSlug.id === params.id) break;
+        if (!existingSlug || existingSlug.id === id) break;
         slug = `${baseSlug}-${counter}`;
         counter++;
       }
     }
 
     const ukm = await prisma.profilUkm.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         namaUsaha: data.namaUsaha,
         slug,
@@ -91,18 +93,18 @@ export async function PUT(
         pemilik: data.pemilik,
         lokasi: data.lokasi,
         alamat: data.alamat,
-        koordinat: data.koordinat,
-        nomorTelepon: data.nomorTelepon,
-        email: data.email,
-        instagram: data.instagram,
-        facebook: data.facebook,
-        whatsapp: data.whatsapp,
-        website: data.website,
-        logo: data.logo,
+        koordinat: data.koordinat || null,
+        nomorTelepon: data.nomorTelepon || null,
+        email: data.email || null,
+        instagram: data.instagram || null,
+        facebook: data.facebook || null,
+        whatsapp: data.whatsapp || null,
+        website: data.website || null,
+        logo: data.logo || null,
         gambar: data.gambar || [],
         produkLayanan: data.produkLayanan || [],
-        hargaRata: data.hargaRata,
-        jamOperasional: data.jamOperasional,
+        hargaRata: data.hargaRata || null,
+        jamOperasional: data.jamOperasional || null,
         status: data.status,
         featured: data.featured,
         verified: data.verified,
@@ -130,7 +132,7 @@ export async function PUT(
 // DELETE - Delete UKM
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -138,9 +140,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     // Check if UKM exists
     const ukm = await prisma.profilUkm.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!ukm) {
@@ -148,7 +151,7 @@ export async function DELETE(
     }
 
     await prisma.profilUkm.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "UKM deleted successfully" });

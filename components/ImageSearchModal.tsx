@@ -62,7 +62,7 @@ export default function ImageSearchModal({
         setPage(pageNum);
       } else {
         alert(
-          "Gagal mencari gambar. Pastikan Pexels API key sudah dikonfigurasi."
+          "Gagal mencari gambar. Pastikan LoL Human API key sudah dikonfigurasi."
         );
       }
     } catch (error) {
@@ -97,7 +97,7 @@ export default function ImageSearchModal({
           <div>
             <h2 className="text-2xl font-bold text-slate-800">Cari Gambar</h2>
             <p className="text-sm text-slate-600 mt-1">
-              Powered by Pexels - Gambar gratis berkualitas tinggi
+              Powered by Pinterest via LoL Human API
             </p>
           </div>
           <button

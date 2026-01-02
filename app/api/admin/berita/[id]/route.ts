@@ -97,9 +97,18 @@ export async function PUT(
     if (data.isExternal !== undefined) updateData.isExternal = data.isExternal;
     if (data.status) {
       updateData.status = data.status;
-      // Set publishedAt when changing to PUBLISHED
+      // Set publishedAt and expiresAt when changing to PUBLISHED
       if (data.status === "PUBLISHED" && !existingBerita.publishedAt) {
-        updateData.publishedAt = new Date();
+        const now = new Date();
+        updateData.publishedAt = now;
+        // Auto-expire after 5 days
+        const expiresAt = new Date(now);
+        expiresAt.setDate(expiresAt.getDate() + 5);
+        updateData.expiresAt = expiresAt;
+      }
+      // Clear expiresAt if changed back to DRAFT
+      if (data.status === "DRAFT") {
+        updateData.expiresAt = null;
       }
     }
     if (data.featured !== undefined) updateData.featured = data.featured;

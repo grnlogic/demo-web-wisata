@@ -27,6 +27,8 @@ interface LocationPickerProps {
   onLocationSelect: (data: LocationData) => void;
   initialLat?: number;
   initialLon?: number;
+  initialLocation?: { lat: number; lon: number };
+  readOnly?: boolean;
 }
 
 interface SearchResult {
@@ -48,6 +50,8 @@ export default function LocationPicker({
   onLocationSelect,
   initialLat = -7.683,
   initialLon = 108.65,
+  initialLocation,
+  readOnly = false,
 }: LocationPickerProps) {
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -58,10 +62,14 @@ export default function LocationPicker({
     null
   );
 
+  // Use initialLocation if provided, otherwise use initialLat/initialLon
+  const startLat = initialLocation?.lat || initialLat;
+  const startLon = initialLocation?.lon || initialLon;
+
   useEffect(() => {
     // Initialize map
     if (!mapRef.current) {
-      const map = L.map("location-map").setView([initialLat, initialLon], 13);
+      const map = L.map("location-map").setView([startLat, startLon], 15);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution:
@@ -69,13 +77,22 @@ export default function LocationPicker({
         maxZoom: 19,
       }).addTo(map);
 
-      // Add click handler
-      map.on("click", async (e) => {
-        const { lat, lng } = e.latlng;
-        await handleMapClick(lat, lng);
-      });
+      // Add click handler only if not readOnly
+      if (!readOnly) {
+        map.on("click", async (e) => {
+          const { lat, lng } = e.latlng;
+          await handleMapClick(lat, lng);
+        });
+      }
 
       mapRef.current = map;
+
+      // If initialLocation is provided, add marker immediately
+      if (initialLocation) {
+        const marker = L.marker([initialLocation.lat, initialLocation.lon])
+          .addTo(map);
+        markerRef.current = marker;
+      }
     }
 
     return () => {
@@ -84,7 +101,7 @@ export default function LocationPicker({
         mapRef.current = null;
       }
     };
-  }, []);
+  }, [startLat, startLon, readOnly, initialLocation]);
 
   const handleMapClick = async (lat: number, lng: number) => {
     try {
@@ -183,68 +200,72 @@ export default function LocationPicker({
 
   return (
     <div className="space-y-4">
-      {/* Search Bar */}
-      <div className="space-y-2">
-        <label className="block text-sm font-medium text-slate-700">
-          Cari Lokasi
-        </label>
-        <div className="flex gap-2">
-          <div className="flex-1 relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-              placeholder="Cari lokasi di Pangandaran..."
-              className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
+      {/* Search Bar - only show if not readOnly */}
+      {!readOnly && (
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-slate-700">
+            Cari Lokasi
+          </label>
+          <div className="flex gap-2">
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && handleSearch()}
+                placeholder="Cari lokasi di Pangandaran..."
+                className="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={handleSearch}
+              disabled={searching}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
+            >
+              {searching ? "..." : "Cari"}
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={handleSearch}
-            disabled={searching}
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50"
-          >
-            {searching ? "..." : "Cari"}
-          </button>
-        </div>
 
-        {/* Search Results */}
-        {searchResults.length > 0 && (
-          <div className="border border-slate-300 rounded-lg max-h-48 overflow-y-auto bg-white shadow-lg">
-            {searchResults.map((result, index) => (
-              <button
-                key={index}
-                type="button"
-                onClick={() => handleSelectResult(result)}
-                className="w-full px-4 py-3 text-left hover:bg-slate-50 border-b border-slate-200 last:border-b-0 transition-colors"
-              >
-                <div className="flex items-start gap-2">
-                  <MapPin className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
-                  <div className="text-sm text-slate-700">
-                    {result.display_name}
+          {/* Search Results */}
+          {searchResults.length > 0 && (
+            <div className="border border-slate-300 rounded-lg max-h-48 overflow-y-auto bg-white shadow-lg">
+              {searchResults.map((result, index) => (
+                <button
+                  key={index}
+                  type="button"
+                  onClick={() => handleSelectResult(result)}
+                  className="w-full px-4 py-3 text-left hover:bg-slate-50 border-b border-slate-200 last:border-b-0 transition-colors"
+                >
+                  <div className="flex items-start gap-2">
+                    <MapPin className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />
+                    <div className="text-sm text-slate-700">
+                      {result.display_name}
+                    </div>
                   </div>
-                </div>
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Map */}
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">
-          Pilih Lokasi di Peta (Klik pada peta)
-        </label>
+        {!readOnly && (
+          <label className="block text-sm font-medium text-slate-700 mb-2">
+            Pilih Lokasi di Peta (Klik pada peta)
+          </label>
+        )}
         <div
           id="location-map"
           className="h-[400px] w-full rounded-lg border border-slate-300 shadow-sm"
         />
       </div>
 
-      {/* Selected Location Info */}
-      {selectedLocation && (
+      {/* Selected Location Info - only show if not readOnly */}
+      {!readOnly && selectedLocation && (
         <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-start gap-2">
             <MapPin className="w-5 h-5 text-blue-600 mt-0.5" />
@@ -264,10 +285,12 @@ export default function LocationPicker({
         </div>
       )}
 
-      <p className="text-xs text-slate-500">
-        💡 Tips: Gunakan kolom pencarian atau klik langsung pada peta untuk
-        memilih lokasi
-      </p>
+      {!readOnly && (
+        <p className="text-xs text-slate-500">
+          💡 Tips: Gunakan kolom pencarian atau klik langsung pada peta untuk
+          memilih lokasi
+        </p>
+      )}
     </div>
   );
 }

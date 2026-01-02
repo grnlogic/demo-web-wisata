@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Calendar, Clock, MapPin, Plus, Upload, X } from "lucide-react";
+import { Calendar, Clock, MapPin, Plus, Upload, X, Search } from "lucide-react";
 import LocationPicker from "@/components/LocationPicker";
+import ImageSearchModal from "@/components/ImageSearchModal";
 
 export default function CreateEventPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [showImageSearch, setShowImageSearch] = useState(false);
+  const [currentImageField, setCurrentImageField] = useState<
+    "gambar" | "thumbnail" | null
+  >(null);
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
@@ -266,28 +271,72 @@ export default function CreateEventPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Gambar Utama
             </label>
-            <input
-              type="url"
-              name="gambar"
-              value={formData.gambar}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/image.jpg"
-            />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                name="gambar"
+                value={formData.gambar}
+                onChange={handleChange}
+                className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://example.com/image.jpg"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentImageField("gambar");
+                  setShowImageSearch(true);
+                }}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
+              >
+                <Search className="w-5 h-5" />
+                Cari Gambar
+              </button>
+            </div>
+            {formData.gambar && (
+              <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
+                <img
+                  src={formData.gambar}
+                  alt="Preview"
+                  className="w-full h-48 object-cover"
+                />
+              </div>
+            )}
           </div>
 
           <div>
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Thumbnail
             </label>
-            <input
-              type="url"
-              name="thumbnail"
-              value={formData.thumbnail}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              placeholder="https://example.com/thumbnail.jpg"
-            />
+            <div className="flex gap-2">
+              <input
+                type="url"
+                name="thumbnail"
+                value={formData.thumbnail}
+                onChange={handleChange}
+                className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="https://example.com/thumbnail.jpg"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentImageField("thumbnail");
+                  setShowImageSearch(true);
+                }}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
+              >
+                <Search className="w-5 h-5" />
+                Cari Gambar
+              </button>
+            </div>
+            {formData.thumbnail && (
+              <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
+                <img
+                  src={formData.thumbnail}
+                  alt="Preview Thumbnail"
+                  className="w-full h-32 object-cover"
+                />
+              </div>
+            )}
           </div>
         </div>
 
@@ -400,6 +449,24 @@ export default function CreateEventPage() {
           </button>
         </div>
       </form>
+
+      {/* Image Search Modal */}
+      <ImageSearchModal
+        isOpen={showImageSearch}
+        onClose={() => {
+          setShowImageSearch(false);
+          setCurrentImageField(null);
+        }}
+        onSelectImage={(imageUrl) => {
+          if (currentImageField) {
+            setFormData((prev) => ({
+              ...prev,
+              [currentImageField]: imageUrl,
+            }));
+          }
+        }}
+        initialQuery={formData.nama || "event pangandaran"}
+      />
     </div>
   );
 }

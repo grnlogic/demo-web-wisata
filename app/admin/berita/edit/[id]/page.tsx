@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
-import { FileText, Image, Tag, X } from "lucide-react";
+import { FileText, Image, Tag, X, Search } from "lucide-react";
+import ImageSearchModal from "@/components/ImageSearchModal";
 
 export default function EditBeritaPage() {
   const router = useRouter();
@@ -11,6 +12,7 @@ export default function EditBeritaPage() {
 
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [showImageSearch, setShowImageSearch] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const [formData, setFormData] = useState({
     judul: "",
@@ -241,31 +243,40 @@ export default function EditBeritaPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Gambar Utama
             </label>
-            <div className="relative">
-              <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-              <input
-                type="url"
-                name="gambarUtama"
-                value={formData.gambarUtama}
-                onChange={handleChange}
-                className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
-              />
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <input
+                  type="url"
+                  name="gambarUtama"
+                  value={formData.gambarUtama}
+                  onChange={handleChange}
+                  className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowImageSearch(true)}
+                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
+              >
+                <Search className="w-5 h-5" />
+                Cari Gambar
+              </button>
             </div>
+            {formData.gambarUtama && (
+              <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
+                <img
+                  src={formData.gambarUtama}
+                  alt="Preview"
+                  className="w-full h-48 object-cover"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = "none";
+                  }}
+                />
+              </div>
+            )}
           </div>
-
-          {formData.gambarUtama && (
-            <div className="mt-3">
-              <img
-                src={formData.gambarUtama}
-                alt="Preview"
-                className="max-w-md h-48 object-cover rounded-lg"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                }}
-              />
-            </div>
-          )}
         </div>
 
         {/* Tags */}
@@ -449,6 +460,19 @@ export default function EditBeritaPage() {
           </div>
         </div>
       </form>
+
+      {/* Image Search Modal */}
+      <ImageSearchModal
+        isOpen={showImageSearch}
+        onClose={() => setShowImageSearch(false)}
+        onSelectImage={(imageUrl) => {
+          setFormData((prev) => ({
+            ...prev,
+            gambarUtama: imageUrl,
+          }));
+        }}
+        initialQuery={formData.judul || "berita pangandaran"}
+      />
     </div>
   );
 }

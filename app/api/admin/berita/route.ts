@@ -99,6 +99,10 @@ export async function POST(request: NextRequest) {
         status: data.status || "DRAFT",
         featured: data.featured || false,
         publishedAt: data.status === "PUBLISHED" ? new Date() : null,
+        expiresAt:
+          data.status === "PUBLISHED"
+            ? new Date(Date.now() + 5 * 24 * 60 * 60 * 1000)
+            : null, // 5 days from now
         createdBy: session.user.id,
       },
       include: {

@@ -1,58 +1,60 @@
 import { NextRequest, NextResponse } from "next/server";
 
-// Pexels API - Free untuk personal & small projects
-// Daftar di: https://www.pexels.com/api/
-const PEXELS_API_KEY = process.env.PEXELS_API_KEY || ""; // Add to .env.local
+// LoL Human API - Pinterest Image Search
+// API: https://api.lolhuman.xyz/api/pinterest
+const LOL_HUMAN_API_KEY = process.env.LOL_HUMAN_API_KEY || "";
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
     const query = searchParams.get("query") || "landscape";
-    const page = searchParams.get("page") || "1";
-    const perPage = searchParams.get("per_page") || "20";
+    const perPage = parseInt(searchParams.get("per_page") || "20");
 
-    if (!PEXELS_API_KEY) {
+    if (!LOL_HUMAN_API_KEY) {
       return NextResponse.json(
-        { error: "Pexels API key not configured" },
+        { error: "LoL Human API key not configured" },
         { status: 500 }
       );
     }
 
-    const response = await fetch(
-      `https://api.pexels.com/v1/search?query=${encodeURIComponent(
-        query
-      )}&page=${page}&per_page=${perPage}&orientation=landscape`,
-      {
-        headers: {
-          Authorization: PEXELS_API_KEY,
-        },
-      }
+    // Fetch multiple images in parallel (20-50 requests)
+    const numberOfImages = Math.min(perPage, 50); // Max 50 images
+    const fetchPromises = Array.from({ length: numberOfImages }, () =>
+      fetch(
+        `https://api.lolhuman.xyz/api/pinterest?apikey=${LOL_HUMAN_API_KEY}&query=${encodeURIComponent(
+          query
+        )}`
+      ).then((res) => res.json())
     );
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch images from Pexels");
-    }
+    const results = await Promise.all(fetchPromises);
 
-    const data = await response.json();
+    // Extract image URLs and filter out duplicates
+    const imageUrls = new Set<string>();
+    results.forEach((data) => {
+      if (data.status === 200 && data.result) {
+        imageUrls.add(data.result);
+      }
+    });
 
-    // Transform response to simpler format
-    const photos = data.photos.map((photo: any) => ({
-      id: photo.id,
-      url: photo.src.large2x, // High quality
-      thumbnail: photo.src.medium,
-      photographer: photo.photographer,
-      photographer_url: photo.photographer_url,
-      alt: photo.alt || query,
-      width: photo.width,
-      height: photo.height,
+    // Convert to photos array
+    const photos = Array.from(imageUrls).map((url, index) => ({
+      id: Date.now() + index,
+      url: url,
+      thumbnail: url,
+      photographer: "Pinterest",
+      photographer_url: "",
+      alt: query,
+      width: 1200,
+      height: 800,
     }));
 
     return NextResponse.json({
       success: true,
       photos,
-      total_results: data.total_results,
-      page: data.page,
-      per_page: data.per_page,
+      total_results: photos.length,
+      page: 1,
+      per_page: photos.length,
     });
   } catch (error) {
     console.error("Error searching images:", error);

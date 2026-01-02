@@ -516,7 +516,7 @@ export default function EditUKMPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Nomor Telepon
+                Nomor Telepon <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="tel"
@@ -530,7 +530,7 @@ export default function EditUKMPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Email
+                Email <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="email"
@@ -544,7 +544,7 @@ export default function EditUKMPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                WhatsApp
+                WhatsApp <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="tel"
@@ -558,7 +558,7 @@ export default function EditUKMPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Instagram
+                Instagram <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="text"
@@ -572,7 +572,7 @@ export default function EditUKMPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Facebook
+                Facebook <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="text"
@@ -586,7 +586,7 @@ export default function EditUKMPage() {
 
             <div>
               <label className="block text-sm font-medium text-slate-700 mb-2">
-                Website
+                Website <span className="text-slate-400">(Opsional)</span>
               </label>
               <input
                 type="url"
