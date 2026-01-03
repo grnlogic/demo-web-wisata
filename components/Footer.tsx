@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   MapPin,
@@ -6,7 +8,9 @@ import {
   Facebook,
   Instagram,
   Youtube,
+  Twitter,
 } from "lucide-react";
+import { useState, useEffect } from "react";
 
 const footerLinks = {
   destinasi: [
@@ -30,7 +34,25 @@ const footerLinks = {
   ],
 };
 
+interface Settings {
+  site_about?: string;
+  site_email?: string;
+  site_phone?: string;
+  social_facebook?: string;
+  social_instagram?: string;
+  social_twitter?: string;
+  social_youtube?: string;
+}
+
 export default function Footer() {
+  const [settings, setSettings] = useState<Settings>({});
+
+  useEffect(() => {
+    fetch("/api/settings")
+      .then((res) => res.json())
+      .then((data) => setSettings(data))
+      .catch((err) => console.error("Failed to fetch settings:", err));
+  }, []);
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
       {/* Main Footer */}
@@ -48,35 +70,50 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-slate-300 text-sm mb-4">
-              Portal informasi wisata Pangandaran hasil kolaborasi dengan KKN
-              126. Menjelajahi keindahan Pangandaran, dari pantai hingga budaya
-              lokal.
+              {settings.site_about ||
+                "Portal informasi wisata Pangandaran hasil kolaborasi dengan KKN 126. Menjelajahi keindahan Pangandaran, dari pantai hingga budaya lokal."}
             </p>
             <div className="flex space-x-3">
-              <a
-                href="https://facebook.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-700 hover:bg-blue-600 flex items-center justify-center transition-colors"
-              >
-                <Facebook className="w-5 h-5" />
-              </a>
-              <a
-                href="https://instagram.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-700 hover:bg-pink-600 flex items-center justify-center transition-colors"
-              >
-                <Instagram className="w-5 h-5" />
-              </a>
-              <a
-                href="https://youtube.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-10 h-10 rounded-full bg-slate-700 hover:bg-red-600 flex items-center justify-center transition-colors"
-              >
-                <Youtube className="w-5 h-5" />
-              </a>
+              {settings.social_facebook && (
+                <a
+                  href={settings.social_facebook}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-700 hover:bg-blue-600 flex items-center justify-center transition-colors"
+                >
+                  <Facebook className="w-5 h-5" />
+                </a>
+              )}
+              {settings.social_instagram && (
+                <a
+                  href={settings.social_instagram}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-700 hover:bg-pink-600 flex items-center justify-center transition-colors"
+                >
+                  <Instagram className="w-5 h-5" />
+                </a>
+              )}
+              {settings.social_twitter && (
+                <a
+                  href={settings.social_twitter}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-700 hover:bg-sky-600 flex items-center justify-center transition-colors"
+                >
+                  <Twitter className="w-5 h-5" />
+                </a>
+              )}
+              {settings.social_youtube && (
+                <a
+                  href={settings.social_youtube}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-10 h-10 rounded-full bg-slate-700 hover:bg-red-600 flex items-center justify-center transition-colors"
+                >
+                  <Youtube className="w-5 h-5" />
+                </a>
+              )}
             </div>
           </div>
 
@@ -135,14 +172,16 @@ export default function Footer() {
                 <Mail className="w-5 h-5 text-slate-400 mt-0.5" />
                 <div>
                   <p className="text-sm text-slate-300">
-                    info@wisatapangandaran.com
+                    {settings.site_email || "info@wisatapangandaran.com"}
                   </p>
                 </div>
               </div>
               <div className="flex items-start space-x-3">
                 <Phone className="w-5 h-5 text-slate-400 mt-0.5" />
                 <div>
-                  <p className="text-sm text-slate-300">+62 265 639 xxx</p>
+                  <p className="text-sm text-slate-300">
+                    {settings.site_phone || "+62 265 639 xxx"}
+                  </p>
                 </div>
               </div>
             </div>

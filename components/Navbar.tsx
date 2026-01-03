@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 const navigation = [
   { name: "Beranda", href: "/" },
   { name: "Destinasi", href: "/destinasi" },
+  { name: "Kuliner", href: "/kuliner" },
   { name: "Event & Agenda", href: "/event" },
   { name: "Berita", href: "/berita" },
   { name: "UKM Lokal", href: "/ukm" },
@@ -105,7 +106,7 @@ export default function Navbar() {
                 </Link>
               );
             })}
-            
+
             {/* Admin Login Button */}
             <Link
               href="/admin/login"
@@ -178,7 +179,7 @@ export default function Navbar() {
                   </Link>
                 );
               })}
-              
+
               {/* Admin Login Button for Mobile */}
               <Link
                 href="/admin/login"

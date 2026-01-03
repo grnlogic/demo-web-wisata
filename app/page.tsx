@@ -22,318 +22,387 @@ import {
   Newspaper,
 } from "lucide-react";
 import VideoBackground from "@/components/VideoBackground";
+import { prisma } from "@/lib/prisma";
 
-export default function Home() {
+export default async function Home() {
+  // Fetch real data from database
+  const rekomendasi = await prisma.rekomendasi.findMany({
+    where: {
+      status: "PUBLISHED",
+    },
+    orderBy: [{ featured: "desc" }, { urutan: "asc" }, { createdAt: "desc" }],
+    take: 3,
+  });
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className="relative min-h-screen bg-slate-950 text-slate-50">
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute -left-32 top-0 h-72 w-72 bg-cyan-500/30 blur-3xl" />
+        <div className="absolute right-0 top-16 h-80 w-80 bg-blue-600/20 blur-[120px]" />
+        <div className="absolute left-1/2 bottom-0 h-64 w-64 -translate-x-1/2 bg-emerald-400/15 blur-[120px]" />
+      </div>
+
       {/* Hero Section */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Video Background */}
+      <section className="relative overflow-hidden">
         <VideoBackground />
-
-        {/* Content */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-white shadow-lg">
-              <MapPin className="w-4 h-4" />
-              <span className="text-sm">Jawa Barat, Indonesia</span>
-            </div>
-
-            <div className="space-y-4">
-              <h1 className="text-5xl md:text-7xl font-bold text-white leading-tight drop-shadow-2xl">
-                Jelajahi Keindahan
-                <span className="block mt-2 bg-gradient-to-r from-cyan-200 via-white to-blue-300 bg-clip-text text-transparent">
-                  Pangandaran
-                </span>
-              </h1>
-              <div className="flex items-center justify-center gap-3 text-white/80 text-sm md:text-base flex-wrap">
-                <Badge icon={Waves} label="Pantai & Surf" />
-                <Badge icon={Trees} label="Hutan Tropis" />
-                <Badge icon={Camera} label="Spot Foto" />
-                <Badge icon={Compass} label="Petualangan" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-24">
+          <div className="grid lg:grid-cols-2 gap-12 items-center">
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm shadow-lg backdrop-blur">
+                <MapPin className="w-4 h-4" />
+                <span>Koordinat rasa: Pangandaran, Jawa Barat</span>
               </div>
-            </div>
 
-            <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto leading-relaxed">
-              Dari pantai berpasir putih hingga goa eksotis, temukan surga
-              tersembunyi di pesisir selatan Jawa Barat
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-6">
-              <Link
-                href="/destinasi"
-                className="group px-8 py-4 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 flex items-center space-x-2"
-              >
-                <span>Mulai Jelajah</span>
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Link>
-
-              <Link
-                href="/galeri"
-                className="px-8 py-4 bg-white/10 backdrop-blur-sm text-white border-2 border-white/30 rounded-full font-semibold hover:bg-white/20 transition-all duration-300 flex items-center space-x-2"
-              >
-                <Camera className="w-5 h-5" />
-                <span>Lihat Galeri</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Scroll Indicator */}
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white/30 rounded-full flex items-start justify-center p-2">
-            <div className="w-1 h-2 bg-white rounded-full"></div>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="py-16 md:py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Quick Access */}
-          <div className="mb-16">
-            <div className="text-center mb-10">
-              <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-semibold">
-                Akses Cepat
-              </p>
-              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mt-2">
-                Mulai dari mana?
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Link
-                href="/destinasi"
-                className="group p-6 bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl hover:from-blue-100 hover:to-cyan-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-center"
-              >
-                <MapPin className="w-10 h-10 mx-auto mb-3 text-blue-600 group-hover:scale-110 transition-transform" />
-                <h4 className="font-bold text-slate-800">Pilih Wisata</h4>
-                <p className="text-xs text-slate-600 mt-1">
-                  Jelajahi destinasi
+              <div className="space-y-4">
+                <h1 className="text-4xl md:text-6xl font-semibold leading-tight tracking-tight text-white">
+                  Wisata rasa lokal, <br />
+                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-blue-200">
+                    kurasi anti generik.
+                  </span>
+                </h1>
+                <p className="text-lg md:text-xl text-white/85 max-w-2xl">
+                  Hidupkan itinerari dengan spot yang disembunyikan warga lokal,
+                  event kecil yang tidak masuk brosur, dan kuliner yang tidak
+                  pasaran.
                 </p>
-              </Link>
-              <Link
-                href="/event"
-                className="group p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl hover:from-purple-100 hover:to-pink-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-center"
-              >
-                <Calendar className="w-10 h-10 mx-auto mb-3 text-purple-600 group-hover:scale-110 transition-transform" />
-                <h4 className="font-bold text-slate-800">Ringkasan Event</h4>
-                <p className="text-xs text-slate-600 mt-1">Agenda terkini</p>
-              </Link>
-              <Link
-                href="/ukm"
-                className="group p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl hover:from-green-100 hover:to-emerald-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-center"
-              >
-                <Store className="w-10 h-10 mx-auto mb-3 text-green-600 group-hover:scale-110 transition-transform" />
-                <h4 className="font-bold text-slate-800">Profil UKM</h4>
-                <p className="text-xs text-slate-600 mt-1">Produk lokal</p>
-              </Link>
-              <Link
-                href="/berita"
-                className="group p-6 bg-gradient-to-br from-orange-50 to-amber-50 rounded-2xl hover:from-orange-100 hover:to-amber-100 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 text-center"
-              >
-                <Newspaper className="w-10 h-10 mx-auto mb-3 text-orange-600 group-hover:scale-110 transition-transform" />
-                <h4 className="font-bold text-slate-800">Berita</h4>
-                <p className="text-xs text-slate-600 mt-1">Konten terbaru</p>
-              </Link>
-            </div>
-          </div>
-
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-semibold">
-                Angka yang berbicara
-              </p>
-              <h3 className="text-2xl md:text-3xl font-bold text-slate-900 mt-2">
-                Selalu ada alasan untuk kembali
-              </h3>
-            </div>
-            <div className="flex items-center gap-3 text-sm text-slate-500">
-              <Sparkles className="w-5 h-5 text-yellow-500" />
-              <span>Data kurasi tim lokal & komunitas</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {[
-              { icon: MapPin, label: "Destinasi", value: "25+" },
-              { icon: ImageIcon, label: "Galeri Foto", value: "500+" },
-              { icon: Calendar, label: "Event/Tahun", value: "30+" },
-              { icon: Star, label: "Rating", value: "4.8" },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="text-center bg-white rounded-2xl p-6 shadow-md border border-slate-100 hover:-translate-y-2 transition-transform duration-300"
-              >
-                <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 mb-4 shadow-lg">
-                  <stat.icon className="w-8 h-8 text-white" />
-                </div>
-                <div className="text-3xl font-bold text-slate-800 mb-2">
-                  {stat.value}
-                </div>
-                <div className="text-slate-600">{stat.label}</div>
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
-      {/* Featured Destinations */}
-      <section className="py-20 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold text-slate-800 mb-4">
-              Destinasi Unggulan
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Jelajahi destinasi wisata terbaik yang wajib dikunjungi di
-              Pangandaran
-            </p>
-          </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <Badge icon={Waves} label="Pantai sunrise" />
+                <Badge icon={Trees} label="Hutan & goa" />
+                <Badge icon={Camera} label="Frame-ready" />
+                <Badge icon={Compass} label="Peta rasa" />
+              </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredDestinations.map((dest, index) => (
-              <Link
-                key={index}
-                href={dest.href}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100"
-              >
-                <div
-                  className="relative h-64 overflow-hidden"
-                  style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.6) 70%), url(${dest.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Link
+                  href="/destinasi"
+                  className="group inline-flex items-center justify-center gap-2 rounded-full bg-white px-7 py-3 text-slate-900 font-semibold shadow-xl ring-2 ring-white/30 transition hover:-translate-y-0.5 hover:shadow-2xl"
                 >
-                  <div className="absolute inset-0 border-b border-white/10" />
-                  <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full flex items-center space-x-1 shadow">
-                    <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                    <span className="text-sm font-semibold">{dest.rating}</span>
-                  </div>
-                  <div className="absolute bottom-4 left-4 text-white flex items-center space-x-2">
-                    <dest.icon className="w-5 h-5" />
-                    <span className="text-sm font-medium">{dest.vibe}</span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                    {dest.name}
-                  </h3>
-                  <p className="text-slate-600 mb-4 line-clamp-2">
-                    {dest.description}
-                  </p>
-                  <div className="flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform">
-                    <span>Lihat Detail</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-
-          <div className="text-center mt-12">
-            <Link
-              href="/destinasi"
-              className="inline-flex items-center space-x-2 px-8 py-4 bg-blue-600 text-white rounded-full font-semibold hover:bg-blue-700 transition-all duration-300 shadow-lg hover:shadow-xl"
-            >
-              <span>Lihat Semua Destinasi</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Rekomendasi Paket Wisata */}
-      <section className="py-20 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-semibold">
-              Rekomendasi Perjalanan
-            </p>
-            <h2 className="text-4xl font-bold text-slate-800 mb-4 mt-2">
-              Paket Wisata Pilihan
-            </h2>
-            <p className="text-xl text-slate-600 max-w-2xl mx-auto">
-              Itinerary lengkap untuk berbagai tema perjalanan
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {recommendedPackages.map((pkg, index) => (
-              <div
-                key={index}
-                className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100"
-              >
-                <div
-                  className="relative h-56 overflow-hidden"
-                  style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.6) 70%), url(${pkg.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
+                  Mulai eksplor
+                  <ArrowRight className="w-4 h-4 transition group-hover:translate-x-1" />
+                </Link>
+                <Link
+                  href="/galeri"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/40 bg-white/10 px-7 py-3 font-semibold text-white transition hover:-translate-y-0.5 hover:bg-white/15"
                 >
-                  <div className="absolute top-4 left-4">
-                    <span className="px-3 py-1 bg-blue-600/90 backdrop-blur-sm text-white text-xs font-semibold rounded-full">
-                      {pkg.duration}
-                    </span>
-                  </div>
-                  <div className="absolute top-4 right-4">
-                    <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-slate-800 text-xs font-semibold rounded-full">
-                      {pkg.budget}
-                    </span>
-                  </div>
-                </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                    {pkg.title}
-                  </h3>
-                  <p className="text-slate-600 mb-4 text-sm">
-                    {pkg.description}
-                  </p>
-                  <div className="space-y-2 mb-4">
-                    <p className="text-sm font-semibold text-slate-700">
-                      Termasuk:
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {pkg.includes.map((item, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 bg-blue-50 text-blue-700 text-xs rounded"
-                        >
-                          {item}
-                        </span>
-                      ))}
+                  Buka galeri
+                  <Camera className="w-4 h-4" />
+                </Link>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
+                {[
+                  { label: "Destinasi kurasi", value: "25+", icon: MapPin },
+                  { label: "Galeri asli", value: "500+", icon: ImageIcon },
+                  { label: "Event setahun", value: "30+", icon: Calendar },
+                  { label: "Skor puas", value: "4.8", icon: Star },
+                ].map((item) => (
+                  <div
+                    key={item.label}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-inner"
+                  >
+                    <div className="flex items-center gap-3 text-sm text-white/70">
+                      <item.icon className="w-4 h-4" />
+                      <span>{item.label}</span>
+                    </div>
+                    <div className="mt-2 text-2xl font-semibold text-white">
+                      {item.value}
                     </div>
                   </div>
-                  <Link
-                    href={`/rekomendasi/${pkg.slug}`}
-                    className="flex items-center text-blue-600 font-semibold group-hover:translate-x-2 transition-transform"
-                  >
-                    <span>Lihat Detail</span>
-                    <ArrowRight className="w-4 h-4 ml-2" />
-                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-8 bg-gradient-to-br from-cyan-300/10 via-blue-200/10 to-emerald-200/5 blur-3xl" />
+              <div className="relative grid gap-4">
+                <div className="rounded-3xl border border-white/10 bg-slate-900/70 p-6 shadow-2xl backdrop-blur">
+                  <div className="flex items-center justify-between text-sm text-white/70">
+                    <span>Rencana instan</span>
+                    <Sparkles className="w-4 h-4 text-cyan-300" />
+                  </div>
+                  <div className="mt-4 space-y-3">
+                    {quickSteps.slice(0, 3).map((step) => (
+                      <div key={step.title} className="flex items-start gap-3">
+                        <div className="mt-1 h-2 w-2 rounded-full bg-cyan-300" />
+                        <div>
+                          <p className="text-xs uppercase tracking-[0.2em] text-white/60">
+                            {step.time}
+                          </p>
+                          <p className="font-semibold">{step.title}</p>
+                          <p className="text-sm text-white/70">{step.detail}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  {moodTrips.slice(0, 2).map((item) => (
+                    <div
+                      key={item.title}
+                      className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-xl"
+                    >
+                      <div
+                        className="h-40"
+                        style={{
+                          backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.75) 70%), url(${item.image})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                        }}
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent" />
+                      <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
+                        <div className="flex items-center gap-2 text-xs text-white/80">
+                          <item.icon className="w-4 h-4" />
+                          <span>{item.badge}</span>
+                        </div>
+                        <p className="font-semibold">{item.title}</p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Quick Access */}
+      <section className="py-14 bg-slate-900/60 backdrop-blur border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+            <div className="space-y-2 max-w-xl">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                Akses cepat
+              </p>
+              <h3 className="text-2xl font-semibold">
+                Jalur singkat buat langsung aksi
+              </h3>
+              <p className="text-white/70">
+                Tanpa scroll panjang. Pilih portal yang sesuai kebutuhanmu.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full lg:w-auto">
+              {[
+                {
+                  href: "/destinasi",
+                  title: "Destinasi",
+                  copy: "Kurasi lokal",
+                  icon: MapPin,
+                  tone: "from-cyan-500/20 to-blue-500/20",
+                },
+                {
+                  href: "/event",
+                  title: "Agenda",
+                  copy: "Kalender hidup",
+                  icon: Calendar,
+                  tone: "from-purple-500/20 to-pink-500/20",
+                },
+                {
+                  href: "/ukm",
+                  title: "UKM",
+                  copy: "Belanja lokal",
+                  icon: Store,
+                  tone: "from-emerald-500/20 to-green-500/20",
+                },
+                {
+                  href: "/berita",
+                  title: "Berita",
+                  copy: "Apa yang baru",
+                  icon: Newspaper,
+                  tone: "from-amber-500/20 to-orange-500/20",
+                },
+              ].map((item) => (
+                <Link
+                  key={item.title}
+                  href={item.href}
+                  className={`group rounded-2xl border border-white/10 bg-gradient-to-br ${item.tone} p-4 shadow-lg transition hover:-translate-y-1 hover:border-white/20`}
+                >
+                  <div className="flex items-center justify-between text-sm text-white/80">
+                    <span>{item.copy}</span>
+                    <item.icon className="w-4 h-4" />
+                  </div>
+                  <div className="mt-2 text-lg font-semibold">{item.title}</div>
+                  <div className="mt-3 inline-flex items-center gap-1 text-xs text-cyan-100">
+                    Lihat
+                    <ArrowRight className="w-3 h-3 transition group-hover:translate-x-1" />
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Destinations */}
+      <section className="py-20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                Destinasi unggulan
+              </p>
+              <h2 className="text-3xl md:text-4xl font-semibold text-white">
+                Titik favorit warga, bukan brosur.
+              </h2>
+              <p className="text-white/70 max-w-2xl">
+                Kami pilih spot yang punya rasa: sunrise sepi, jalur teduh, cafe
+                rooftop kecil, sampai tempat jajan habis diving.
+              </p>
+            </div>
+            <Link
+              href="/destinasi"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
+            >
+              Lihat semua destinasi
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {featuredDestinations.map((dest) => (
+              <Link
+                key={dest.name}
+                href={dest.href}
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl transition hover:-translate-y-2 hover:border-cyan-200/50"
+              >
+                <div
+                  className="h-64"
+                  style={{
+                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.65) 70%), url(${dest.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/30 to-slate-950/80" />
+                <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-slate-900 text-sm font-semibold shadow-lg">
+                  <Star className="w-4 h-4 text-yellow-500" /> {dest.rating}
+                </div>
+                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">
+                    <dest.icon className="w-4 h-4" />
+                    <span>{dest.vibe}</span>
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white group-hover:text-cyan-100 transition">
+                    {dest.name}
+                  </h3>
+                  <p className="text-white/75 text-sm leading-relaxed line-clamp-2">
+                    {dest.description}
+                  </p>
+                </div>
+              </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Experiences Strip */}
-      <section className="py-16 bg-slate-50">
+      {/* Rekomendasi */}
+      <section className="py-20 bg-slate-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-emerald-200">
+                Itinerary pilihan
+              </p>
+              <h2 className="text-3xl font-semibold text-white">
+                Paket anti bosan
+              </h2>
+              <p className="text-white/70 max-w-2xl">
+                Tema disusun bareng warga dan pegiat lokal. Lengkap dengan
+                durasi, estimasi budget, dan vibe unik tiap perjalanan.
+              </p>
+            </div>
+            <Link
+              href="/rekomendasi"
+              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-emerald-200"
+            >
+              Lihat daftar lengkap
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {rekomendasi.length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {rekomendasi.map((pkg) => (
+                <div
+                  key={pkg.id}
+                  className="group h-full rounded-3xl border border-white/10 bg-gradient-to-br from-slate-800/90 via-slate-800/70 to-slate-900 p-5 shadow-2xl transition hover:-translate-y-2 hover:border-emerald-200/40"
+                >
+                  <div
+                    className="relative h-48 rounded-2xl overflow-hidden"
+                    style={{
+                      backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.7) 70%), url(${
+                        pkg.gambarUtama ||
+                        "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80"
+                      })`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                    }}
+                  >
+                    <div className="absolute inset-0 border border-white/10" />
+                    {pkg.durasi && (
+                      <span className="absolute top-3 left-3 rounded-full bg-emerald-400/90 px-3 py-1 text-xs font-semibold text-slate-900 shadow">
+                        {pkg.durasi}
+                      </span>
+                    )}
+                    {pkg.estimasiBudget && (
+                      <span className="absolute top-3 right-3 rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-slate-900 shadow">
+                        {pkg.estimasiBudget}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="mt-5 space-y-3">
+                    <span className="inline-flex items-center gap-2 rounded-full bg-emerald-400/10 px-3 py-1 text-xs font-semibold text-emerald-100">
+                      <Sparkles className="w-4 h-4" /> {pkg.tema}
+                    </span>
+                    <h3 className="text-xl font-semibold text-white group-hover:text-emerald-100 transition">
+                      {pkg.judul}
+                    </h3>
+                    <p className="text-sm text-white/70 line-clamp-3">
+                      {pkg.deskripsi}
+                    </p>
+                    <Link
+                      href={`/rekomendasi/${pkg.slug}`}
+                      className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-100 transition hover:gap-3"
+                    >
+                      Detail perjalanan
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-white/70">
+              Belum ada paket rekomendasi siap tampil. Kembali lagi sebentar
+              lagi.
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Moodboard */}
+      <section className="py-16 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-semibold">
-                Kurasi Lokal
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                Moodboard
               </p>
-              <h3 className="text-3xl font-bold text-slate-900">
-                Mood liburan seperti apa?
+              <h3 className="text-3xl font-semibold text-white">
+                Pilih vibe, tinggal ikuti
               </h3>
+              <p className="text-white/70 max-w-2xl">
+                Kombinasi foto, rute, dan rasa yang langsung bisa kamu duplikat.
+                Tidak perlu mikir lama.
+              </p>
             </div>
-            <div className="flex items-center text-slate-500 text-sm">
-              <Compass className="w-5 h-5 mr-2 text-blue-600" />
-              Pilih vibe, ikuti rekomendasi cepat.
+            <div className="flex items-center gap-2 text-sm text-white/70">
+              <Compass className="w-4 h-4 text-cyan-200" />
+              Kurasi ekspres.
             </div>
           </div>
 
@@ -341,26 +410,26 @@ export default function Home() {
             {moodTrips.map((item) => (
               <div
                 key={item.title}
-                className="group relative rounded-3xl overflow-hidden shadow-lg border border-slate-100"
+                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-slate-900 shadow-2xl"
               >
                 <div
-                  className="h-64"
+                  className="h-60"
                   style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.65) 70%), url(${item.image})`,
+                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.12) 0%, rgba(15,23,42,0.8) 70%), url(${item.image})`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-                  <div className="flex items-center space-x-2 text-sm text-white/80">
-                    <item.icon className="w-5 h-5" />
+                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">
+                    <item.icon className="w-4 h-4" />
                     <span>{item.badge}</span>
                   </div>
-                  <h4 className="text-xl font-bold text-white group-hover:translate-x-1 transition-transform">
+                  <h4 className="text-2xl font-semibold text-white group-hover:text-cyan-100 transition">
                     {item.title}
                   </h4>
-                  <p className="text-white/80 text-sm leading-relaxed">
+                  <p className="text-sm text-white/75 leading-relaxed">
                     {item.description}
                   </p>
                 </div>
@@ -371,26 +440,26 @@ export default function Home() {
       </section>
 
       {/* Quick Planner */}
-      <section className="py-16 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white">
+      <section className="py-16 bg-gradient-to-br from-blue-600 via-indigo-700 to-cyan-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
             <div className="space-y-3 max-w-2xl">
-              <p className="text-sm uppercase tracking-[0.2em] text-white/70 font-semibold">
-                Rencana Singkat
+              <p className="text-xs uppercase tracking-[0.25em] text-white/80">
+                Rencana 48 jam
               </p>
-              <h3 className="text-3xl md:text-4xl font-bold leading-tight">
-                48 jam di Pangandaran tanpa ribet
+              <h3 className="text-3xl md:text-4xl font-semibold leading-tight">
+                Dua hari penuh cerita, tanpa detour.
               </h3>
               <p className="text-white/80 text-lg">
-                Ikuti langkah sederhana ini untuk jadwal padat berisi, cocok
-                untuk first-timer maupun yang ingin rehat singkat.
+                Blok jadwal ini tinggal diikuti. Sesuaikan tempo, tapi jangan
+                skip bagian sunset.
               </p>
             </div>
             <Link
               href="/event"
-              className="inline-flex items-center space-x-2 px-5 py-3 bg-white text-blue-700 rounded-full font-semibold hover:-translate-y-1 transition-transform shadow-xl"
+              className="inline-flex items-center gap-2 rounded-full bg-white text-slate-900 px-5 py-3 text-sm font-semibold shadow-xl transition hover:-translate-y-0.5"
             >
-              <span>Lihat kalender</span>
+              Lihat kalender
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -399,16 +468,16 @@ export default function Home() {
             {quickSteps.map((step, idx) => (
               <div
                 key={step.title}
-                className="bg-white/10 border border-white/15 rounded-2xl p-5 space-y-3 backdrop-blur-sm hover:-translate-y-1 transition-transform"
+                className="rounded-2xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur transition hover:-translate-y-1"
               >
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold">{step.time}</span>
-                  <span className="px-3 py-1 rounded-full bg-white/15 text-white/90 text-xs">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-white/70">
+                  <span>{step.time}</span>
+                  <span className="rounded-full bg-white/15 px-2 py-1 text-[10px]">
                     Hari {idx < 2 ? 1 : 2}
                   </span>
                 </div>
-                <h4 className="text-xl font-bold">{step.title}</h4>
-                <p className="text-white/80 text-sm leading-relaxed">
+                <h4 className="mt-3 text-xl font-semibold">{step.title}</h4>
+                <p className="mt-2 text-sm text-white/80 leading-relaxed">
                   {step.detail}
                 </p>
               </div>
@@ -417,42 +486,42 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Travel Toolkit */}
-      <section className="py-16 bg-white">
+      {/* Toolkit */}
+      <section className="py-16 bg-slate-950">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-            <div>
-              <p className="text-sm uppercase tracking-[0.2em] text-blue-600 font-semibold">
-                Travel Toolkit
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                Toolkit
               </p>
-              <h3 className="text-3xl font-bold text-slate-900">
-                Bekal praktis sebelum berangkat
+              <h3 className="text-3xl font-semibold text-white">
+                Perlengkapan cepat sebelum berangkat
               </h3>
+              <p className="text-white/70 max-w-2xl">
+                Peta, transport, dan budget yang bisa dibaca sepintas tapi cukup
+                detail untuk langsung dipakai.
+              </p>
             </div>
-            <p className="text-slate-600 max-w-xl">
-              Ringkas, bisa di-scan cepat: peta interaktif, opsi transport, dan
-              estimasi budget harian.
-            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {toolkit.map((tool) => (
               <div
                 key={tool.title}
-                className="bg-white rounded-2xl border border-slate-100 shadow-sm hover:shadow-lg p-6 space-y-3 transition-transform hover:-translate-y-1"
+                className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl transition hover:-translate-y-1 hover:border-cyan-200/40"
               >
-                <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 text-blue-700">
+                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-100">
                   <tool.icon className="w-6 h-6" />
                 </div>
-                <h4 className="text-xl font-bold text-slate-900">
+                <h4 className="mt-4 text-xl font-semibold text-white">
                   {tool.title}
                 </h4>
-                <p className="text-slate-600 text-sm leading-relaxed">
+                <p className="mt-2 text-sm text-white/75 leading-relaxed">
                   {tool.description}
                 </p>
-                <div className="flex items-center text-blue-600 font-semibold group-hover:translate-x-1 transition-transform">
-                  <ArrowRight className="w-4 h-4 mr-2" />
-                  <span>{tool.cta}</span>
+                <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-100 transition hover:gap-3">
+                  {tool.cta}
+                  <ArrowRight className="w-4 h-4" />
                 </div>
               </div>
             ))}
@@ -460,28 +529,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-4xl font-bold mb-6">
-            Siap Memulai Petualangan Anda?
+      {/* CTA */}
+      <section className="py-20 bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-700 text-white">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl font-semibold">
+            Siap merapat? Bawa rasa penasaranmu.
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Temukan informasi lengkap tentang destinasi, event, dan tips wisata
-            untuk pengalaman terbaik di Pangandaran
+          <p className="text-lg md:text-xl text-white/85 max-w-3xl mx-auto">
+            Mulai dari event terkini atau jelajahi cerita kota. Kamu tentukan
+            alur, kami siapkan jalurnya.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link
               href="/event"
-              className="px-8 py-4 bg-white text-blue-600 rounded-full font-semibold hover:bg-blue-50 transition-all duration-300 shadow-xl hover:scale-105"
+              className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-8 py-4 text-slate-900 font-semibold shadow-xl transition hover:-translate-y-1"
             >
-              Lihat Event Terbaru
+              Lihat event terbaru
+              <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/tentang"
-              className="px-8 py-4 bg-white/10 backdrop-blur-sm border-2 border-white/30 rounded-full font-semibold hover:bg-white/20 transition-all duration-300"
+              className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/40 px-8 py-4 font-semibold text-white transition hover:-translate-y-1 hover:border-white"
             >
-              Tentang Pangandaran
+              Kenali Pangandaran
             </Link>
           </div>
         </div>
@@ -604,47 +674,6 @@ const toolkit = [
       "Hitung cepat biaya makan, tiket, sewa, dan aktivitas utama per orang per hari.",
     cta: "Cek estimasi",
     icon: Wallet,
-  },
-];
-
-const recommendedPackages = [
-  {
-    title: "Petualangan Alam",
-    slug: "petualangan-alam",
-    description:
-      "Jelajahi Green Canyon, cliff jumping, dan trekking ke goa tersembunyi. Cocok untuk pencinta adrenalin.",
-    duration: "2 Hari 1 Malam",
-    budget: "Rp 500-700rb",
-    image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    includes: ["Green Canyon", "Goa Pananjung", "Cliff Jump", "Trekking"],
-  },
-  {
-    title: "Romantis untuk Dua",
-    slug: "romantis-untuk-dua",
-    description:
-      "Sunset dinner, private beach, dan malam di villa tepi pantai. Sempurna untuk pasangan.",
-    duration: "2 Hari 1 Malam",
-    budget: "Rp 1-1.5jt",
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    includes: ["Sunset Point", "Beach Dinner", "Villa Tepi Pantai", "Spa"],
-  },
-  {
-    title: "Liburan Keluarga",
-    slug: "liburan-keluarga",
-    description:
-      "Paket lengkap untuk keluarga dengan anak-anak. Destinasi ramah anak dan edukatif.",
-    duration: "3 Hari 2 Malam",
-    budget: "Rp 2-3jt",
-    image:
-      "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80",
-    includes: [
-      "Pantai Pasir Putih",
-      "Penyu Conservation",
-      "Aquarium",
-      "Playground",
-    ],
   },
 ];
 
