@@ -1,7 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Star, ArrowRight, Search } from "lucide-react";
+import {
+  MapPin,
+  Star,
+  ArrowRight,
+  Search,
+  Compass,
+  Sparkles,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { KategoriDestinasi } from "@prisma/client";
 
@@ -91,38 +98,125 @@ export default function DestinasiPage() {
   };
 
   return (
-    <div className="min-h-screen pt-20">
+    <div className="relative min-h-screen bg-slate-950 text-slate-50">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-24 top-0 h-64 w-64 bg-cyan-500/25 blur-3xl" />
+        <div className="absolute right-0 top-10 h-80 w-80 bg-blue-600/20 blur-[120px]" />
+        <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 bg-emerald-400/15 blur-[120px]" />
+      </div>
+
       {/* Header */}
-      <section className="bg-gradient-to-br from-blue-600 via-blue-700 to-cyan-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-5xl font-bold">Destinasi Wisata</h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Temukan berbagai destinasi wisata menarik di Pangandaran, dari
-              pantai hingga cagar alam
-            </p>
+      <section className="relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900/70 to-slate-950" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-16">
+          <div className="grid lg:grid-cols-2 gap-10 items-center">
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm shadow-lg backdrop-blur">
+                <Compass className="w-4 h-4" />
+                <span>Peta rasa Pangandaran</span>
+              </div>
+              <div className="space-y-3">
+                <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
+                  Destinasi yang punya cerita, bukan cuma spot foto.
+                </h1>
+                <p className="text-lg text-white/80 max-w-2xl">
+                  Kurasi pantai, cagar alam, dan sudut lokal yang biasanya cuma
+                  dibisikkan warga. Pilih vibe, sesuaikan tempo, langsung jalan.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-3 text-sm text-white/70">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                  <Sparkles className="w-4 h-4 text-cyan-200" />
+                  Kurasi warga
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                  <MapPin className="w-4 h-4 text-emerald-200" />
+                  Koordinat siap pakai
+                </div>
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                  <Star className="w-4 h-4 text-amber-200" />
+                  Rating real visitor
+                </div>
+              </div>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -inset-6 bg-gradient-to-br from-cyan-300/15 via-blue-200/10 to-indigo-300/10 blur-3xl" />
+              <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
+                <div className="flex items-center justify-between text-sm text-white/70">
+                  <span>Filter cepat</span>
+                  <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+                    Live search
+                  </span>
+                </div>
+                <div className="mt-4 space-y-4">
+                  <div className="relative">
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                    <input
+                      type="text"
+                      placeholder="Cari pantai sepi, gua hijau, atau kuliner..."
+                      className="w-full rounded-2xl border border-white/10 bg-white/10 px-12 py-3 text-sm text-white placeholder:text-white/50 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/50"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                    />
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      "Semua",
+                      "PANTAI",
+                      "CAGAR_ALAM",
+                      "GOA",
+                      "WISATA_BUDAYA",
+                      "WISATA_BAHARI",
+                      "WAHANA_AIR",
+                      "KAMPUNG_TURIS",
+                    ].map((category) => {
+                      const active =
+                        (category === "Semua" && !selectedCategory) ||
+                        selectedCategory === category;
+                      return (
+                        <button
+                          key={category}
+                          onClick={() =>
+                            setSelectedCategory(
+                              category === "Semua" ? "" : category
+                            )
+                          }
+                          className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
+                            active
+                              ? "border-cyan-300 bg-cyan-400/20 text-cyan-50 shadow-lg shadow-cyan-500/20"
+                              : "border-white/10 bg-white/5 text-white/80 hover:border-cyan-200 hover:text-white"
+                          }`}
+                        >
+                          {category === "Semua"
+                            ? "Semua"
+                            : getKategoriLabel(category as KategoriDestinasi)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Search & Filter */}
-      <section className="bg-white shadow-md sticky top-20 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+      {/* Search & Filter (sticky) */}
+      <section className="sticky top-16 z-40 border-b border-white/10 bg-slate-900/80 backdrop-blur">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
               <input
                 type="text"
                 placeholder="Cari destinasi..."
-                className="w-full pl-12 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full rounded-2xl border border-white/10 bg-white/10 px-12 py-3 text-sm text-white placeholder:text-white/50 focus:border-cyan-300 focus:outline-none focus:ring-2 focus:ring-cyan-300/50"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
               />
             </div>
-
-            {/* Filter Category */}
-            <div className="flex gap-2 overflow-x-auto pb-2 md:pb-0">
+            <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
               {[
                 "Semua",
                 "PANTAI",
@@ -132,41 +226,46 @@ export default function DestinasiPage() {
                 "WISATA_BAHARI",
                 "WAHANA_AIR",
                 "KAMPUNG_TURIS",
-              ].map((category) => (
-                <button
-                  key={category}
-                  onClick={() =>
-                    setSelectedCategory(category === "Semua" ? "" : category)
-                  }
-                  className={`px-4 py-3 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                    (category === "Semua" && !selectedCategory) ||
-                    selectedCategory === category
-                      ? "bg-blue-500 text-white"
-                      : "bg-slate-100 hover:bg-blue-500 hover:text-white"
-                  }`}
-                >
-                  {category === "Semua"
-                    ? "Semua"
-                    : getKategoriLabel(category as KategoriDestinasi)}
-                </button>
-              ))}
+              ].map((category) => {
+                const active =
+                  (category === "Semua" && !selectedCategory) ||
+                  selectedCategory === category;
+                return (
+                  <button
+                    key={category}
+                    onClick={() =>
+                      setSelectedCategory(category === "Semua" ? "" : category)
+                    }
+                    className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
+                      active
+                        ? "bg-cyan-500 text-slate-950 shadow-lg shadow-cyan-500/30"
+                        : "bg-white/5 text-white/80 hover:bg-white/10"
+                    }`}
+                  >
+                    {category === "Semua"
+                      ? "Semua"
+                      : getKategoriLabel(category as KategoriDestinasi)}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
       </section>
 
       {/* Destinasi Grid */}
-      <section className="py-16 bg-slate-50">
+      <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-              <p className="mt-4 text-slate-600">Memuat destinasi...</p>
+            <div className="text-center py-16 text-white/70">
+              <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-cyan-400" />
+              Memuat destinasi...
             </div>
           ) : destinasi.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-slate-600 text-lg">
-                Tidak ada destinasi ditemukan
+            <div className="text-center py-16 text-white/70">
+              <p className="text-lg">Tidak ada destinasi ditemukan</p>
+              <p className="text-sm text-white/50">
+                Coba kata kunci atau kategori lain.
               </p>
             </div>
           ) : (
@@ -176,69 +275,68 @@ export default function DestinasiPage() {
                 return (
                   <div
                     key={dest.id}
-                    className="bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group"
+                    className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl transition hover:-translate-y-2 hover:border-cyan-200/40"
                   >
-                    {/* Image */}
                     <div className="relative h-56 overflow-hidden">
                       {primaryImage ? (
                         <img
                           src={primaryImage.url}
                           alt={dest.nama}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-110"
                         />
                       ) : (
-                        <div className="w-full h-full bg-slate-200 flex items-center justify-center">
-                          <MapPin className="w-16 h-16 text-slate-400" />
+                        <div className="flex h-full w-full items-center justify-center bg-slate-800">
+                          <MapPin className="h-12 w-12 text-white/40" />
                         </div>
                       )}
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-medium">
-                          {getKategoriLabel(dest.kategori)}
-                        </span>
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/10 to-slate-950/60" />
+                      <div className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-white/85 px-3 py-1 text-xs font-semibold text-slate-900 shadow">
+                        {getKategoriLabel(dest.kategori)}
                       </div>
+                      {dest.rating !== null && dest.rating > 0 && (
+                        <div className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-amber-400/90 px-3 py-1 text-xs font-semibold text-slate-900 shadow">
+                          <Star className="h-4 w-4" /> {dest.rating.toFixed(1)}
+                        </div>
+                      )}
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors">
-                        {dest.nama}
-                      </h3>
-
-                      <div className="flex items-center gap-2 text-slate-600 mb-3">
-                        <MapPin className="w-4 h-4" />
-                        <span className="text-sm">{dest.lokasi}</span>
+                    <div className="p-6 space-y-3">
+                      <div className="flex items-start justify-between gap-3">
+                        <h3 className="text-xl font-semibold text-white group-hover:text-cyan-100 transition">
+                          {dest.nama}
+                        </h3>
+                        {formatPrice(dest.harga) && (
+                          <span className="rounded-full bg-emerald-400/15 px-3 py-1 text-xs font-semibold text-emerald-100 border border-emerald-300/30">
+                            {formatPrice(dest.harga)}
+                          </span>
+                        )}
                       </div>
 
-                      {dest.rating !== null && dest.rating > 0 && (
-                        <div className="flex items-center gap-2 mb-3">
-                          <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                          <span className="font-medium">
-                            {dest.rating.toFixed(1)}
-                          </span>
-                          <span className="text-slate-500 text-sm">
-                            ({dest.jumlahReview} review)
-                          </span>
-                        </div>
-                      )}
+                      <div className="flex items-center gap-2 text-white/70 text-sm">
+                        <MapPin className="h-4 w-4" />
+                        <span>{dest.lokasi}</span>
+                      </div>
 
-                      <p className="text-slate-600 text-sm mb-4 line-clamp-2">
+                      <p className="text-sm text-white/75 leading-relaxed line-clamp-3">
                         {dest.deskripsi}
                       </p>
 
-                      <div className="flex items-center justify-between">
-                        <div>
-                          {formatPrice(dest.harga) && (
-                            <div className="text-blue-600 font-bold text-lg">
-                              {formatPrice(dest.harga)}
-                            </div>
-                          )}
-                        </div>
+                      <div className="flex items-center justify-between pt-2 text-sm font-semibold text-cyan-100">
+                        {dest.jumlahReview ? (
+                          <span className="text-white/60">
+                            {dest.jumlahReview} ulasan nyata
+                          </span>
+                        ) : (
+                          <span className="text-white/50">
+                            Belum ada ulasan
+                          </span>
+                        )}
                         <Link
                           href={`/destinasi/${dest.slug}`}
-                          className="inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium"
+                          className="inline-flex items-center gap-2 rounded-full border border-cyan-200/30 px-3 py-1.5 text-cyan-100 transition hover:-translate-y-0.5 hover:border-cyan-100"
                         >
-                          Lihat Detail
-                          <ArrowRight className="w-4 h-4" />
+                          Lihat detail
+                          <ArrowRight className="h-4 w-4" />
                         </Link>
                       </div>
                     </div>

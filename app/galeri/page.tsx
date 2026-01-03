@@ -1,8 +1,19 @@
 "use client";
 
-import { Image as ImageIcon, Play, X } from "lucide-react";
-import { useEffect, useState } from "react";
+import { JSX, useEffect, useMemo, useState } from "react";
 import { KategoriGaleri } from "@prisma/client";
+import {
+  Camera,
+  Image as ImageIcon,
+  Layers,
+  Loader2,
+  Sparkles,
+  Sunrise,
+  Sunset,
+  Trees,
+  Waves,
+  X,
+} from "lucide-react";
 
 interface Galeri {
   id: string;
@@ -23,6 +34,32 @@ interface PaginationData {
   totalPages: number;
 }
 
+const kategoriLabels: Record<string, string> = {
+  SEMUA: "Semua",
+  PANTAI: "Pantai",
+  KULINER: "Kuliner",
+  BUDAYA: "Budaya",
+  WAHANA: "Wahana",
+  EVENT: "Event",
+  SUNSET: "Sunset",
+  SUNRISE: "Sunrise",
+  UNDERWATER: "Underwater",
+  LAINNYA: "Lainnya",
+};
+
+const kategoriIcons: Record<string, JSX.Element> = {
+  SEMUA: <Layers className="h-4 w-4" />,
+  PANTAI: <Waves className="h-4 w-4" />,
+  KULINER: <Camera className="h-4 w-4" />,
+  BUDAYA: <Sparkles className="h-4 w-4" />,
+  WAHANA: <Trees className="h-4 w-4" />,
+  EVENT: <Camera className="h-4 w-4" />,
+  SUNSET: <Sunset className="h-4 w-4" />,
+  SUNRISE: <Sunrise className="h-4 w-4" />,
+  UNDERWATER: <Waves className="h-4 w-4" />,
+  LAINNYA: <ImageIcon className="h-4 w-4" />,
+};
+
 export default function GaleriPage() {
   const [galeri, setGaleri] = useState<Galeri[]>([]);
   const [loading, setLoading] = useState(true);
@@ -34,6 +71,22 @@ export default function GaleriPage() {
     limit: 20,
     totalPages: 0,
   });
+
+  const categories = useMemo(
+    () => [
+      "SEMUA",
+      "PANTAI",
+      "KULINER",
+      "BUDAYA",
+      "WAHANA",
+      "EVENT",
+      "SUNSET",
+      "SUNRISE",
+      "UNDERWATER",
+      "LAINNYA",
+    ],
+    []
+  );
 
   const fetchGaleri = async () => {
     setLoading(true);
@@ -47,7 +100,7 @@ export default function GaleriPage() {
         params.append("kategori", selectedKategori);
       }
 
-      const response = await fetch(`/api/galeri?${params}`);
+      const response = await fetch(`/api/galeri?${params.toString()}`);
       const data = await response.json();
 
       if (response.ok) {
@@ -64,206 +117,274 @@ export default function GaleriPage() {
   };
 
   useEffect(() => {
-    fetchGaleri();
+    void fetchGaleri();
   }, [pagination.page, selectedKategori]);
 
   const handleKategoriChange = (kategori: string) => {
     setSelectedKategori(kategori);
-    setPagination({ ...pagination, page: 1 });
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleLoadMore = () => {
-    setPagination({ ...pagination, page: pagination.page + 1 });
+    setPagination((prev) => ({ ...prev, page: prev.page + 1 }));
   };
 
-  const getKategoriLabel = (kat: string) => {
-    const labels: Record<string, string> = {
-      SEMUA: "Semua",
-      PANTAI: "Pantai",
-      KULINER: "Kuliner",
-      BUDAYA: "Budaya",
-      WAHANA: "Wahana",
-      EVENT: "Event",
-      SUNSET: "Sunset",
-      SUNRISE: "Sunrise",
-      UNDERWATER: "Underwater",
-      LAINNYA: "Lainnya",
-    };
-    return labels[kat] || kat;
-  };
+  const getKategoriLabel = (kat: string) => kategoriLabels[kat] || kat;
 
-  const categories = [
-    "SEMUA",
-    "PANTAI",
-    "KULINER",
-    "BUDAYA",
-    "WAHANA",
-    "EVENT",
-    "SUNSET",
-    "SUNRISE",
-    "UNDERWATER",
-  ];
+  const gridSkeleton = (
+    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      {[...Array(8)].map((_, idx) => (
+        <div
+          key={idx}
+          className="aspect-square rounded-2xl bg-white/5 border border-white/10 animate-pulse"
+        />
+      ))}
+    </div>
+  );
+
   return (
-    <div className="min-h-screen pt-20">
-      {/* Header */}
-      <section className="bg-gradient-to-br from-pink-600 via-pink-700 to-rose-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-5xl font-bold">Galeri</h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Jelajahi keindahan Pangandaran melalui foto dan video pilihan
-            </p>
-          </div>
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <section className="relative overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950">
+        <div className="absolute inset-0 opacity-70 blur-3xl" aria-hidden>
+          <div className="absolute -top-20 -left-10 h-64 w-64 rounded-full bg-emerald-500/20" />
+          <div className="absolute top-10 right-0 h-72 w-72 rounded-full bg-cyan-400/15" />
         </div>
-      </section>
-
-      {/* Filter */}
-      <section className="bg-white shadow-md sticky top-20 z-40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex gap-2 overflow-x-auto pb-2">
-            {categories.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => handleKategoriChange(cat)}
-                className={`px-4 py-2 rounded-lg font-medium whitespace-nowrap transition-colors ${
-                  selectedKategori === cat
-                    ? "bg-pink-600 text-white"
-                    : "bg-slate-100 hover:bg-pink-500 hover:text-white"
-                }`}
-              >
-                {getKategoriLabel(cat)}
-              </button>
-            ))}
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 space-y-10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-sm text-white/80 backdrop-blur">
+            <Sparkles className="h-4 w-4" />
+            Kurasi visual Pangandaran
           </div>
-        </div>
-      </section>
-
-      {/* Gallery Grid */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {loading && pagination.page === 1 ? (
-            <div className="py-20 text-center">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-pink-600 border-t-transparent"></div>
-              <p className="mt-4 text-slate-600">Memuat galeri...</p>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="space-y-4 max-w-3xl">
+              <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-white">
+                Galeri premium: suasana, laut, kuliner, dan budaya
+              </h1>
+              <p className="text-lg text-white/80">
+                Koleksi foto dan video dengan presentasi gelap elegan, filter
+                kategori cepat, dan modal detail yang kinclong.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/80">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Camera className="h-4 w-4" />
+                  Foto & video siap unduh
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Waves className="h-4 w-4" />
+                  Pantai, sunrise, underwater
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Sparkles className="h-4 w-4" />
+                  Sorotan featured terpilih
+                </span>
+              </div>
             </div>
+            <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+                <p className="text-xs text-white/60">Total item</p>
+                <p className="text-2xl font-semibold text-white">
+                  {pagination.total}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
+                <p className="text-xs text-white/60">Halaman</p>
+                <p className="text-2xl font-semibold text-white">
+                  {pagination.page}/{pagination.totalPages || 1}
+                </p>
+              </div>
+              <div className="col-span-2 rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-400/15 to-cyan-400/10 px-4 py-3 backdrop-blur flex items-center gap-3">
+                <ImageIcon className="h-5 w-5 text-emerald-200" />
+                <div>
+                  <p className="text-xs text-white/70">Kategori aktif</p>
+                  <p className="text-sm font-semibold text-white">
+                    {getKategoriLabel(selectedKategori)}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-4 shadow-lg">
+            <div className="flex gap-2 overflow-x-auto pb-2">
+              {categories.map((cat) => {
+                const active = selectedKategori === cat;
+                return (
+                  <button
+                    key={cat}
+                    onClick={() => handleKategoriChange(cat)}
+                    className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition border ${
+                      active
+                        ? "bg-emerald-300 text-slate-950 border-emerald-200 shadow-emerald-900/30 shadow"
+                        : "bg-white/10 border-white/15 text-white/80 hover:border-white/40"
+                    }`}
+                  >
+                    {kategoriIcons[cat] || <Layers className="h-4 w-4" />}
+                    {getKategoriLabel(cat)}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-14">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+          {loading && pagination.page === 1 ? (
+            gridSkeleton
           ) : galeri.length === 0 ? (
-            <div className="py-20 text-center">
-              <ImageIcon className="w-16 h-16 text-slate-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                Belum Ada Galeri
+            <div className="rounded-3xl border border-white/10 bg-white/5 p-12 text-center">
+              <ImageIcon className="w-14 h-14 text-white/30 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-white mb-2">
+                Belum ada galeri
               </h3>
-              <p className="text-slate-600">
-                Belum ada foto atau video untuk kategori ini
+              <p className="text-white/70 max-w-xl mx-auto">
+                Konten akan muncul setelah tim mengunggah foto atau video pada
+                kategori ini.
               </p>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {galeri.map((item) => (
-                  <div
+                  <button
+                    type="button"
                     key={item.id}
                     onClick={() => setSelectedImage(item)}
-                    className="group relative aspect-square rounded-xl overflow-hidden cursor-pointer hover:scale-105 transition-transform shadow-lg"
+                    className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur shadow-lg shadow-emerald-950/20 transition hover:-translate-y-1 hover:border-emerald-200/70"
                   >
-                    <img
-                      src={item.thumbnail || item.url}
-                      alt={item.judul}
-                      className="w-full h-full object-cover"
+                    <div
+                      className="aspect-[4/3] w-full overflow-hidden"
+                      style={{
+                        backgroundImage: `linear-gradient(180deg, rgba(2,6,23,0.25) 0%, rgba(2,6,23,0.75) 100%), url(${
+                          item.thumbnail || item.url
+                        })`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity">
-                      <div className="absolute bottom-0 left-0 right-0 p-4">
-                        <p className="text-white font-semibold line-clamp-2">
-                          {item.judul}
-                        </p>
-                        {item.deskripsi && (
-                          <p className="text-white/80 text-sm line-clamp-1 mt-1">
-                            {item.deskripsi}
-                          </p>
+                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-2 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent">
+                      <div className="flex items-center gap-2 text-xs text-white/70">
+                        {kategoriIcons[item.kategori] || (
+                          <Layers className="h-4 w-4" />
                         )}
-                        <div className="flex gap-1 mt-2 flex-wrap">
+                        <span>{getKategoriLabel(item.kategori)}</span>
+                        {item.featured && (
+                          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-300 text-slate-950 px-2 py-0.5 text-[11px] font-semibold">
+                            <Sparkles className="h-3 w-3" />
+                            Featured
+                          </span>
+                        )}
+                      </div>
+                      <h3 className="text-lg font-semibold text-white line-clamp-2 group-hover:text-emerald-200 transition">
+                        {item.judul}
+                      </h3>
+                      {item.deskripsi && (
+                        <p className="text-sm text-white/70 line-clamp-2">
+                          {item.deskripsi}
+                        </p>
+                      )}
+                      {item.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-2">
                           {item.tags.slice(0, 3).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="text-xs bg-white/20 text-white px-2 py-0.5 rounded"
+                              className="text-[11px] rounded-full bg-white/10 px-3 py-1 text-white/80 border border-white/10"
                             >
                               #{tag}
                             </span>
                           ))}
                         </div>
-                      </div>
+                      )}
                     </div>
-                    {item.featured && (
-                      <div className="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-bold">
-                        ⭐ Featured
-                      </div>
-                    )}
-                  </div>
+                  </button>
                 ))}
               </div>
 
-              {/* Load More */}
+              {loading && pagination.page > 1 && gridSkeleton}
+
               {pagination.page < pagination.totalPages && (
-                <div className="text-center mt-12">
+                <div className="flex justify-center">
                   <button
                     onClick={handleLoadMore}
                     disabled={loading}
-                    className="px-8 py-3 bg-pink-600 hover:bg-pink-700 text-white rounded-full font-semibold transition-colors shadow-lg disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full bg-emerald-300 text-slate-950 px-6 py-3 font-semibold shadow-lg shadow-emerald-900/30 hover:shadow-emerald-800/40 transition disabled:opacity-50"
                   >
-                    {loading ? "Memuat..." : "Muat Lebih Banyak"}
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Memuat...
+                      </>
+                    ) : (
+                      "Muat lebih banyak"
+                    )}
                   </button>
                 </div>
               )}
 
-              <div className="text-center mt-6 text-sm text-slate-600">
-                Menampilkan {galeri.length} dari {pagination.total} foto
+              <div className="text-center text-sm text-white/60">
+                Menampilkan {galeri.length} dari {pagination.total} konten
               </div>
             </>
           )}
         </div>
       </section>
 
-      {/* Image Modal */}
       {selectedImage && (
         <div
-          className="fixed inset-0 bg-black/90 flex items-center justify-center z-50 p-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur"
           onClick={() => setSelectedImage(null)}
         >
           <button
             onClick={() => setSelectedImage(null)}
-            className="absolute top-4 right-4 p-2 bg-white/10 hover:bg-white/20 rounded-full transition-colors"
+            className="absolute top-6 right-6 rounded-full bg-white/10 p-2 text-white hover:bg-white/20 transition"
+            aria-label="Tutup"
           >
-            <X className="w-6 h-6 text-white" />
+            <X className="h-5 w-5" />
           </button>
           <div
-            className="max-w-5xl w-full"
+            className="max-w-5xl w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <img
-              src={selectedImage.url}
-              alt={selectedImage.judul}
-              className="w-full max-h-[80vh] object-contain rounded-lg"
-            />
-            <div className="bg-white/10 backdrop-blur-md rounded-lg p-6 mt-4">
-              <h2 className="text-2xl font-bold text-white mb-2">
-                {selectedImage.judul}
-              </h2>
-              {selectedImage.deskripsi && (
-                <p className="text-white/90 mb-4">
-                  {selectedImage.deskripsi}
-                </p>
-              )}
-              {selectedImage.tags.length > 0 && (
-                <div className="flex gap-2 flex-wrap">
-                  {selectedImage.tags.map((tag, idx) => (
-                    <span
-                      key={idx}
-                      className="text-sm bg-white/20 text-white px-3 py-1 rounded-full"
-                    >
-                      #{tag}
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
+              <img
+                src={selectedImage.url}
+                alt={selectedImage.judul}
+                className="w-full max-h-[70vh] object-contain bg-slate-900"
+              />
+              <div className="p-6 space-y-3">
+                <div className="flex items-center gap-2 text-xs text-white/70">
+                  {kategoriIcons[selectedImage.kategori] || (
+                    <Layers className="h-4 w-4" />
+                  )}
+                  <span>{getKategoriLabel(selectedImage.kategori)}</span>
+                  {selectedImage.featured && (
+                    <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-300 text-slate-950 px-2.5 py-0.5 text-[11px] font-semibold">
+                      <Sparkles className="h-3.5 w-3.5" />
+                      Featured
                     </span>
-                  ))}
+                  )}
                 </div>
-              )}
+                <h2 className="text-2xl font-semibold text-white">
+                  {selectedImage.judul}
+                </h2>
+                {selectedImage.deskripsi && (
+                  <p className="text-white/75 leading-relaxed">
+                    {selectedImage.deskripsi}
+                  </p>
+                )}
+                {selectedImage.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {selectedImage.tags.map((tag, idx) => (
+                      <span
+                        key={idx}
+                        className="text-xs rounded-full bg-white/10 px-3 py-1 text-white/80 border border-white/10"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>

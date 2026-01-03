@@ -1,198 +1,215 @@
-import { MapPin, Users, Calendar, Waves, Mountain, Sun } from "lucide-react";
+import {
+  Calendar,
+  Compass,
+  MapPin,
+  Mountain,
+  Sun,
+  Users,
+  Waves,
+} from "lucide-react";
+
+const highlights = [
+  {
+    title: "Sejarah Pangandaran",
+    body: "Nama Pangandaran berasal dari kata 'Pang' (tempat) dan 'andaran' (hutan). Pada masa kolonial sudah populer sebagai tujuan wisata; peninggalan seperti Goa Jepang di Cagar Alam Pananjung menjadi saksi sejarah.",
+  },
+  {
+    title: "Geografi & Iklim",
+    body: "Luas ~68 km², ketinggian 0-200 mdpl, dua sisi pantai dipisahkan Cagar Alam Pananjung. Iklim tropis 27-32°C dengan musim hujan Nov–Mar dan kemarau Apr–Okt.",
+  },
+  {
+    title: "Budaya & Tradisi",
+    body: "Mayoritas Sunda dengan tradisi Nadran/Hajat Laut, festival budaya, serta seni wayang golek, jaipongan, dan musik calung. Kuliner laut segar menjadi identitas kuat.",
+  },
+];
+
+const facts = [
+  { label: "Provinsi", value: "Jawa Barat" },
+  { label: "Kabupaten", value: "Pangandaran" },
+  { label: "Luas Wilayah", value: "~68 km²" },
+  { label: "Populasi", value: "~50.000 jiwa" },
+  { label: "Bahasa", value: "Sunda, Indonesia" },
+];
+
+const stats = [
+  { icon: MapPin, label: "Destinasi", value: "25+" },
+  { icon: Users, label: "Wisatawan/Tahun", value: "500K+" },
+  { icon: Calendar, label: "Event Tahunan", value: "30+" },
+];
 
 export default function TentangPage() {
   return (
-    <div className="min-h-screen pt-20">
-      {/* Header */}
-      <section className="bg-gradient-to-br from-blue-600 via-cyan-600 to-teal-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4">
-            <h1 className="text-5xl font-bold">Tentang Pangandaran</h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Kenali lebih dekat pesona wisata di ujung selatan Jawa Barat
-            </p>
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <section className="relative overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950">
+        <div className="absolute inset-0 opacity-60 blur-3xl" aria-hidden>
+          <div className="absolute -top-24 -left-10 h-64 w-64 rounded-full bg-emerald-500/25" />
+          <div className="absolute top-10 right-0 h-80 w-80 rounded-full bg-cyan-400/20" />
+        </div>
+        <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 space-y-10">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-sm text-white/80 backdrop-blur">
+            <Compass className="h-4 w-4" />
+            Profil destinasi selatan Jawa Barat
+          </div>
+          <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
+            <div className="space-y-4 max-w-3xl">
+              <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-white">
+                Tentang Pangandaran: alam, budaya, dan laut dalam satu tempat
+              </h1>
+              <p className="text-lg text-white/80">
+                Kenali karakter pesisir yang tenang, cagar alam Pananjung, serta
+                budaya Sunda yang tetap hidup. Disajikan dengan estetika gelap
+                kaca yang konsisten dengan halaman lain.
+              </p>
+              <div className="flex flex-wrap gap-3 text-sm text-white/80">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Waves className="h-4 w-4" />
+                  Dua sisi pantai ikonik
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Mountain className="h-4 w-4" />
+                  Cagar alam & karst
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                  <Sun className="h-4 w-4" />
+                  Sunrise & sunset spot
+                </span>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+              {stats.map((stat) => (
+                <div
+                  key={stat.label}
+                  className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur shadow-lg shadow-emerald-950/20"
+                >
+                  <div className="flex items-center gap-2 text-white/70 text-xs">
+                    <stat.icon className="h-4 w-4" />
+                    {stat.label}
+                  </div>
+                  <p className="text-2xl font-semibold text-white mt-2">
+                    {stat.value}
+                  </p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="py-16 bg-slate-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-16">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Sejarah */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-3xl font-bold text-slate-800 mb-6">
-                  Sejarah Pangandaran
-                </h2>
-                <div className="prose prose-slate max-w-none space-y-4 text-slate-600 leading-relaxed">
-                  <p>
-                    Pangandaran adalah sebuah kecamatan di Kabupaten
-                    Pangandaran, Provinsi Jawa Barat. Nama Pangandaran berasal
-                    dari kata "Pang" yang berarti tempat dan "andaran" yang
-                    berarti hutan. Daerah ini telah dikenal sejak zaman kerajaan
-                    sebagai tempat yang indah dan strategis.
-                  </p>
-                  <p>
-                    Pada masa penjajahan Belanda, Pangandaran sudah menjadi
-                    tujuan wisata favorit. Hal ini dibuktikan dengan banyaknya
-                    peninggalan bersejarah seperti Goa Jepang di Cagar Alam
-                    Pananjung yang menjadi saksi bisu perjuangan kemerdekaan.
-                  </p>
-                  <p>
-                    Setelah kemerdekaan, Pangandaran berkembang pesat menjadi
-                    salah satu destinasi wisata unggulan di Jawa Barat.
-                    Keindahan alamnya yang memukau, pantai yang eksotis, dan
-                    budaya lokal yang kaya menjadikan Pangandaran sebagai surga
-                    wisata yang wajib dikunjungi.
-                  </p>
-                </div>
+            <div className="lg:col-span-2 space-y-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {highlights.map((item) => (
+                  <div
+                    key={item.title}
+                    className="rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur shadow-lg shadow-emerald-950/20"
+                  >
+                    <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/80 mb-2">
+                      Highlight
+                    </p>
+                    <h3 className="text-lg font-semibold text-white mb-2">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-white/70 leading-relaxed">
+                      {item.body}
+                    </p>
+                  </div>
+                ))}
               </div>
 
-              {/* Geografi */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-3xl font-bold text-slate-800 mb-6">
-                  Geografi & Iklim
-                </h2>
-                <div className="prose prose-slate max-w-none space-y-4 text-slate-600 leading-relaxed">
-                  <p>
-                    Pangandaran terletak di pesisir selatan Pulau Jawa dengan
-                    posisi geografis yang unik. Kota ini memiliki dua sisi
-                    pantai - Pantai Barat yang tenang dan Pantai Timur yang
-                    berombak - yang dipisahkan oleh Cagar Alam Pananjung.
-                  </p>
-                  <p>
-                    Dengan luas wilayah sekitar 68 km² dan ketinggian 0-200
-                    mdpl, Pangandaran memiliki iklim tropis dengan suhu
-                    rata-rata 27-32°C. Musim hujan berlangsung dari November
-                    hingga Maret, sementara musim kemarau dari April hingga
-                    Oktober.
-                  </p>
-                  <p>
-                    Kondisi geografis ini menciptakan ekosistem yang beragam,
-                    mulai dari pantai berpasir putih, hutan tropis, ngarai
-                    sungai, hingga formasi batu karang yang menakjubkan.
-                  </p>
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur shadow-xl shadow-emerald-950/25 space-y-6">
+                <div className="flex items-center justify-between gap-4">
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/80">
+                      Cerita panjang
+                    </p>
+                    <h2 className="text-3xl font-semibold text-white">
+                      Sejarah, geografi, dan budaya
+                    </h2>
+                  </div>
+                  <div className="hidden sm:flex items-center gap-2 text-sm text-white/70">
+                    <Compass className="h-4 w-4" />
+                    Ringkasan kurasi tim
+                  </div>
                 </div>
-              </div>
-
-              {/* Budaya */}
-              <div className="bg-white rounded-2xl p-8 shadow-lg">
-                <h2 className="text-3xl font-bold text-slate-800 mb-6">
-                  Budaya & Tradisi
-                </h2>
-                <div className="prose prose-slate max-w-none space-y-4 text-slate-600 leading-relaxed">
-                  <p>
-                    Masyarakat Pangandaran mayoritas adalah suku Sunda dengan
-                    budaya dan tradisi yang masih dijaga hingga kini. Keramahan
-                    penduduk lokal menjadi daya tarik tersendiri bagi wisatawan.
-                  </p>
-                  <p>
-                    Berbagai upacara adat dan ritual masih dijalankan, seperti
-                    Nadran (upacara laut), Hajat Laut, dan berbagai festival
-                    budaya yang rutin diselenggarakan. Seni tradisional seperti
-                    wayang golek, jaipongan, dan musik calung masih lestari.
-                  </p>
-                  <p>
-                    Kuliner khas Pangandaran juga menjadi bagian penting dari
-                    budaya lokal, dengan seafood segar dan masakan tradisional
-                    Sunda yang menggugah selera.
-                  </p>
+                <div className="grid md:grid-cols-2 gap-6 text-white/75 leading-relaxed">
+                  <div className="space-y-4">
+                    <p>
+                      Pangandaran telah dikenal sejak era kerajaan sebagai
+                      pelabuhan dan titik singgah. Statusnya kian kuat di masa
+                      kolonial ketika jalur wisata dibuka, menghadirkan
+                      penginapan dan infrastruktur pantai.
+                    </p>
+                    <p>
+                      Bentang alamnya unik: dua pantai yang saling membelakangi,
+                      hutan tropis Pananjung, formasi karang, dan garis ombak
+                      yang berbeda karakter antara barat dan timur.
+                    </p>
+                  </div>
+                  <div className="space-y-4">
+                    <p>
+                      Budaya Sunda terasa di keramahan warga, musik calung, dan
+                      kuliner laut segar. Upacara laut seperti Nadran menjaga
+                      hubungan masyarakat dengan alam dan laut sebagai sumber
+                      hidup.
+                    </p>
+                    <p>
+                      Modernisasi pariwisata tetap diracik dengan kearifan
+                      lokal, menempatkan Pangandaran sebagai destinasi yang
+                      selaras antara alam, budaya, dan pengalaman wisata.
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
 
-            {/* Sidebar */}
             <div className="space-y-6">
-              {/* Quick Facts */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-800 mb-6">
-                  Fakta Singkat
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur shadow-lg shadow-emerald-950/20">
+                <h3 className="text-lg font-semibold text-white mb-4">
+                  Fakta singkat
                 </h3>
-                <div className="space-y-4">
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">Provinsi</div>
-                    <div className="font-semibold text-slate-800">
-                      Jawa Barat
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">Kabupaten</div>
-                    <div className="font-semibold text-slate-800">
-                      Pangandaran
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">
-                      Luas Wilayah
-                    </div>
-                    <div className="font-semibold text-slate-800">~68 km²</div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">Populasi</div>
-                    <div className="font-semibold text-slate-800">
-                      ~50.000 jiwa
-                    </div>
-                  </div>
-                  <div>
-                    <div className="text-sm text-slate-600 mb-1">Bahasa</div>
-                    <div className="font-semibold text-slate-800">
-                      Bahasa Sunda, Indonesia
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Stats */}
-              <div className="bg-gradient-to-br from-blue-600 to-cyan-600 rounded-2xl p-6 text-white">
-                <h3 className="text-xl font-bold mb-6">Statistik Wisata</h3>
-                <div className="space-y-4">
-                  {[
-                    { icon: MapPin, label: "Destinasi", value: "25+" },
-                    { icon: Users, label: "Wisatawan/Tahun", value: "500K+" },
-                    { icon: Calendar, label: "Event Tahunan", value: "30+" },
-                  ].map((stat, index) => (
-                    <div key={index} className="flex items-center space-x-3">
-                      <div className="w-12 h-12 bg-white/20 rounded-lg flex items-center justify-center">
-                        <stat.icon className="w-6 h-6" />
-                      </div>
-                      <div>
-                        <div className="text-2xl font-bold">{stat.value}</div>
-                        <div className="text-sm text-white/80">
-                          {stat.label}
-                        </div>
-                      </div>
+                <div className="space-y-4 text-sm text-white/75">
+                  {facts.map((fact) => (
+                    <div
+                      key={fact.label}
+                      className="flex items-baseline justify-between gap-4"
+                    >
+                      <span className="text-white/60">{fact.label}</span>
+                      <span className="font-semibold text-white">
+                        {fact.value}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* Best Time */}
-              <div className="bg-white rounded-2xl p-6 shadow-lg">
-                <h3 className="text-xl font-bold text-slate-800 mb-4">
-                  Waktu Terbaik Berkunjung
+              <div className="rounded-2xl border border-white/10 bg-gradient-to-br from-emerald-400/20 to-cyan-400/15 p-6 text-white backdrop-blur shadow-lg shadow-emerald-950/25">
+                <h3 className="text-lg font-semibold mb-4">
+                  Waktu terbaik berkunjung
                 </h3>
                 <div className="space-y-3 text-sm">
-                  <div className="flex items-start space-x-2">
-                    <Sun className="w-5 h-5 text-yellow-500 mt-0.5" />
+                  <div className="flex items-start gap-2">
+                    <Sun className="w-5 h-5 text-amber-300" />
                     <div>
-                      <p className="font-semibold text-slate-800">
+                      <p className="font-semibold text-white">
                         April - Oktober
                       </p>
-                      <p className="text-slate-600">
-                        Musim kemarau, cuaca cerah sempurna untuk pantai
+                      <p className="text-white/80">
+                        Musim kemarau, langit cerah untuk pantai dan aktivitas
+                        laut.
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-start space-x-2">
-                    <Waves className="w-5 h-5 text-blue-500 mt-0.5" />
+                  <div className="flex items-start gap-2">
+                    <Waves className="w-5 h-5 text-cyan-200" />
                     <div>
-                      <p className="font-semibold text-slate-800">
+                      <p className="font-semibold text-white">
                         November - Maret
                       </p>
-                      <p className="text-slate-600">
-                        Musim hujan, air terjun dan sungai lebih indah
+                      <p className="text-white/80">
+                        Musim hujan, debit sungai naik, air terjun dan hijauan
+                        lebih segar.
                       </p>
                     </div>
                   </div>

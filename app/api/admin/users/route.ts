@@ -143,6 +143,45 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    // Check if admin exists
+    const admin = await prisma.admin.findUnique({
+      where: { id },
+      include: {
+        destinasiCreated: { take: 1 },
+        eventCreated: { take: 1 },
+        galeriUploaded: { take: 1 },
+        infoUpdated: { take: 1 },
+        beritaCreated: { take: 1 },
+        profilUkmCreated: { take: 1 },
+      },
+    });
+
+    if (!admin) {
+      return NextResponse.json(
+        { error: "Admin tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
+    // Check if admin has created any content
+    const hasRelatedData =
+      admin.destinasiCreated.length > 0 ||
+      admin.eventCreated.length > 0 ||
+      admin.galeriUploaded.length > 0 ||
+      admin.infoUpdated.length > 0 ||
+      admin.beritaCreated.length > 0 ||
+      admin.profilUkmCreated.length > 0;
+
+    if (hasRelatedData) {
+      return NextResponse.json(
+        {
+          error:
+            "Tidak dapat menghapus admin yang memiliki data terkait (destinasi, event, galeri, berita, dll). Silakan hapus atau transfer data terlebih dahulu.",
+        },
+        { status: 400 }
+      );
+    }
+
     await prisma.admin.delete({
       where: { id },
     });
@@ -151,8 +190,27 @@ export async function DELETE(request: NextRequest) {
       success: true,
       message: "Admin berhasil dihapus",
     });
-  } catch (error) {
+  } catch (error: any) {
     console.error("Error deleting admin:", error);
+    
+    // Handle Prisma-specific errors
+    if (error.code === "P2003") {
+      return NextResponse.json(
+        {
+          error:
+            "Tidak dapat menghapus admin yang memiliki data terkait. Silakan hapus data terkait terlebih dahulu.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (error.code === "P2025") {
+      return NextResponse.json(
+        { error: "Admin tidak ditemukan" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Gagal menghapus admin" },
       { status: 500 }

@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useState, useEffect } from "react";
-import { Menu, X, Search, MapPin, LogIn } from "lucide-react";
+import { Menu, X, Search, LogIn } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -50,17 +51,19 @@ export default function Navbar() {
           <Link href="/" className="flex items-center space-x-3 group">
             <div
               className={cn(
-                "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300",
+                "w-12 h-12 rounded-full flex items-center justify-center overflow-hidden transition-all duration-300",
                 isScrolled
-                  ? "bg-gradient-to-br from-blue-500 to-cyan-500"
-                  : "bg-white/20 backdrop-blur-sm border-2 border-white/30"
+                  ? "bg-white shadow-md"
+                  : "bg-white/90 backdrop-blur-sm border-2 border-white/50"
               )}
             >
-              <MapPin
-                className={cn(
-                  "w-6 h-6 transition-colors",
-                  isScrolled ? "text-white" : "text-white"
-                )}
+              <Image
+                src="/logo.png"
+                alt="Logo Wisata Pangandaran"
+                width={48}
+                height={48}
+                className="w-full h-full object-cover"
+                priority
               />
             </div>
             <div className="flex flex-col">
@@ -107,7 +110,7 @@ export default function Navbar() {
               );
             })}
 
-            {/* Admin Login Button */}
+            {/* Login Button */}
             <Link
               href="/admin/login"
               className={cn(
@@ -118,7 +121,7 @@ export default function Navbar() {
               )}
             >
               <LogIn className="w-4 h-4" />
-              <span>Admin</span>
+              <span>Login</span>
             </Link>
           </div>
 
@@ -180,7 +183,7 @@ export default function Navbar() {
                 );
               })}
 
-              {/* Admin Login Button for Mobile */}
+              {/* Login Button for Mobile */}
               <Link
                 href="/admin/login"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -192,7 +195,7 @@ export default function Navbar() {
                 )}
               >
                 <LogIn className="w-4 h-4" />
-                <span>Admin Login</span>
+                <span>Login</span>
               </Link>
             </div>
           </div>

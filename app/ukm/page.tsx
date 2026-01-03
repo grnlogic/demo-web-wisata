@@ -1,24 +1,27 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  Store,
-  MapPin,
-  Phone,
-  Mail,
-  Instagram,
-  Globe,
-  CheckCircle,
-  Star,
   ArrowRight,
-  ShoppingBag,
-  Utensils,
+  BadgeCheck,
+  CheckCircle,
+  Globe,
+  Instagram,
+  Loader2,
+  MapPin,
   PalmtreeIcon as Palm,
+  Phone,
+  Search,
+  ShoppingBag,
+  Sparkles,
+  Star,
+  Store,
+  TrendingUp,
+  Utensils,
+  Waves,
   Paintbrush,
   Camera,
-  Loader2,
-  Waves,
 } from "lucide-react";
 
 interface UKM {
@@ -45,10 +48,6 @@ export default function UkmPage() {
   const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState("");
 
-  useEffect(() => {
-    fetchUKMs();
-  }, [selectedCategory]);
-
   const fetchUKMs = async () => {
     try {
       const params = new URLSearchParams();
@@ -66,8 +65,12 @@ export default function UkmPage() {
     }
   };
 
+  useEffect(() => {
+    void fetchUKMs();
+  }, [selectedCategory]);
+
   const featuredUkms = ukms.filter((u) => u.featured && u.verified);
-  const regularUkms = ukms.filter((u) => !u.featured || !selectedCategory);
+  const regularUkms = ukms.filter((u) => !(u.featured && u.verified));
 
   // Count UKMs by category
   const categories = [
@@ -85,344 +88,374 @@ export default function UkmPage() {
   }));
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
-      {/* Header */}
-      <section className="relative bg-gradient-to-br from-green-600 via-emerald-700 to-teal-600 text-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center space-y-4">
-            <div className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 text-white shadow-lg">
-              <Store className="w-4 h-4" />
-              <span className="text-sm">Dukung Ekonomi Lokal</span>
+    <div className="min-h-screen bg-slate-950 text-slate-50">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950 border-b border-white/5">
+        <div className="absolute inset-0 opacity-60 blur-3xl" aria-hidden>
+          <div className="absolute -top-24 -left-10 h-64 w-64 rounded-full bg-emerald-500/30" />
+          <div className="absolute top-10 right-0 h-72 w-72 rounded-full bg-teal-400/20" />
+        </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative">
+          <div className="flex flex-col gap-8">
+            <div className="flex items-center gap-3">
+              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 backdrop-blur">
+                <Sparkles className="h-4 w-4" />
+                <span className="text-sm text-white/80">Kurasi UKM Lokal</span>
+              </div>
+              <div className="hidden md:inline-flex items-center gap-2 text-xs text-white/70 uppercase tracking-[0.2em]">
+                <div className="h-px w-8 bg-white/20" />
+                <span>Profil premium</span>
+              </div>
             </div>
-            <h1 className="text-4xl md:text-5xl font-bold">
-              Profil UKM Pangandaran
-            </h1>
-            <p className="text-xl text-white/90 max-w-2xl mx-auto">
-              Temukan produk dan layanan dari pelaku usaha lokal terbaik di
-              Pangandaran
-            </p>
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6">
+              <div className="space-y-4 max-w-3xl">
+                <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-white">
+                  UKM Pangandaran versi butik, bukan katalog generik
+                </h1>
+                <p className="text-lg text-slate-200/80">
+                  Jelajahi brand kuliner, kerajinan, hingga jasa wisata dengan
+                  presentasi rapi dan info kontak siap pakai.
+                </p>
+                <div className="flex flex-wrap gap-3 text-sm text-white/80">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                    <TrendingUp className="h-4 w-4" />
+                    Terlaris mingguan
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                    <BadgeCheck className="h-4 w-4" />
+                    Terverifikasi
+                  </span>
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                    <Waves className="h-4 w-4" />
+                    Khas pesisir
+                  </span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
+                {["Kuliner", "Kerajinan", "Jasa Wisata", "Souvenir"].map(
+                  (label) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-center text-sm text-white/80 shadow-lg shadow-emerald-900/30"
+                    >
+                      <div className="text-xs uppercase tracking-[0.08em] text-white/50">
+                        Sektor
+                      </div>
+                      <div className="font-semibold text-white">{label}</div>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* Loading State */}
-      {loading && (
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col items-center justify-center">
-              <Loader2 className="w-12 h-12 text-green-600 animate-spin mb-4" />
-              <p className="text-slate-600">Memuat data UKM...</p>
+      <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
+        <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur shadow-2xl shadow-emerald-900/30 p-6 md:p-7 space-y-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-4">
+            <div className="flex-1 relative">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-white/40" />
+              <input
+                type="text"
+                placeholder="Cari UKM, kategori, atau lokasi..."
+                value={selectedCategory ? selectedCategory : undefined}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="w-full rounded-2xl bg-white/5 border border-white/10 px-12 py-4 text-white placeholder:text-white/40 focus:outline-none focus:ring-2 focus:ring-emerald-300/70"
+              />
+            </div>
+            <div className="flex gap-3 overflow-x-auto pb-1">
+              {categories.map((cat) => (
+                <button
+                  key={cat.name}
+                  onClick={() => setSelectedCategory(cat.slug)}
+                  className={`shrink-0 rounded-full px-4 py-2 text-sm font-medium border transition ${
+                    selectedCategory === cat.slug
+                      ? "bg-emerald-300 text-slate-950 border-emerald-200"
+                      : "bg-white/5 border-white/10 text-white/80 hover:border-white/30"
+                  }`}
+                >
+                  {cat.name}
+                  <span className="ml-2 text-xs text-white/60">
+                    {cat.count}
+                  </span>
+                </button>
+              ))}
             </div>
           </div>
-        </section>
-      )}
-
-      {/* Featured UKM */}
-      {!loading && featuredUkms.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
-              <div>
-                <h2 className="text-3xl font-bold text-slate-800">
-                  UKM Unggulan
-                </h2>
-                <p className="text-slate-600 mt-2">
-                  UKM terverifikasi dengan reputasi terbaik
-                </p>
-              </div>
-              <div className="flex items-center text-green-600">
-                <CheckCircle className="w-5 h-5 mr-2" />
-                <span className="text-sm font-semibold">Terverifikasi</span>
-              </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs text-white/70">
+            <div className="flex items-center gap-2">
+              <BadgeCheck className="h-4 w-4" />
+              UKM terverifikasi tampil di atas
             </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-4 w-4" />
+              Lokasi dan kontak siap pakai
+            </div>
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              Visual glassy non-template
+            </div>
+            <div className="flex items-center gap-2">
+              <TrendingUp className="h-4 w-4" />
+              Statistik kategori ringan
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {featuredUkms.map((ukm) => (
-                <Link
-                  key={ukm.id}
-                  href={`/ukm/${ukm.slug}`}
-                  className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2 border border-slate-100"
-                >
-                  <div className="flex flex-col md:flex-row">
+      {loading ? (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 grid gap-6 md:grid-cols-2">
+          {[1, 2, 3, 4].map((item) => (
+            <div
+              key={item}
+              className="animate-pulse rounded-3xl border border-white/5 bg-white/5 h-64"
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 space-y-16">
+          {featuredUkms.length > 0 && (
+            <section className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-emerald-200/80 uppercase tracking-[0.18em]">
+                    Unggulan
+                  </p>
+                  <h2 className="text-3xl font-semibold text-white mt-1">
+                    UKM terverifikasi pilihan
+                  </h2>
+                </div>
+                <div className="hidden md:flex items-center gap-2 text-sm text-white/70">
+                  <BadgeCheck className="h-4 w-4" />
+                  Kurasi redaksi
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {featuredUkms.map((ukm) => (
+                  <Link
+                    key={ukm.id}
+                    href={`/ukm/${ukm.slug}`}
+                    className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur shadow-2xl shadow-emerald-900/30"
+                  >
                     <div
-                      className="h-64 md:h-auto md:w-1/3 bg-cover bg-center"
+                      className="relative h-64 overflow-hidden"
                       style={{
-                        backgroundImage: `url(${
+                        backgroundImage: `linear-gradient(180deg, rgba(2,6,23,0.1) 0%, rgba(2,6,23,0.6) 70%), url(${
                           ukm.gambar[0] ||
                           ukm.logo ||
-                          "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=80"
+                          "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=1200&q=80"
                         })`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
                       }}
-                    />
-                    <div className="p-6 md:w-2/3 space-y-4">
+                    >
+                      <div className="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-black/50 px-3 py-1 text-xs text-white border border-white/10">
+                        <Store className="h-4 w-4" />
+                        {ukm.kategori}
+                      </div>
+                      <div className="absolute top-4 right-4 inline-flex items-center gap-2 rounded-full bg-emerald-400/90 px-3 py-1 text-xs font-semibold text-slate-900 shadow">
+                        <BadgeCheck className="h-4 w-4" />
+                        Verified
+                      </div>
+                    </div>
+                    <div className="p-6 space-y-4">
                       <div className="flex items-start justify-between">
-                        <div className="flex items-center space-x-3">
+                        <div className="flex items-center gap-3">
                           {ukm.logo ? (
                             <img
                               src={ukm.logo}
                               alt={ukm.namaUsaha}
-                              className="w-16 h-16 rounded-lg object-cover border-2 border-slate-200"
+                              className="w-14 h-14 rounded-xl object-cover border border-white/15"
                             />
                           ) : (
-                            <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center">
-                              <Store className="w-8 h-8 text-white" />
+                            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center border border-white/15">
+                              <Store className="w-7 h-7 text-white" />
                             </div>
                           )}
                           <div>
-                            <h3 className="text-xl font-bold text-slate-800 group-hover:text-green-600 transition-colors">
+                            <h3 className="text-xl font-semibold text-white group-hover:text-emerald-200 transition-colors">
                               {ukm.namaUsaha}
                             </h3>
-                            <p className="text-sm text-slate-600">
-                              {ukm.kategori}
+                            <p className="text-sm text-white/60">
+                              {ukm.pemilik}
                             </p>
                           </div>
                         </div>
-                        {ukm.verified && (
-                          <CheckCircle className="w-6 h-6 text-green-500" />
-                        )}
-                      </div>
-
-                      <p className="text-slate-600 line-clamp-2">
-                        {ukm.deskripsi}
-                      </p>
-
-                      <div className="space-y-2">
-                        <div className="flex items-center text-sm text-slate-600">
-                          <MapPin className="w-4 h-4 mr-2 text-slate-400" />
-                          <span>{ukm.lokasi}</span>
+                        <div className="flex items-center gap-2 text-emerald-200 text-sm">
+                          <Star className="h-4 w-4" />
+                          Unggulan
                         </div>
                       </div>
+                      <p className="text-white/80 text-sm leading-relaxed line-clamp-3">
+                        {ukm.deskripsi}
+                      </p>
+                      <div className="flex flex-wrap gap-2 text-xs text-white/70">
+                        <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                          <MapPin className="h-4 w-4" />
+                          {ukm.lokasi}
+                        </span>
+                        {ukm.produkLayanan.slice(0, 3).map((produk, idx) => (
+                          <span
+                            key={idx}
+                            className="rounded-full bg-emerald-400/10 px-3 py-1 text-emerald-100 border border-emerald-300/30"
+                          >
+                            {produk}
+                          </span>
+                        ))}
+                      </div>
+                      <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                        <div className="flex items-center gap-3 text-white/70">
+                          {ukm.nomorTelepon && <Phone className="h-4 w-4" />}
+                          {ukm.instagram && <Instagram className="h-4 w-4" />}
+                          {ukm.website && <Globe className="h-4 w-4" />}
+                        </div>
+                        <div className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-200 group-hover:translate-x-1 transition-transform">
+                          Lihat detail
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </section>
+          )}
 
+          <section className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-emerald-200/80 uppercase tracking-[0.18em]">
+                  Semua UKM
+                </p>
+                <h2 className="text-3xl font-semibold text-white mt-1">
+                  {selectedCategory
+                    ? `UKM ${selectedCategory}`
+                    : "Direktori lengkap"}
+                </h2>
+                <p className="text-white/60 mt-1">
+                  {regularUkms.length} UKM ditemukan
+                </p>
+              </div>
+            </div>
+
+            {regularUkms.length === 0 ? (
+              <div className="rounded-3xl border border-white/10 bg-white/5 p-12 text-center text-white/70">
+                <Store className="w-16 h-16 text-white/30 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-white mb-2">
+                  Belum ada UKM
+                </h3>
+                <p>Data akan muncul setelah ada pendaftar baru.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {regularUkms.map((ukm) => (
+                  <Link
+                    key={ukm.id}
+                    href={`/ukm/${ukm.slug}`}
+                    className="group flex flex-col h-full rounded-3xl border border-white/10 bg-gradient-to-b from-white/8 to-white/5 p-4 backdrop-blur shadow-xl shadow-emerald-950/25 transition hover:-translate-y-1 hover:border-emerald-300/60"
+                  >
+                    <div
+                      className="relative h-44 rounded-2xl overflow-hidden mb-4"
+                      style={{
+                        backgroundImage: `linear-gradient(180deg, rgba(2,6,23,0) 0%, rgba(2,6,23,0.45) 100%), url(${
+                          ukm.gambar[0] ||
+                          ukm.logo ||
+                          "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=900&q=80"
+                        })`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                      }}
+                    >
+                      <div className="absolute top-3 left-3 inline-flex items-center gap-2 rounded-full bg-black/60 px-3 py-1 text-[11px] text-white border border-white/10">
+                        <Store className="h-3.5 w-3.5" />
+                        {ukm.kategori}
+                      </div>
+                      {ukm.featured && (
+                        <span className="absolute top-3 right-3 inline-flex items-center gap-1 rounded-full bg-amber-300/90 px-3 py-1 text-[11px] font-semibold text-slate-900 shadow">
+                          <Star className="h-3.5 w-3.5" />
+                          Featured
+                        </span>
+                      )}
+                      {ukm.verified && (
+                        <span className="absolute bottom-3 right-3 inline-flex items-center gap-1 rounded-full bg-emerald-400/90 px-2.5 py-1 text-[11px] font-semibold text-slate-900 shadow">
+                          <BadgeCheck className="h-3.5 w-3.5" />
+                          Verified
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex-1 flex flex-col gap-3">
+                      <div>
+                        <h3 className="text-lg font-semibold text-white line-clamp-2 group-hover:text-emerald-200 transition">
+                          {ukm.namaUsaha}
+                        </h3>
+                        <p className="text-sm text-white/60 line-clamp-1">
+                          {ukm.deskripsi}
+                        </p>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-white/70">
+                        <MapPin className="h-4 w-4" />
+                        <span className="line-clamp-1">{ukm.lokasi}</span>
+                      </div>
                       {ukm.produkLayanan.length > 0 && (
                         <div className="flex flex-wrap gap-2">
-                          {ukm.produkLayanan.slice(0, 3).map((produk: string, idx: number) => (
+                          {ukm.produkLayanan.slice(0, 2).map((produk, idx) => (
                             <span
                               key={idx}
-                              className="px-3 py-1 bg-green-50 text-green-700 text-xs font-medium rounded-full"
+                              className="rounded-full bg-white/10 px-3 py-1 text-[11px] text-white/80 border border-white/10"
                             >
                               {produk}
                             </span>
                           ))}
                         </div>
                       )}
-
-                      <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                        <div className="flex items-center space-x-3">
-                          {ukm.nomorTelepon && (
-                            <Phone className="w-4 h-4 text-slate-400" />
-                          )}
-                          {ukm.instagram && (
-                            <Instagram className="w-4 h-4 text-slate-400" />
-                          )}
-                          {ukm.website && (
-                            <Globe className="w-4 h-4 text-slate-400" />
-                          )}
+                      <div className="flex items-center justify-between pt-3 border-t border-white/10 text-sm">
+                        <div className="flex items-center gap-2 text-white/70">
+                          {ukm.nomorTelepon && <Phone className="h-4 w-4" />}
+                          {ukm.instagram && <Instagram className="h-4 w-4" />}
+                          {ukm.website && <Globe className="h-4 w-4" />}
                         </div>
-                        <div className="flex items-center text-green-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                          <span>Lihat Detail</span>
-                          <ArrowRight className="w-4 h-4 ml-1" />
+                        <div className="inline-flex items-center gap-2 font-semibold text-emerald-200 group-hover:translate-x-1 transition-transform">
+                          Detail
+                          <ArrowRight className="h-4 w-4" />
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </section>
 
-      {/* Categories */}
-      {!loading && (
-        <section className="py-16 bg-slate-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-slate-800">
-                Kategori UKM
-              </h2>
-              <p className="text-slate-600 mt-2">
-                Temukan UKM berdasarkan kategori usaha
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-              {categories.map((category) => (
-                <button
-                  key={category.name}
-                  onClick={() => setSelectedCategory(category.slug)}
-                  className={`group p-6 rounded-xl hover:shadow-lg transition-all duration-300 hover:-translate-y-1 text-center ${
-                    selectedCategory === category.slug
-                      ? "bg-green-600 text-white shadow-lg"
-                      : "bg-white"
-                  }`}
-                >
-                  <div
-                    className={`flex items-center justify-center w-16 h-16 mx-auto rounded-full mb-3 group-hover:scale-110 transition-transform ${
-                      selectedCategory === category.slug
-                        ? "bg-white/20"
-                        : "bg-gradient-to-br from-green-500 to-emerald-500 text-white"
-                    }`}
-                  >
-                    <category.icon className="w-8 h-8" />
-                  </div>
-                  <h3
-                    className={`font-bold text-sm mb-1 ${
-                      selectedCategory === category.slug
-                        ? "text-white"
-                        : "text-slate-800"
-                    }`}
-                  >
-                    {category.name}
-                  </h3>
-                  <p
-                    className={`text-xs ${
-                      selectedCategory === category.slug
-                        ? "text-white/80"
-                        : "text-slate-500"
-                    }`}
-                  >
-                    {category.count} UKM
-                  </p>
-                </button>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* All UKM */}
-      {!loading && regularUkms.length > 0 && (
-        <section className="py-16">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex items-center justify-between mb-8">
+          <section className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
               <div>
-                <h2 className="text-3xl font-bold text-slate-800">
-                  {selectedCategory
-                    ? `UKM ${selectedCategory}`
-                    : "Semua UKM"}
-                </h2>
-                <p className="text-slate-600 mt-2">
-                  {regularUkms.length} UKM ditemukan
+                <p className="text-sm text-emerald-200/80 uppercase tracking-[0.18em]">
+                  Ajukan UKM
                 </p>
+                <h3 className="text-2xl font-semibold text-white mt-1">
+                  Punya usaha? Tampilkan dengan gaya premium
+                </h3>
+              </div>
+              <div className="flex items-center gap-2 text-sm text-white/70">
+                <Sparkles className="h-4 w-4" />
+                Gratis onboarding & foto sampul
               </div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {regularUkms.map((ukm) => (
-                <Link
-                  key={ukm.id}
-                  href={`/ukm/${ukm.slug}`}
-                  className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 border border-slate-100"
-                >
-                  <div
-                    className="h-48 bg-cover bg-center relative"
-                    style={{
-                      backgroundImage: `url(${
-                        ukm.gambar[0] ||
-                        ukm.logo ||
-                        "https://images.unsplash.com/photo-1556740749-887f6717d7e4?auto=format&fit=crop&w=800&q=80"
-                      })`,
-                    }}
-                  >
-                    {ukm.featured && (
-                      <span className="absolute top-3 right-3 px-3 py-1 bg-yellow-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
-                        <Star className="w-3 h-3" />
-                        Featured
-                      </span>
-                    )}
-                    {ukm.verified && (
-                      <span className="absolute top-3 left-3 px-3 py-1 bg-green-500 text-white text-xs font-semibold rounded-full flex items-center gap-1">
-                        <CheckCircle className="w-3 h-3" />
-                        Verified
-                      </span>
-                    )}
-                  </div>
-                  <div className="p-5 space-y-3">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h3 className="text-lg font-bold text-slate-800 group-hover:text-green-600 transition-colors line-clamp-1">
-                          {ukm.namaUsaha}
-                        </h3>
-                        <p className="text-sm text-slate-600">{ukm.kategori}</p>
-                      </div>
-                    </div>
-
-                    <p className="text-slate-600 text-sm line-clamp-2">
-                      {ukm.deskripsi}
-                    </p>
-
-                    <div className="flex items-center text-sm text-slate-600">
-                      <MapPin className="w-4 h-4 mr-2 text-slate-400 flex-shrink-0" />
-                      <span className="line-clamp-1">{ukm.lokasi}</span>
-                    </div>
-
-                    <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                      <div className="flex items-center space-x-2">
-                        {ukm.nomorTelepon && (
-                          <Phone className="w-4 h-4 text-slate-400" />
-                        )}
-                        {ukm.instagram && (
-                          <Instagram className="w-4 h-4 text-slate-400" />
-                        )}
-                        {ukm.website && (
-                          <Globe className="w-4 h-4 text-slate-400" />
-                        )}
-                      </div>
-                      <div className="flex items-center text-green-600 font-semibold text-sm group-hover:translate-x-1 transition-transform">
-                        <span>Detail</span>
-                        <ArrowRight className="w-4 h-4 ml-1" />
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Empty State */}
-      {!loading && ukms.length === 0 && (
-        <section className="py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center">
-              <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-100 mb-4">
-                <Store className="w-10 h-10 text-slate-400" />
-              </div>
-              <h3 className="text-2xl font-bold text-slate-800 mb-2">
-                Belum Ada UKM Terdaftar
-              </h3>
-              <p className="text-slate-600">
-                Saat ini belum ada UKM yang terdaftar. Silakan cek kembali nanti.
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* CTA Section */}
-      {!loading && ukms.length > 0 && (
-        <section className="py-16 bg-gradient-to-br from-green-600 via-emerald-700 to-teal-600">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center text-white space-y-6">
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Punya Usaha di Pangandaran?
-              </h2>
-              <p className="text-xl text-white/90 max-w-2xl mx-auto">
-                Daftarkan UKM Anda dan jangkau lebih banyak pelanggan!
-              </p>
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link
-                  href="/hubungi-kami"
-                  className="inline-flex items-center justify-center px-8 py-4 bg-white text-green-600 rounded-full font-semibold hover:bg-slate-50 transition-colors shadow-lg"
-                >
-                  Daftar Sekarang
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Link>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Link
+                href="/hubungi-kami"
+                className="inline-flex items-center justify-center px-6 py-3 rounded-2xl bg-emerald-300 text-slate-950 font-semibold shadow-lg shadow-emerald-900/30 hover:shadow-emerald-800/40 transition"
+              >
+                Daftar sekarang
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Link>
+              <div className="flex-1 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white/70 text-sm">
+                Kami kurasi profil lengkap: logo, galeri foto, produk unggulan,
+                dan kontak.
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        </div>
       )}
     </div>
   );
