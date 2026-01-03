@@ -2,17 +2,18 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 }
 
 // GET - Fetch single kuliner by slug for public
 export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
+    const { slug } = await params;
     const kuliner = await prisma.kuliner.findUnique({
       where: {
-        slug: params.slug,
+        slug,
         status: "PUBLISHED",
       },
     });

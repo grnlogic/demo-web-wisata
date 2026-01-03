@@ -6,7 +6,7 @@ import { KategoriGaleri, TipeMedia } from "@prisma/client";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -14,8 +14,9 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const galeri = await prisma.galeri.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         admin: {
           select: {
@@ -41,7 +42,7 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -49,6 +50,7 @@ export async function PUT(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const body = await request.json();
     const {
       judul,
@@ -63,7 +65,7 @@ export async function PUT(
 
     // Check if galeri exists
     const existingGaleri = await prisma.galeri.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingGaleri) {
@@ -71,7 +73,7 @@ export async function PUT(
     }
 
     const galeri = await prisma.galeri.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         judul,
         deskripsi: deskripsi || null,
@@ -96,7 +98,7 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await getServerSession(authOptions);
@@ -104,9 +106,10 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     // Check if galeri exists
     const existingGaleri = await prisma.galeri.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingGaleri) {
@@ -114,7 +117,7 @@ export async function DELETE(
     }
 
     await prisma.galeri.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Galeri deleted successfully" });

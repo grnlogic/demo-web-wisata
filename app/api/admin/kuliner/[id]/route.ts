@@ -5,9 +5,9 @@ import { prisma } from "@/lib/prisma";
 import slugify from "slugify";
 
 interface RouteParams {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 // GET - Fetch single kuliner by ID
@@ -18,8 +18,9 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const kuliner = await prisma.kuliner.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!kuliner) {
@@ -47,11 +48,12 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     const data = await request.json();
 
     // Check if kuliner exists
     const existingKuliner = await prisma.kuliner.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingKuliner) {
@@ -70,7 +72,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
       const duplicateSlug = await prisma.kuliner.findFirst({
         where: {
           slug,
-          id: { not: params.id },
+          id: { not: id },
         },
       });
 
@@ -83,7 +85,7 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     }
 
     const kuliner = await prisma.kuliner.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         nama: data.nama,
         slug,
@@ -122,9 +124,10 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const { id } = await params;
     // Check if kuliner exists
     const existingKuliner = await prisma.kuliner.findUnique({
-      where: { id: params.id },
+      where: { id },
     });
 
     if (!existingKuliner) {
@@ -135,7 +138,7 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     }
 
     await prisma.kuliner.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Kuliner berhasil dihapus" });
