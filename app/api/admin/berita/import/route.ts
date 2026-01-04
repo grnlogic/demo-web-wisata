@@ -4,116 +4,59 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import slugify from "slugify";
 
-const LOL_HUMAN_API_KEY = process.env.LOL_HUMAN_API_KEY || "";
+const SERPAPI_API_KEY = process.env.SERPAPI_API_KEY || "";
+const SERPAPI_ENDPOINT = "https://serpapi.com/search";
+const MAX_RESULTS = 50;
 
 interface NewsSource {
   title: string;
   link: string;
   image?: string;
   description?: string;
+  source?: string;
+  published_at?: string;
 }
 
-// Fetch news from multiple sources
-async function fetchNewsFromSources() {
-  const sources = [
-    {
-      name: "Kumparan",
-      url: `https://api.lolhuman.xyz/api/kumparan?apikey=${LOL_HUMAN_API_KEY}`,
-    },
-    {
-      name: "Republika",
-      url: `https://api.lolhuman.xyz/api/republika?apikey=${LOL_HUMAN_API_KEY}`,
-    },
-  ];
+async function fetchNewsFromSerpApi(): Promise<NewsSource[]> {
+  if (!SERPAPI_API_KEY) return [];
 
-  const allNews: NewsSource[] = [];
+  const params = new URLSearchParams({
+    engine: "google",
+    tbm: "nws",
+    q: "Pangandaran",
+    gl: "id",
+    hl: "id",
+    api_key: SERPAPI_API_KEY,
+  });
 
-  // Keywords yang harus ada (primary)
-  const primaryKeywords = [
-    "pangandaran",
-    "ciamis",
-    "jawa barat",
-    "jabar",
-  ];
+  try {
+    const res = await fetch(`${SERPAPI_ENDPOINT}?${params.toString()}`, {
+      method: "GET",
+      cache: "no-store",
+    });
 
-  // Keywords pelengkap wisata (secondary - optional)
-  const secondaryKeywords = [
-    "wisata",
-    "pantai",
-    "tourism",
-    "travel",
-    "liburan",
-    "destinasi",
-    "kuliner",
-    "festival",
-  ];
-
-  // Exclude keywords (blacklist)
-  const excludeKeywords = [
-    "inggris",
-    "england",
-    "eropa",
-    "amerika",
-    "australia",
-    "jepang",
-    "korea",
-    "china",
-    "thailand",
-    "malaysia",
-    "singapura",
-    "bali", // agar fokus ke Pangandaran saja
-    "jakarta",
-    "bandung", // kecuali disebutkan berkaitan dengan Pangandaran
-  ];
-
-  for (const source of sources) {
-    try {
-      const response = await fetch(source.url);
-      const data = await response.json();
-
-      if (data.status === 200 && data.result && Array.isArray(data.result)) {
-        // Filter berita yang relevan dengan keyword
-        const filteredNews = data.result.filter((item: any) => {
-          const title = item.title?.toLowerCase() || "";
-          const description = item.description?.toLowerCase() || "";
-          const content = `${title} ${description}`;
-
-          // Check exclude keywords first
-          const hasExcluded = excludeKeywords.some((keyword) =>
-            content.includes(keyword.toLowerCase())
-          );
-          
-          if (hasExcluded) return false;
-
-          // Must have at least one primary keyword
-          const hasPrimary = primaryKeywords.some((keyword) =>
-            content.includes(keyword.toLowerCase())
-          );
-
-          // OR have at least 2 secondary keywords (wisata + pantai, dll)
-          const secondaryMatches = secondaryKeywords.filter((keyword) =>
-            content.includes(keyword.toLowerCase())
-          ).length;
-
-          return hasPrimary || secondaryMatches >= 2;
-        });
-
-        // Map and add source info
-        const newsItems = filteredNews.map((item: any) => ({
-          title: item.title,
-          link: item.link,
-          image: item.image || item.thumbnail || "",
-          description: item.description || item.snippet || "",
-        }));
-
-        allNews.push(...newsItems);
-      }
-    } catch (error) {
-      console.error(`Error fetching from ${source.name}:`, error);
+    if (!res.ok) {
+      console.error("SerpAPI news failed", await res.text());
+      return [];
     }
-  }
 
-  return allNews;
+    const data = await res.json();
+    const news: any[] = Array.isArray(data?.news_results)
+      ? data.news_results.slice(0, MAX_RESULTS)
+      : [];
+
+    return news.map((item: any) => ({
+      title: item.title,
+      link: item.link,
+      image: item.thumbnail || item.image,
+      description: item.snippet,
+      source: item.source,
+      published_at: item.published_at,
+    }));
+  } catch (error) {
+    console.error("SerpAPI news error", error);
+    return [];
+  }
 }
 
 // POST - Import news from API
@@ -133,8 +76,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Admin not found" }, { status: 404 });
     }
 
-    // Fetch news from sources
-    const newsItems = await fetchNewsFromSources();
+    // Fetch news from SerpAPI (Google News) fokus Pangandaran
+    const newsItems = await fetchNewsFromSerpApi();
 
     if (newsItems.length === 0) {
       return NextResponse.json(
@@ -193,19 +136,23 @@ export async function POST(request: NextRequest) {
           kategori = "Event";
         }
 
-        // Create berita as DRAFT
+        // Create berita as PUBLISHED (trusted external source)
         const berita = await prisma.berita.create({
           data: {
             judul: item.title,
             slug,
-            konten: item.description || item.title,
+            konten: item.link
+              ? `${item.description || item.title}\n\nBaca selengkapnya: ${item.link}`
+              : item.description || item.title,
             ringkasan: item.description?.substring(0, 200) || null,
             kategori,
             gambarUtama: item.image || null,
             sourceUrl: item.link,
             sourceImage: item.image || null,
             isExternal: true,
-            status: "DRAFT",
+            status: "PUBLISHED",
+            publishedAt: new Date(),
+            expiresAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
             featured: false,
             createdBy: admin.id,
           },
@@ -248,7 +195,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const newsItems = await fetchNewsFromSources();
+    const newsItems = await fetchNewsFromSerpApi();
 
     return NextResponse.json({
       success: true,

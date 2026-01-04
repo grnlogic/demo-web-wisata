@@ -17,6 +17,7 @@ import {
   X,
   Newspaper,
   Store,
+  Hotel,
 } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const navigation = [
   { name: "Event & Agenda", href: "/admin/event", icon: Calendar },
   { name: "Berita", href: "/admin/berita", icon: Newspaper },
   { name: "UKM", href: "/admin/ukm", icon: Store },
+  { name: "Hotel", href: "/admin/hotel", icon: Hotel },
   { name: "Galeri", href: "/admin/galeri", icon: ImageIcon },
   { name: "Kuliner", href: "/admin/kuliner", icon: Utensils },
   { name: "Informasi", href: "/admin/informasi", icon: Info },

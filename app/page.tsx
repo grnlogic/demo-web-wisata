@@ -7,6 +7,7 @@ import {
   Image as ImageIcon,
   Star,
   ArrowRight,
+  Hotel,
   Waves,
   Mountain,
   Camera,
@@ -22,7 +23,11 @@ import {
   Newspaper,
 } from "lucide-react";
 import VideoBackground from "@/components/VideoBackground";
+import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
 import { prisma } from "@/lib/prisma";
+
+export const revalidate = 0;
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   // Fetch real data from database
@@ -33,6 +38,20 @@ export default async function Home() {
     orderBy: [{ featured: "desc" }, { urutan: "asc" }, { createdAt: "desc" }],
     take: 3,
   });
+
+  const hotels = await prisma.hotelListing.findMany({
+    orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
+    take: 24,
+  });
+
+  const latestNews = await prisma.berita.findMany({
+    where: { status: "PUBLISHED" },
+    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+    take: 5,
+    select: { judul: true, slug: true, publishedAt: true, createdAt: true },
+  });
+
+  const dailyHotels = pickDailySubset(hotels, 3);
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-50">
@@ -169,6 +188,119 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Daily Hotels */}
+      <section className="py-16 bg-slate-900/60 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="space-y-2 max-w-2xl">
+              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                Pilihan hotel hari ini
+              </p>
+              <h3 className="text-2xl md:text-3xl font-semibold text-white">
+                3 rekomendasi yang berganti tiap hari
+              </h3>
+              <p className="text-white/70">
+                Snapshot diambil dari basis data hotel. Refresh harian dengan
+                kombinasi berbeda, supaya opsi tidak monoton.
+              </p>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80">
+              <Star className="w-4 h-4 text-amber-300" />
+              Kurasi otomatis harian
+            </div>
+          </div>
+
+          {dailyHotels.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/70">
+              Data hotel belum tersedia. Jalankan POST /api/hotels untuk memuat
+              snapshot, lalu coba lagi.
+            </div>
+          ) : (
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {dailyHotels.map((hotel) => {
+                const hasLink = Boolean(hotel.link);
+
+                return (
+                  <div
+                    key={hotel.id}
+                    className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-cyan-200/40"
+                  >
+                    {hotel.thumbnail ? (
+                      <div className="h-44 w-full overflow-hidden bg-slate-800/60">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img
+                          src={hotel.thumbnail}
+                          alt={hotel.name}
+                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-44 w-full bg-slate-800/50 flex items-center justify-center text-white/50 text-sm">
+                        Tidak ada gambar
+                      </div>
+                    )}
+                    <div className="p-4 space-y-3">
+                      <div className="flex items-start justify-between gap-2">
+                        <div className="space-y-1">
+                          <p className="text-xs uppercase tracking-[0.18em] text-cyan-200/80">
+                            {hotel.source ?? "Google Hotels"}
+                          </p>
+                          <h4 className="text-lg font-semibold text-white">
+                            {hotel.name}
+                          </h4>
+                        </div>
+                        {hotel.rating ? (
+                          <div className="inline-flex items-center gap-1 rounded-full bg-amber-200/80 px-3 py-1 text-xs font-semibold text-amber-900">
+                            <Star className="h-3 w-3" />{" "}
+                            {hotel.rating.toFixed(1)}
+                          </div>
+                        ) : null}
+                      </div>
+                      {hotel.location ? (
+                        <p className="flex items-center gap-1 text-xs text-white/70">
+                          <MapPin className="h-3 w-3 text-white/60" />{" "}
+                          {hotel.location}
+                        </p>
+                      ) : null}
+                      <p className="text-sm text-white/75 line-clamp-2">
+                        {hotel.description ??
+                          "Lihat detail harga dan ketersediaan di penyedia."}
+                      </p>
+                      <div className="flex items-center justify-between pt-1">
+                        <span className="text-sm font-semibold text-emerald-200">
+                          {hotel.price ?? "Lihat harga"}
+                        </span>
+                        <span className="text-xs text-white/60">
+                          {hotel.reviews
+                            ? `${hotel.reviews} ulasan`
+                            : "Ulasan belum ada"}
+                        </span>
+                      </div>
+                      <div className="pt-2">
+                        {hasLink ? (
+                          <a
+                            href={hotel.link as string}
+                            className="inline-flex items-center gap-2 rounded-full bg-white px-3.5 py-2 text-xs font-semibold text-slate-900 transition hover:-translate-y-0.5 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-white/60 focus:ring-offset-2 focus:ring-offset-slate-900"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <Hotel className="w-4 h-4" /> Kunjungi halaman
+                          </a>
+                        ) : (
+                          <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3.5 py-2 text-xs font-semibold text-white/70">
+                            <Hotel className="w-4 h-4" /> Link tidak tersedia
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+      </section>
+
       {/* Quick Access */}
       <section className="py-14 bg-slate-900/60 backdrop-blur border-t border-white/5">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -233,6 +365,58 @@ export default async function Home() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Berita terkini */}
+      <section className="py-14 bg-slate-900/60 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.25em] text-amber-200">
+                Berita terkini
+              </p>
+              <h3 className="text-3xl font-semibold text-white">
+                5 headline terbaru
+              </h3>
+              <p className="text-white/70 text-sm">
+                Auto-update harian, langsung dari redaksi.
+              </p>
+            </div>
+            <span className="inline-flex items-center gap-2 rounded-full bg-amber-100/10 px-4 py-2 text-sm font-semibold text-amber-100 border border-amber-200/30">
+              <Newspaper className="w-4 h-4" /> Live feed
+            </span>
+          </div>
+
+          {latestNews.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-6 text-white/70">
+              Belum ada berita terbit hari ini.
+            </div>
+          ) : (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {latestNews.map((news) => (
+                <Link
+                  key={news.slug}
+                  href={`/berita/${news.slug}`}
+                  className="group relative overflow-hidden rounded-2xl border border-amber-100/20 bg-white/5 p-5 shadow-lg transition hover:-translate-y-1 hover:border-amber-200/60"
+                >
+                  <div className="absolute inset-0 bg-gradient-to-br from-amber-200/10 via-transparent to-white/5" />
+                  <div className="relative space-y-2">
+                    <p className="text-sm font-semibold text-white group-hover:text-amber-100 transition line-clamp-2">
+                      {news.judul}
+                    </p>
+                    <p className="text-xs text-white/60">
+                      {formatNewsDate(news.publishedAt ?? news.createdAt)}
+                    </p>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-amber-100/10 px-3 py-1 text-[11px] font-semibold text-amber-100 border border-amber-200/30">
+                      <span className="h-2 w-2 rounded-full bg-amber-300 animate-pulse" />
+                      Update harian
+                    </span>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -455,13 +639,7 @@ export default async function Home() {
                 skip bagian sunset.
               </p>
             </div>
-            <Link
-              href="/event"
-              className="inline-flex items-center gap-2 rounded-full bg-white text-slate-900 px-5 py-3 text-sm font-semibold shadow-xl transition hover:-translate-y-0.5"
-            >
-              Lihat kalender
-              <ArrowRight className="w-4 h-4" />
-            </Link>
+            <QuickPlannerCalendar quickSteps={quickSteps} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -676,6 +854,32 @@ const toolkit = [
     icon: Wallet,
   },
 ];
+
+function formatNewsDate(date: Date) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
+function pickDailySubset<T>(items: T[], count: number) {
+  if (items.length === 0 || count <= 0) return [] as T[];
+
+  const today = new Date();
+  const dayOfYear = Math.floor(
+    (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
+      Date.UTC(today.getFullYear(), 0, 0)) /
+      86_400_000
+  );
+
+  const start = dayOfYear % items.length;
+  const picked: T[] = [];
+  for (let i = 0; i < count && i < items.length; i += 1) {
+    picked.push(items[(start + i) % items.length]);
+  }
+  return picked;
+}
 
 type BadgeProps = {
   icon: React.ComponentType<{ className?: string }>;

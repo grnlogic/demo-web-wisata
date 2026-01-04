@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import {
   MapPin,
   Mail,
@@ -61,8 +62,15 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                <MapPin className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center border-2 border-white/60">
+                <Image
+                  src="/logo.png"
+                  alt="Logo Wisata Pangandaran"
+                  width={48}
+                  height={48}
+                  className="w-full h-full object-cover"
+                  priority
+                />
               </div>
               <div>
                 <h3 className="font-bold text-xl">Pangandaran</h3>
@@ -73,6 +81,12 @@ export default function Footer() {
               {settings.site_about ||
                 "Portal informasi wisata Pangandaran hasil kolaborasi dengan KKN 126. Menjelajahi keindahan Pangandaran, dari pantai hingga budaya lokal."}
             </p>
+            <Link
+              href="/akomodasi"
+              className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-2 text-sm font-semibold text-slate-900 shadow-md transition hover:from-amber-400 hover:to-amber-500"
+            >
+              Butuh hotel? Lihat pilihan
+            </Link>
             <div className="flex space-x-3">
               {settings.social_facebook && (
                 <a

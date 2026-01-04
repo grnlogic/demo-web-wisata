@@ -3,3 +3,9 @@ kvm password
 Fajar-geran2005
 
 ssh pangandaran@72.62.125.104
+
+pass: fajargeran2005
+
+password email @amazingpangandara.com
+
+W0EPsZ1qmGk5y

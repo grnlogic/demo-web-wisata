@@ -13,6 +13,9 @@ export default function CreateEventPage() {
   const [currentImageField, setCurrentImageField] = useState<
     "gambar" | "thumbnail" | null
   >(null);
+  const [uploadingField, setUploadingField] = useState<
+    "gambar" | "thumbnail" | null
+  >(null);
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
@@ -70,6 +73,32 @@ export default function CreateEventPage() {
       alert(error.message || "Terjadi kesalahan saat membuat event");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpload = async (field: "gambar" | "thumbnail", file: File) => {
+    setUploadingField(field);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Gagal mengunggah gambar");
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, [field]: data.url }));
+    } catch (error) {
+      console.error("Error upload event image:", error);
+      alert("Terjadi kesalahan saat mengunggah gambar");
+    } finally {
+      setUploadingField(null);
     }
   };
 
@@ -280,6 +309,23 @@ export default function CreateEventPage() {
                 className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://example.com/image.jpg"
               />
+              <label
+                htmlFor="upload-gambar"
+                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
+              >
+                Upload
+              </label>
+              <input
+                id="upload-gambar"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleUpload("gambar", file);
+                  e.target.value = "";
+                }}
+              />
               <button
                 type="button"
                 onClick={() => {
@@ -292,6 +338,9 @@ export default function CreateEventPage() {
                 Cari Gambar
               </button>
             </div>
+            {uploadingField === "gambar" && (
+              <p className="text-xs text-blue-600 mt-1">Mengunggah gambar...</p>
+            )}
             {formData.gambar && (
               <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
                 <img
@@ -316,6 +365,23 @@ export default function CreateEventPage() {
                 className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://example.com/thumbnail.jpg"
               />
+              <label
+                htmlFor="upload-thumbnail"
+                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
+              >
+                Upload
+              </label>
+              <input
+                id="upload-thumbnail"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleUpload("thumbnail", file);
+                  e.target.value = "";
+                }}
+              />
               <button
                 type="button"
                 onClick={() => {
@@ -328,6 +394,11 @@ export default function CreateEventPage() {
                 Cari Gambar
               </button>
             </div>
+            {uploadingField === "thumbnail" && (
+              <p className="text-xs text-blue-600 mt-1">
+                Mengunggah thumbnail...
+              </p>
+            )}
             {formData.thumbnail && (
               <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
                 <img

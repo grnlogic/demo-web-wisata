@@ -14,6 +14,7 @@ import {
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { KategoriDestinasi } from "@prisma/client";
+import DestinasiReviews from "@/components/DestinasiReviews";
 
 async function getDestinasiBySlug(slug: string) {
   const destinasi = await prisma.destinasi.findUnique({
@@ -204,6 +205,9 @@ export default async function DestinasiDetailPage({
                   </div>
                 </div>
               )}
+
+              {/* Reviews */}
+              <DestinasiReviews slug={slug} />
             </div>
 
             {/* Sidebar */}

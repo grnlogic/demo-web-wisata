@@ -11,12 +11,37 @@ export default function VideoBackground() {
 
     // Perlambat playback untuk gerakan yang lebih smooth dan ambient
     video.playbackRate = 0.75;
+    video.style.opacity = "0";
+
+    // Buat loop terasa halus: fade in/out 2 detik di awal/akhir durasi
+    const fadeDuration = 2; // detik
+
+    const updateOpacity = () => {
+      if (!video.duration || Number.isNaN(video.duration)) return;
+
+      const timeToEnd = video.duration - video.currentTime;
+      let opacity = 1;
+
+      if (video.currentTime < fadeDuration) {
+        opacity = Math.min(video.currentTime / fadeDuration, 1);
+      } else if (timeToEnd < fadeDuration) {
+        opacity = Math.max(timeToEnd / fadeDuration, 0);
+      }
+
+      video.style.opacity = opacity.toString();
+    };
+
+    let rafId = requestAnimationFrame(function tick() {
+      updateOpacity();
+      rafId = requestAnimationFrame(tick);
+    });
 
     // Ensure seamless loop - handle loop event
     const handleTimeUpdate = () => {
       // Reset sedikit sebelum video benar-benar selesai untuk seamless loop
       if (video.duration - video.currentTime < 0.1) {
         video.currentTime = 0;
+        video.style.opacity = "0"; // mulai dari fade-in lagi
       }
     };
 
@@ -24,6 +49,7 @@ export default function VideoBackground() {
 
     return () => {
       video.removeEventListener("timeupdate", handleTimeUpdate);
+      cancelAnimationFrame(rafId);
     };
   }, []);
 

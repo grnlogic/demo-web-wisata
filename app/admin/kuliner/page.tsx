@@ -6,6 +6,7 @@ import {
   Utensils,
   Plus,
   Search,
+  Download,
   Edit,
   Trash2,
   MapPin,
@@ -35,6 +36,7 @@ export default function AdminKulinerPage() {
   const router = useRouter();
   const [kuliner, setKuliner] = useState<Kuliner[]>([]);
   const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
   const [search, setSearch] = useState("");
   const [kategoriFilter, setKategoriFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -59,6 +61,28 @@ export default function AdminKulinerPage() {
       alert(error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleImport = async () => {
+    if (
+      !confirm("Import daftar restoran Pangandaran (50 hasil) dari Google?")
+    ) {
+      return;
+    }
+    setImporting(true);
+    try {
+      const res = await fetch("/api/admin/kuliner/import", { method: "POST" });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data?.error || "Gagal import kuliner");
+      alert(
+        `Import selesai: ${data.imported} masuk, ${data.skipped} dilewati.`
+      );
+      fetchKuliner();
+    } catch (error: any) {
+      alert(error.message || "Gagal import kuliner");
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -99,13 +123,32 @@ export default function AdminKulinerPage() {
             Kelola informasi kuliner dan restoran
           </p>
         </div>
-        <button
-          onClick={() => router.push("/admin/kuliner/create")}
-          className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
-        >
-          <Plus className="w-5 h-5" />
-          <span>Tambah Kuliner</span>
-        </button>
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={handleImport}
+            disabled={importing}
+            className="inline-flex items-center justify-center space-x-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold transition-colors shadow-lg disabled:opacity-70"
+          >
+            {importing ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                <span>Importing...</span>
+              </>
+            ) : (
+              <>
+                <Download className="w-5 h-5" />
+                <span>Import Google (50)</span>
+              </>
+            )}
+          </button>
+          <button
+            onClick={() => router.push("/admin/kuliner/create")}
+            className="inline-flex items-center justify-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors shadow-lg"
+          >
+            <Plus className="w-5 h-5" />
+            <span>Tambah Kuliner</span>
+          </button>
+        </div>
       </div>
 
       {/* Search & Filters */}
@@ -181,6 +224,19 @@ export default function AdminKulinerPage() {
               className="bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-shadow"
             >
               <div className="flex flex-col lg:flex-row gap-6">
+                {/* Image */}
+                {Array.isArray((item as any).gambar) &&
+                (item as any).gambar[0] ? (
+                  <div className="w-full lg:w-48 shrink-0">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={(item as any).gambar[0]}
+                      alt={item.nama}
+                      className="w-full h-32 lg:h-40 object-cover rounded-lg border border-slate-200"
+                    />
+                  </div>
+                ) : null}
+
                 {/* Info */}
                 <div className="flex-1 space-y-3">
                   <div className="flex items-start justify-between gap-4">
@@ -246,6 +302,13 @@ export default function AdminKulinerPage() {
                   <p className="text-slate-600 text-sm line-clamp-2">
                     {item.alamat}
                   </p>
+
+                  {Array.isArray((item as any).gambar) &&
+                  (item as any).gambar[0] ? (
+                    <p className="text-xs text-slate-500">
+                      Gambar sumber Google (preview)
+                    </p>
+                  ) : null}
 
                   <p className="text-xs text-slate-500">
                     Dibuat:{" "}

@@ -24,6 +24,9 @@ export default function CreateDestinasiPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState<number | null>(
     null
   );
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(
+    null
+  );
   const [formData, setFormData] = useState({
     nama: "",
     slug: "",
@@ -98,6 +101,33 @@ export default function CreateDestinasiPage() {
   const openImageSearch = (index: number) => {
     setCurrentImageIndex(index);
     setShowImageSearch(true);
+  };
+
+  const handleImageUpload = async (index: number, file: File) => {
+    setUploadingImageIndex(index);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.error || "Gagal mengunggah gambar");
+        return;
+      }
+
+      updateImage(index, "url", data.url);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      alert("Terjadi kesalahan saat mengunggah gambar");
+    } finally {
+      setUploadingImageIndex(null);
+    }
   };
 
   const handleImageSelect = (imageUrl: string, alt: string) => {
@@ -442,6 +472,25 @@ export default function CreateDestinasiPage() {
                       placeholder="https://example.com/image.jpg"
                       className="flex-1 px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     />
+                    <label
+                      htmlFor={`upload-${index}`}
+                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 cursor-pointer"
+                    >
+                      Upload
+                    </label>
+                    <input
+                      id={`upload-${index}`}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleImageUpload(index, file);
+                        }
+                        e.target.value = "";
+                      }}
+                    />
                     <button
                       type="button"
                       onClick={() => openImageSearch(index)}
@@ -451,6 +500,11 @@ export default function CreateDestinasiPage() {
                       Cari Gambar
                     </button>
                   </div>
+                  {uploadingImageIndex === index && (
+                    <p className="text-xs text-blue-600 mt-1">
+                      Mengunggah gambar...
+                    </p>
+                  )}
                   <p className="text-xs text-slate-500 mt-1">
                     Atau klik "Cari Gambar" untuk mencari gambar gratis dari
                     Pexels

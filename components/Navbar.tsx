@@ -3,8 +3,9 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { useState, useEffect } from "react";
-import { Menu, X, Search, LogIn } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { signOut, useSession } from "next-auth/react";
+import { Menu, X, Search, LogIn, User, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -20,8 +21,11 @@ const navigation = [
 
 export default function Navbar() {
   const pathname = usePathname();
+  const { data: session, status } = useSession();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAccountMenuOpen, setIsAccountMenuOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -31,10 +35,27 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+        setIsAccountMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   // Don't show navbar on admin pages
   if (pathname?.startsWith("/admin")) {
     return null;
   }
+
+  const displayName =
+    session?.user?.name ||
+    session?.user?.username ||
+    session?.user?.email?.split("@")[0] ||
+    "Pengguna";
+  const isAuthed = status === "authenticated" && !!session?.user;
 
   return (
     <nav
@@ -110,19 +131,52 @@ export default function Navbar() {
               );
             })}
 
-            {/* Login Button */}
-            <Link
-              href="/admin/login"
-              className={cn(
-                "ml-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center space-x-2",
-                isScrolled
-                  ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700"
-                  : "bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 border border-white/30"
-              )}
-            >
-              <LogIn className="w-4 h-4" />
-              <span>Login</span>
-            </Link>
+            {/* Login / Greeting */}
+            {isAuthed ? (
+              <div className="relative" ref={accountRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsAccountMenuOpen((prev) => !prev)}
+                  className={cn(
+                    "ml-2 px-4 py-2 rounded-lg text-sm font-semibold inline-flex items-center space-x-2 transition-colors",
+                    isScrolled
+                      ? "bg-white text-slate-900 border border-slate-200 hover:bg-slate-50"
+                      : "bg-white/20 text-white backdrop-blur-sm border border-white/30 hover:bg-white/30"
+                  )}
+                >
+                  <User className="w-4 h-4" />
+                  <span>Hi, {displayName}</span>
+                </button>
+                {isAccountMenuOpen && (
+                  <div className="absolute right-0 mt-2 w-44 rounded-xl border border-slate-200/50 bg-white shadow-lg text-sm text-slate-800 overflow-hidden">
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        setIsAccountMenuOpen(false);
+                        await signOut({ callbackUrl: "/" });
+                      }}
+                      className="w-full px-4 py-3 inline-flex items-center gap-2 hover:bg-slate-100 text-left"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Log out</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <Link
+                href="/admin/login"
+                className={cn(
+                  "ml-2 px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center space-x-2",
+                  isScrolled
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white hover:from-blue-700 hover:to-cyan-700"
+                    : "bg-white/20 text-white backdrop-blur-sm hover:bg-white/30 border border-white/30"
+                )}
+              >
+                <LogIn className="w-4 h-4" />
+                <span>Login</span>
+              </Link>
+            )}
           </div>
 
           {/* Search & Mobile Menu Button */}
@@ -184,19 +238,51 @@ export default function Navbar() {
               })}
 
               {/* Login Button for Mobile */}
-              <Link
-                href="/admin/login"
-                onClick={() => setIsMobileMenuOpen(false)}
-                className={cn(
-                  "px-4 py-3 rounded-lg text-sm font-medium transition-colors inline-flex items-center space-x-2",
-                  isScrolled
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
-                    : "bg-white/20 text-white backdrop-blur-sm border border-white/30"
-                )}
-              >
-                <LogIn className="w-4 h-4" />
-                <span>Login</span>
-              </Link>
+              {isAuthed ? (
+                <div className="space-y-2">
+                  <div
+                    className={cn(
+                      "px-4 py-3 rounded-lg text-sm font-semibold inline-flex items-center space-x-2",
+                      isScrolled
+                        ? "bg-white text-slate-900 border border-slate-200"
+                        : "bg-white/20 text-white backdrop-blur-sm border border-white/30"
+                    )}
+                  >
+                    <User className="w-4 h-4" />
+                    <span>Hi, {displayName}</span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      await signOut({ callbackUrl: "/" });
+                    }}
+                    className={cn(
+                      "w-full px-4 py-3 rounded-lg text-sm font-medium inline-flex items-center space-x-2 transition-colors",
+                      isScrolled
+                        ? "bg-slate-100 text-slate-800 hover:bg-slate-200"
+                        : "bg-white/10 text-white hover:bg-white/15 border border-white/20"
+                    )}
+                  >
+                    <LogOut className="w-4 h-4" />
+                    <span>Log out</span>
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/admin/login"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "px-4 py-3 rounded-lg text-sm font-medium transition-colors inline-flex items-center space-x-2",
+                    isScrolled
+                      ? "bg-gradient-to-r from-blue-600 to-cyan-600 text-white"
+                      : "bg-white/20 text-white backdrop-blur-sm border border-white/30"
+                  )}
+                >
+                  <LogIn className="w-4 h-4" />
+                  <span>Login</span>
+                </Link>
+              )}
             </div>
           </div>
         )}

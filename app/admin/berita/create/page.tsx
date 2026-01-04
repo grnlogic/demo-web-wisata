@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FileText, Image, Tag, X, Search } from "lucide-react";
+import { FileText, Image, Tag, X, Search, Upload } from "lucide-react";
 import ImageSearchModal from "@/components/ImageSearchModal";
 
 export default function CreateBeritaPage() {
@@ -10,6 +10,7 @@ export default function CreateBeritaPage() {
   const [loading, setLoading] = useState(false);
   const [showImageSearch, setShowImageSearch] = useState(false);
   const [tagInput, setTagInput] = useState("");
+  const [uploading, setUploading] = useState(false);
   const [formData, setFormData] = useState({
     judul: "",
     konten: "",
@@ -23,6 +24,32 @@ export default function CreateBeritaPage() {
     status: "DRAFT",
     featured: false,
   });
+
+  const handleUpload = async (file: File) => {
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: fd,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || "Gagal mengunggah gambar");
+        return;
+      }
+
+      setFormData((prev) => ({ ...prev, gambarUtama: data.url }));
+    } catch (error) {
+      console.error("Error upload berita image:", error);
+      alert("Terjadi kesalahan saat mengunggah gambar");
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -199,7 +226,28 @@ export default function CreateBeritaPage() {
                 <Search className="w-5 h-5" />
                 Cari Gambar
               </button>
+              <label
+                htmlFor="upload-gambar-utama"
+                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
+              >
+                <Upload className="w-4 h-4" />
+                Upload
+              </label>
+              <input
+                id="upload-gambar-utama"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleUpload(file);
+                  e.target.value = "";
+                }}
+              />
             </div>
+            {uploading && (
+              <p className="text-xs text-blue-600 mt-1">Mengunggah gambar...</p>
+            )}
             {formData.gambarUtama && (
               <div className="mt-3 relative rounded-lg overflow-hidden border border-slate-300">
                 <img

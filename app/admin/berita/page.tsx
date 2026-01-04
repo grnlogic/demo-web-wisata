@@ -299,7 +299,7 @@ export default function AdminBeritaPage() {
                     <img
                       src={item.gambarUtama}
                       alt={item.judul}
-                      className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
+                      className="w-32 h-32 object-cover rounded-lg shrink-0"
                     />
                   )}
 

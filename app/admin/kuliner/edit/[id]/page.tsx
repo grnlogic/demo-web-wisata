@@ -19,6 +19,7 @@ export default function EditKulinerPage() {
   const params = useParams();
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [formData, setFormData] = useState({
     nama: "",
     deskripsi: "",
@@ -128,6 +129,31 @@ export default function EditKulinerPage() {
       alert(error.message || "Terjadi kesalahan saat mengupdate kuliner");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpload = async (file: File) => {
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+    setUploadingImage(true);
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Gagal mengunggah gambar");
+      }
+
+      const data = await res.json();
+      setFormData((prev) => ({ ...prev, gambar: [...prev.gambar, data.url] }));
+    } catch (error: any) {
+      alert(error.message || "Gagal mengunggah gambar");
+    } finally {
+      setUploadingImage(false);
     }
   };
 
@@ -416,6 +442,22 @@ export default function EditKulinerPage() {
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="URL gambar"
                 />
+                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold cursor-pointer transition-colors text-sm flex items-center gap-2">
+                  {uploadingImage ? "Mengunggah..." : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleUpload(file);
+                        e.target.value = "";
+                      }
+                    }}
+                    disabled={uploadingImage}
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={addGambar}

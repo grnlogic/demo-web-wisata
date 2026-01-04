@@ -1,111 +1,219 @@
 
-prisma:query SELECT "public"."admins"."id", "public"."admins"."nama", "public"."admins"."username" FROM "public"."admins" WHERE "public"."admins"."id" IN ($1) OFFSET $2
- GET /api/admin/ukm? 200 in 45ms (compile: 5ms, render: 41ms)
-Error: Route "/api/admin/ukm/[id]" used `params.id`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
-    at DELETE (app\api\admin\ukm\[id]\route.ts:143:27)
-  141 |     // Check if UKM exists
-  142 |     const ukm = await prisma.profilUkm.findUnique({
-> 143 |       where: { id: params.id },
-      |                           ^
-  144 |     });
-  145 |
-  146 |     if (!ukm) {
+    at GET (app\api\destinasi\[slug]\reviews\route.ts:18:55)
+  16 | ) {
+  17 |   try {
+> 18 |     const destinasi = await getDestinasiBySlug(params.slug);
+     |                                                       ^
+  19 |
+  20 |     if (!destinasi) {
+  21 |       return NextResponse.json(
 prisma:error 
-Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].profilUkm.findUnique()` invocation in
-D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__8a6fee45._.js:363:159
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__224246f9._.js:243:144
 
-  360     });
-  361 }
-  362 // Check if UKM exists
-→ 363 const ukm = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].profilUkm.findUnique({
-        where: {
-          id: undefined,
-      ?   slug?: String,
-      ?   AND?: ProfilUkmWhereInput | ProfilUkmWhereInput[],
-      ?   OR?: ProfilUkmWhereInput[],
-      ?   NOT?: ProfilUkmWhereInput | ProfilUkmWhereInput[],
-      ?   namaUsaha?: StringFilter | String,
-      ?   deskripsi?: StringFilter | String,
-      ?   kategori?: StringFilter | String,
-      ?   pemilik?: StringFilter | String,
-      ?   lokasi?: StringFilter | String,
-      ?   alamat?: StringFilter | String,
-      ?   koordinat?: StringNullableFilter | String | Null,
-      ?   nomorTelepon?: StringNullableFilter | String | Null,
-      ?   email?: StringNullableFilter | String | Null,
-      ?   instagram?: StringNullableFilter | String | Null,
-      ?   facebook?: StringNullableFilter | String | Null,
-      ?   whatsapp?: StringNullableFilter | String | Null,
-      ?   website?: StringNullableFilter | String | Null,
-      ?   logo?: StringNullableFilter | String | Null,
-      ?   gambar?: StringNullableListFilter,
-      ?   produkLayanan?: StringNullableListFilter,
-      ?   hargaRata?: StringNullableFilter | String | Null,
-      ?   jamOperasional?: StringNullableFilter | String | Null,
-      ?   status?: EnumStatusPublishFilter | StatusPublish,
-      ?   featured?: BoolFilter | Boolean,
-      ?   verified?: BoolFilter | Boolean,
-      ?   createdAt?: DateTimeFilter | DateTime,
-      ?   updatedAt?: DateTimeFilter | DateTime,
-      ?   createdBy?: StringFilter | String,
-      ?   admin?: AdminRelationFilter | AdminWhereInput
-        }
-      })
+  240 ;
+  241 ;
+  242 async function getDestinasiBySlug(slug) {
+→ 243     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique({
+            where: {
+              slug: undefined,
+          ?   id?: String,
+          ?   AND?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   OR?: DestinasiWhereInput[],
+          ?   NOT?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   nama?: StringFilter | String,
+          ?   deskripsi?: StringFilter | String,
+          ?   kategori?: EnumKategoriDestinasiFilter | KategoriDestinasi,
+          ?   lokasi?: StringFilter | String,
+          ?   alamat?: StringFilter | String,
+          ?   koordinat?: StringNullableFilter | String | Null,
+          ?   googleMapsUrl?: StringNullableFilter | String | Null,
+          ?   rating?: FloatNullableFilter | Float | Null,
+          ?   jumlahReview?: IntNullableFilter | Int | Null,
+          ?   metaTitle?: StringNullableFilter | String | Null,
+          ?   metaDescription?: StringNullableFilter | String | Null,
+          ?   status?: EnumStatusPublishFilter | StatusPublish,
+          ?   featured?: BoolFilter | Boolean,
+          ?   urutan?: IntFilter | Int,
+          ?   createdAt?: DateTimeFilter | DateTime,
+          ?   updatedAt?: DateTimeFilter | DateTime,
+          ?   createdBy?: StringFilter | String,
+          ?   admin?: AdminRelationFilter | AdminWhereInput,
+          ?   images?: DestinasiImageListRelationFilter,
+          ?   harga?: DestinasiHargaListRelationFilter,
+          ?   fasilitas?: DestinasiDetailListRelationFilter,
+          ?   destinasiReviews?: DestinasiReviewListRelationFilter
+            },
+            select: {
+              id: true
+            }
+          })
 
-Argument `where` of type ProfilUkmWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+Argument `where` of type DestinasiWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
 file:///D:/Coding/wisata_pangandaran/node_modules/@prisma/client/runtime/library.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: TypeError [ERR_INVALID_ARG_TYPE]: The "payload" argument must be of type object. Received null
-Error deleting UKM: Error [PrismaClientValidationError]: 
-Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].profilUkm.findUnique()` invocation in
-D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__8a6fee45._.js:363:159
+Error fetching destinasi reviews: Error [PrismaClientValidationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__224246f9._.js:243:144
 
-  360     });
-  361 }
-  362 // Check if UKM exists
-→ 363 const ukm = await __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].profilUkm.findUnique({
-        where: {
-          id: undefined,
-      ?   slug?: String,
-      ?   AND?: ProfilUkmWhereInput | ProfilUkmWhereInput[],
-      ?   OR?: ProfilUkmWhereInput[],
-      ?   NOT?: ProfilUkmWhereInput | ProfilUkmWhereInput[],
-      ?   namaUsaha?: StringFilter | String,
-      ?   deskripsi?: StringFilter | String,
-      ?   kategori?: StringFilter | String,
-      ?   pemilik?: StringFilter | String,
-      ?   lokasi?: StringFilter | String,
-      ?   alamat?: StringFilter | String,
-      ?   koordinat?: StringNullableFilter | String | Null,
-      ?   nomorTelepon?: StringNullableFilter | String | Null,
-      ?   email?: StringNullableFilter | String | Null,
-      ?   instagram?: StringNullableFilter | String | Null,
-      ?   facebook?: StringNullableFilter | String | Null,
-      ?   whatsapp?: StringNullableFilter | String | Null,
-      ?   website?: StringNullableFilter | String | Null,
-      ?   logo?: StringNullableFilter | String | Null,
-      ?   gambar?: StringNullableListFilter,
-      ?   produkLayanan?: StringNullableListFilter,
-      ?   hargaRata?: StringNullableFilter | String | Null,
-      ?   jamOperasional?: StringNullableFilter | String | Null,
-      ?   status?: EnumStatusPublishFilter | StatusPublish,
-      ?   featured?: BoolFilter | Boolean,
-      ?   verified?: BoolFilter | Boolean,
-      ?   createdAt?: DateTimeFilter | DateTime,
-      ?   updatedAt?: DateTimeFilter | DateTime,
-      ?   createdBy?: StringFilter | String,
-      ?   admin?: AdminRelationFilter | AdminWhereInput
-        }
-      })
+  240 ;
+  241 ;
+  242 async function getDestinasiBySlug(slug) {
+→ 243     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique({
+            where: {
+              slug: undefined,
+          ?   id?: String,
+          ?   AND?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   OR?: DestinasiWhereInput[],
+          ?   NOT?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   nama?: StringFilter | String,
+          ?   deskripsi?: StringFilter | String,
+          ?   kategori?: EnumKategoriDestinasiFilter | KategoriDestinasi,
+          ?   lokasi?: StringFilter | String,
+          ?   alamat?: StringFilter | String,
+          ?   koordinat?: StringNullableFilter | String | Null,
+          ?   googleMapsUrl?: StringNullableFilter | String | Null,
+          ?   rating?: FloatNullableFilter | Float | Null,
+          ?   jumlahReview?: IntNullableFilter | Int | Null,
+          ?   metaTitle?: StringNullableFilter | String | Null,
+          ?   metaDescription?: StringNullableFilter | String | Null,
+          ?   status?: EnumStatusPublishFilter | StatusPublish,
+          ?   featured?: BoolFilter | Boolean,
+          ?   urutan?: IntFilter | Int,
+          ?   createdAt?: DateTimeFilter | DateTime,
+          ?   updatedAt?: DateTimeFilter | DateTime,
+          ?   createdBy?: StringFilter | String,
+          ?   admin?: AdminRelationFilter | AdminWhereInput,
+          ?   images?: DestinasiImageListRelationFilter,
+          ?   harga?: DestinasiHargaListRelationFilter,
+          ?   fasilitas?: DestinasiDetailListRelationFilter,
+          ?   destinasiReviews?: DestinasiReviewListRelationFilter
+            },
+            select: {
+              id: true
+            }
+          })
 
-Argument `where` of type ProfilUkmWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
-    at <unknown> (app\api\admin\ukm\[id]\route.ts:142:40)
-    at async DELETE (app\api\admin\ukm\[id]\route.ts:142:17)
-  140 |
-  141 |     // Check if UKM exists
-> 142 |     const ukm = await prisma.profilUkm.findUnique({
-      |                                        ^
-  143 |       where: { id: params.id },
-  144 |     });
-  145 | {
+Argument `where` of type DestinasiWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+    at <unknown> (app\api\destinasi\[slug]\reviews\route.ts:7:27)
+    at async GET (app\api\destinasi\[slug]\reviews\route.ts:18:23)
+   5 |
+   6 | async function getDestinasiBySlug(slug: string) {
+>  7 |   return prisma.destinasi.findUnique({
+     |                           ^
+   8 |     where: { slug },
+   9 |     select: { id: true },
+  10 |   }); {
   clientVersion: '5.22.0'
 }
- DELETE /api/admin/ukm/cmjuzimfi000tv9vsblj47r7u 500 in 1345ms (compile: 972ms, render: 374ms)
+ GET /api/destinasi/situs-karang-nini/reviews 500 in 456ms (compile: 79ms, render: 377ms)
+ GET /api/auth/session 200 in 435ms (compile: 186ms, render: 249ms)
+ GET /api/auth/session 200 in 39ms (compile: 8ms, render: 31ms)
+ GET /api/auth/session 200 in 33ms (compile: 10ms, render: 24ms)
+Error: Route "/api/destinasi/[slug]/reviews" used `params.slug`. `params` is a Promise and must be unwrapped with `await` or `React.use()` before accessing its properties. Learn more: https://nextjs.org/docs/messages/sync-dynamic-apis
+    at POST (app\api\destinasi\[slug]\reviews\route.ts:102:55)
+  100 |     }
+  101 |
+> 102 |     const destinasi = await getDestinasiBySlug(params.slug);
+      |                                                       ^
+  103 |     if (!destinasi) {
+  104 |       return NextResponse.json(
+  105 |         { success: false, error: "Destinasi tidak ditemukan" },
+prisma:error 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__224246f9._.js:243:144
+
+  240 ;
+  241 ;
+  242 async function getDestinasiBySlug(slug) {
+→ 243     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique({
+            where: {
+              slug: undefined,
+          ?   id?: String,
+          ?   AND?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   OR?: DestinasiWhereInput[],
+          ?   NOT?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   nama?: StringFilter | String,
+          ?   deskripsi?: StringFilter | String,
+          ?   kategori?: EnumKategoriDestinasiFilter | KategoriDestinasi,
+          ?   lokasi?: StringFilter | String,
+          ?   alamat?: StringFilter | String,
+          ?   koordinat?: StringNullableFilter | String | Null,
+          ?   googleMapsUrl?: StringNullableFilter | String | Null,
+          ?   rating?: FloatNullableFilter | Float | Null,
+          ?   jumlahReview?: IntNullableFilter | Int | Null,
+          ?   metaTitle?: StringNullableFilter | String | Null,
+          ?   metaDescription?: StringNullableFilter | String | Null,
+          ?   status?: EnumStatusPublishFilter | StatusPublish,
+          ?   featured?: BoolFilter | Boolean,
+          ?   urutan?: IntFilter | Int,
+          ?   createdAt?: DateTimeFilter | DateTime,
+          ?   updatedAt?: DateTimeFilter | DateTime,
+          ?   createdBy?: StringFilter | String,
+          ?   admin?: AdminRelationFilter | AdminWhereInput,
+          ?   images?: DestinasiImageListRelationFilter,
+          ?   harga?: DestinasiHargaListRelationFilter,
+          ?   fasilitas?: DestinasiDetailListRelationFilter,
+          ?   destinasiReviews?: DestinasiReviewListRelationFilter
+            },
+            select: {
+              id: true
+            }
+          })
+
+Argument `where` of type DestinasiWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+file:///D:/Coding/wisata_pangandaran/node_modules/@prisma/client/runtime/library.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: TypeError [ERR_INVALID_ARG_TYPE]: The "payload" argument must be of type object. Received null
+Error creating destinasi review: Error [PrismaClientValidationError]: 
+Invalid `__TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique()` invocation in
+D:\Coding\wisata_pangandaran\.next\dev\server\chunks\[root-of-the-server]__224246f9._.js:243:144
+
+  240 ;
+  241 ;
+  242 async function getDestinasiBySlug(slug) {
+→ 243     return __TURBOPACK__imported__module__$5b$project$5d2f$lib$2f$prisma$2e$ts__$5b$app$2d$route$5d$__$28$ecmascript$29$__["prisma"].destinasi.findUnique({
+            where: {
+              slug: undefined,
+          ?   id?: String,
+          ?   AND?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   OR?: DestinasiWhereInput[],
+          ?   NOT?: DestinasiWhereInput | DestinasiWhereInput[],
+          ?   nama?: StringFilter | String,
+          ?   deskripsi?: StringFilter | String,
+          ?   kategori?: EnumKategoriDestinasiFilter | KategoriDestinasi,
+          ?   lokasi?: StringFilter | String,
+          ?   alamat?: StringFilter | String,
+          ?   koordinat?: StringNullableFilter | String | Null,
+          ?   googleMapsUrl?: StringNullableFilter | String | Null,
+          ?   rating?: FloatNullableFilter | Float | Null,
+          ?   jumlahReview?: IntNullableFilter | Int | Null,
+          ?   metaTitle?: StringNullableFilter | String | Null,
+          ?   metaDescription?: StringNullableFilter | String | Null,
+          ?   status?: EnumStatusPublishFilter | StatusPublish,
+          ?   featured?: BoolFilter | Boolean,
+          ?   urutan?: IntFilter | Int,
+          ?   createdAt?: DateTimeFilter | DateTime,
+          ?   updatedAt?: DateTimeFilter | DateTime,
+          ?   createdBy?: StringFilter | String,
+          ?   admin?: AdminRelationFilter | AdminWhereInput,
+          ?   images?: DestinasiImageListRelationFilter,
+          ?   harga?: DestinasiHargaListRelationFilter,
+          ?   fasilitas?: DestinasiDetailListRelationFilter,
+          ?   destinasiReviews?: DestinasiReviewListRelationFilter
+            },
+            select: {
+              id: true
+            }
+          })
+
+Argument `where` of type DestinasiWhereUniqueInput needs at least one of `id` or `slug` arguments. Available options are marked with ?.
+    at <unknown> (app\api\destinasi\[slug]\reviews\route.ts:7:27)
+    at async POST (app\api\destinasi\[slug]\reviews\route.ts:102:23)
+   5 |
+   6 | async function getDestinasiBySlug(slug: string) {
+>  7 |   return prisma.destinasi.findUnique({
+     |                           ^
+   8 |     where: { slug },
+   9 |     select: { id: true },
+  10 |   }); {
+  clientVersion: '5.22.0'
+}
+ POST /api/destinasi/situs-karang-nini/reviews 500 in 242ms (compile: 17ms, render: 225ms)

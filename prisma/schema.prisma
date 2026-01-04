@@ -34,6 +34,19 @@ model Admin {
   @@map("admins")
 }
 
+model User {
+  id        String   @id @default(cuid())
+  name      String?
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews DestinasiReview[]
+
+  @@map("users")
+}
+
 // ========================================
 // DESTINASI WISATA
 // ========================================
@@ -67,9 +80,10 @@ model Destinasi {
   admin     Admin    @relation(fields: [createdBy], references: [id])
 
   // Relations
-  images    DestinasiImage[]
-  harga     DestinasiHarga[]
-  fasilitas DestinasiDetail[]
+  images           DestinasiImage[]
+  harga            DestinasiHarga[]
+  fasilitas        DestinasiDetail[]
+  destinasiReviews DestinasiReview[]
 
   @@map("destinasi")
 }
@@ -112,6 +126,23 @@ model DestinasiDetail {
   destinasi Destinasi @relation(fields: [destinasiId], references: [id], onDelete: Cascade)
 
   @@map("destinasi_detail")
+}
+
+model DestinasiReview {
+  id          String   @id @default(cuid())
+  destinasiId String
+  userId      String
+  userName    String?
+  rating      Int
+  comment     String   @db.Text
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  destinasi Destinasi @relation(fields: [destinasiId], references: [id], onDelete: Cascade)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([destinasiId, userId])
+  @@map("destinasi_reviews")
 }
 
 // ========================================
@@ -359,6 +390,34 @@ model Rekomendasi {
   updatedAt DateTime @updatedAt
 
   @@map("rekomendasi")
+}
+
+// ========================================
+// HOTEL LISTINGS (GOOGLE HOTELS SNAPSHOT)
+// ========================================
+
+model HotelListing {
+  id            String  @id @default(cuid())
+  name          String
+  description   String? @db.Text
+  link          String? @db.Text
+  thumbnail     String? @db.Text
+  source        String?
+  location      String?
+  price         String?
+  rating        Float?
+  reviews       Int?
+  propertyToken String?
+
+  // Metadata for update window (monthly refresh)
+  checkInDate  String?
+  checkOutDate String?
+  fetchedAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  createdAt    DateTime @default(now())
+
+  @@index([fetchedAt])
+  @@map("hotel_listings")
 }
 
 // ========================================

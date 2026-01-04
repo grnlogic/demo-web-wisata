@@ -24,6 +24,10 @@ export default function CreateUKMPage() {
   const [currentImageField, setCurrentImageField] = useState<
     "logo" | number | null
   >(null);
+  const [uploadingLogo, setUploadingLogo] = useState(false);
+  const [uploadingGallery, setUploadingGallery] = useState<
+    Record<number, boolean>
+  >({});
 
   const [formData, setFormData] = useState({
     namaUsaha: "",
@@ -155,6 +159,51 @@ export default function CreateUKMPage() {
     }
   };
 
+  const handleUpload = async (
+    file: File,
+    target: { type: "logo" } | { type: "gallery"; index: number }
+  ) => {
+    const formDataUpload = new FormData();
+    formDataUpload.append("file", file);
+
+    if (target.type === "logo") {
+      setUploadingLogo(true);
+    } else {
+      setUploadingGallery((prev) => ({ ...prev, [target.index]: true }));
+    }
+
+    try {
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formDataUpload,
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Gagal mengunggah gambar");
+      }
+
+      const data = await res.json();
+      if (target.type === "logo") {
+        setFormData((prev) => ({ ...prev, logo: data.url }));
+      } else {
+        setGambar((prev) => {
+          const updated = [...prev];
+          updated[target.index] = data.url;
+          return updated;
+        });
+      }
+    } catch (error: any) {
+      alert(error.message || "Gagal mengunggah gambar");
+    } finally {
+      if (target.type === "logo") {
+        setUploadingLogo(false);
+      } else {
+        setUploadingGallery((prev) => ({ ...prev, [target.index]: false }));
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -270,6 +319,22 @@ export default function CreateUKMPage() {
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/logo.jpg"
                 />
+                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
+                  {uploadingLogo ? "Mengunggah..." : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleUpload(file, { type: "logo" });
+                        e.target.value = "";
+                      }
+                    }}
+                    disabled={uploadingLogo}
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => openImageSearch("logo")}
@@ -317,6 +382,22 @@ export default function CreateUKMPage() {
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/gambar.jpg"
                 />
+                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
+                  {uploadingGallery[index] ? "Mengunggah..." : "Upload"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        handleUpload(file, { type: "gallery", index });
+                        e.target.value = "";
+                      }
+                    }}
+                    disabled={uploadingGallery[index]}
+                  />
+                </label>
                 <button
                   type="button"
                   onClick={() => openImageSearch(index)}

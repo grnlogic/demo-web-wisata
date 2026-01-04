@@ -9,13 +9,124 @@ import {
   Heart,
   Compass,
   Mountain,
-  Waves,
   Users2,
-  Baby,
   TrendingUp,
 } from "lucide-react";
+import { prisma } from "@/lib/prisma";
 
-export default function RekomendasiPage() {
+export default async function RekomendasiPage() {
+  const [destinasiTop, hotelsTop, kulinerTop, newsTop] = await Promise.all([
+    prisma.destinasi.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [
+        { featured: "desc" },
+        { rating: "desc" },
+        { jumlahReview: "desc" },
+        { createdAt: "desc" },
+      ],
+      take: 6,
+      select: {
+        id: true,
+        nama: true,
+        slug: true,
+        rating: true,
+        jumlahReview: true,
+        lokasi: true,
+        kategori: true,
+        images: {
+          orderBy: { isPrimary: "desc" },
+          take: 1,
+          select: { url: true },
+        },
+      },
+    }),
+    prisma.hotelListing.findMany({
+      orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
+      take: 6,
+      select: {
+        id: true,
+        name: true,
+        location: true,
+        price: true,
+        rating: true,
+        reviews: true,
+        thumbnail: true,
+        link: true,
+      },
+    }),
+    prisma.kuliner.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+      take: 6,
+      select: {
+        id: true,
+        nama: true,
+        slug: true,
+        kategori: true,
+        lokasi: true,
+        rating: true,
+        gambar: true,
+      },
+    }),
+    prisma.berita.findMany({
+      where: { status: "PUBLISHED" },
+      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+      take: 6,
+      select: {
+        id: true,
+        judul: true,
+        slug: true,
+        ringkasan: true,
+        publishedAt: true,
+        createdAt: true,
+      },
+    }),
+  ]);
+
+  const featuredRecommendations = destinasiTop.slice(0, 2);
+
+  const combined = [
+    ...destinasiTop.map((d) => ({
+      key: `dest-${d.id}`,
+      title: d.nama,
+      href: `/destinasi/${d.slug}`,
+      tag: "Destinasi",
+      badge: d.kategori.replace("_", " "),
+      meta: `${d.lokasi}`,
+      rating: d.rating,
+      extra: `${d.jumlahReview ?? 0} ulasan`,
+      image:
+        d.images?.[0]?.url ||
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+    })),
+    ...hotelsTop.map((h) => ({
+      key: `hotel-${h.id}`,
+      title: h.name,
+      href: h.link || "/akomodasi",
+      tag: "Hotel",
+      badge: h.location || "Hotel",
+      meta: h.price || "Harga dinamis",
+      rating: h.rating,
+      extra: h.reviews ? `${h.reviews} ulasan` : "",
+      image:
+        h.thumbnail ||
+        "https://images.unsplash.com/photo-1501117716987-c8e1ecb210af?auto=format&fit=crop&w=1200&q=80",
+    })),
+    ...kulinerTop.map((k) => ({
+      key: `kul-${k.id}`,
+      title: k.nama,
+      href: `/kuliner/${k.slug}`,
+      tag: "Kuliner",
+      badge: k.kategori,
+      meta: k.lokasi,
+      rating: k.rating,
+      extra: "Kuliner lokal",
+      image:
+        k.gambar?.[0] ||
+        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+    })),
+  ];
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       {/* Header */}
@@ -66,7 +177,7 @@ export default function RekomendasiPage() {
         </div>
       </section>
 
-      {/* Featured Recommendations */}
+      {/* Featured Recommendations (Destinasi unggulan) */}
       <section className="py-16 bg-slate-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
@@ -85,23 +196,31 @@ export default function RekomendasiPage() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {featuredRecommendations.length === 0 && (
+              <div className="rounded-2xl border border-slate-200 bg-white p-6 text-slate-500">
+                Destinasi belum tersedia.
+              </div>
+            )}
             {featuredRecommendations.map((rec) => (
               <Link
                 key={rec.id}
-                href={`/rekomendasi/${rec.slug}`}
+                href={`/destinasi/${rec.slug}`}
                 className="group bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2"
               >
                 <div
                   className="relative h-72 overflow-hidden"
                   style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.6) 70%), url(${rec.image})`,
+                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.6) 70%), url(${
+                      rec.images?.[0]?.url ||
+                      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80"
+                    })`,
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
                 >
                   <div className="absolute top-4 left-4">
                     <span className="px-3 py-1 bg-purple-600 text-white text-xs font-semibold rounded-full">
-                      {rec.theme}
+                      {rec.kategori.replace("_", " ")}
                     </span>
                   </div>
                   <div className="absolute top-4 right-4">
@@ -111,48 +230,41 @@ export default function RekomendasiPage() {
                   </div>
                   <div className="absolute bottom-4 left-4 right-4 text-white space-y-2">
                     <h3 className="text-2xl font-bold group-hover:text-purple-200 transition-colors">
-                      {rec.title}
+                      {rec.nama}
                     </h3>
                     <div className="flex items-center space-x-4 text-sm">
                       <div className="flex items-center space-x-1">
                         <Clock className="w-4 h-4" />
-                        <span>{rec.duration}</span>
+                        <span>Destinasi unggulan</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Wallet className="w-4 h-4" />
-                        <span>{rec.budget}</span>
+                        <span>{rec.lokasi}</span>
                       </div>
                       <div className="flex items-center space-x-1">
                         <Star className="w-4 h-4 fill-yellow-500 text-yellow-500" />
-                        <span>{rec.rating}</span>
+                        <span>{rec.rating?.toFixed(1) ?? "-"}</span>
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="p-6 space-y-4">
                   <p className="text-slate-600 leading-relaxed">
-                    {rec.description}
+                    Rating {rec.rating?.toFixed(1) ?? "-"} ·{" "}
+                    {rec.jumlahReview ?? 0} ulasan
                   </p>
                   <div>
                     <p className="text-sm font-semibold text-slate-700 mb-2">
-                      Highlight Destinasi:
+                      Lokasi:
                     </p>
-                    <div className="flex flex-wrap gap-2">
-                      {rec.destinations.map((dest, idx) => (
-                        <span
-                          key={idx}
-                          className="px-3 py-1 bg-purple-50 text-purple-700 text-xs font-medium rounded-full flex items-center"
-                        >
-                          <MapPin className="w-3 h-3 mr-1" />
-                          {dest}
-                        </span>
-                      ))}
+                    <div className="flex flex-wrap gap-2 text-sm text-slate-600">
+                      <MapPin className="w-4 h-4" /> {rec.lokasi}
                     </div>
                   </div>
                   <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                     <div className="flex items-center text-sm text-slate-600">
                       <Users className="w-4 h-4 mr-1" />
-                      <span>Cocok untuk {rec.suitableFor}</span>
+                      <span>Direkomendasikan pengunjung</span>
                     </div>
                     <div className="flex items-center text-purple-600 font-semibold group-hover:translate-x-2 transition-transform">
                       <span>Lihat Detail</span>
@@ -166,7 +278,7 @@ export default function RekomendasiPage() {
         </div>
       </section>
 
-      {/* All Recommendations */}
+      {/* All Recommendations (gabungan destinasi, hotel, kuliner) */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-8">
@@ -183,10 +295,16 @@ export default function RekomendasiPage() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allRecommendations.map((rec) => (
+            {combined.length === 0 && (
+              <div className="rounded-xl border border-slate-200 bg-white p-6 text-slate-500">
+                Data rekomendasi belum tersedia.
+              </div>
+            )}
+
+            {combined.map((rec) => (
               <Link
-                key={rec.id}
-                href={`/rekomendasi/${rec.slug}`}
+                key={rec.key}
+                href={rec.href}
                 className="group bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
               >
                 <div
@@ -197,7 +315,7 @@ export default function RekomendasiPage() {
                 >
                   <div className="absolute top-3 left-3">
                     <span className="px-2 py-1 bg-purple-600/90 backdrop-blur-sm text-white text-xs font-semibold rounded">
-                      {rec.theme}
+                      {rec.tag}
                     </span>
                   </div>
                 </div>
@@ -206,57 +324,94 @@ export default function RekomendasiPage() {
                     {rec.title}
                   </h3>
                   <p className="text-sm text-slate-600 line-clamp-2">
-                    {rec.description}
+                    {rec.meta}
                   </p>
                   <div className="flex items-center justify-between text-xs text-slate-600">
                     <div className="flex items-center space-x-1">
-                      <Clock className="w-3 h-3" />
-                      <span>{rec.duration}</span>
+                      <MapPin className="w-3 h-3" />
+                      <span>{rec.badge}</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <Wallet className="w-3 h-3" />
-                      <span>{rec.budget}</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
-                    <div className="flex items-center text-xs text-slate-600">
-                      <Users className="w-3 h-3 mr-1" />
-                      <span>{rec.suitableFor}</span>
-                    </div>
-                    <div className="flex items-center text-xs">
                       <Star className="w-3 h-3 mr-1 fill-yellow-500 text-yellow-500" />
-                      <span className="font-semibold">{rec.rating}</span>
+                      <span className="font-semibold">
+                        {rec.rating ? rec.rating.toFixed(1) : "-"}
+                      </span>
                     </div>
                   </div>
+                  {rec.extra && (
+                    <div className="flex items-center justify-between pt-3 border-t border-slate-100 text-xs text-slate-600">
+                      <span>{rec.extra}</span>
+                      <div className="inline-flex items-center gap-1 text-purple-600 font-semibold group-hover:translate-x-1 transition-transform">
+                        <span>Detail</span>
+                        <ArrowRight className="w-3 h-3" />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Link>
             ))}
           </div>
 
-          <div className="text-center mt-12">
-            <button className="inline-flex items-center space-x-2 px-8 py-4 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
-              <span>Muat Lebih Banyak</span>
-              <ArrowRight className="w-5 h-5" />
-            </button>
-          </div>
+          {combined.length > 9 && (
+            <div className="text-center mt-12">
+              <button className="inline-flex items-center space-x-2 px-8 py-4 bg-purple-600 text-white rounded-full font-semibold hover:bg-purple-700 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <span>Muat Lebih Banyak</span>
+                <ArrowRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Berita terkini */}
       <section className="py-16 bg-gradient-to-br from-purple-600 via-pink-600 to-rose-600 text-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h2 className="text-3xl font-bold mb-4">Butuh Paket Custom?</h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
-            Hubungi kami untuk membuat itinerary khusus sesuai kebutuhan dan
-            budget Anda
-          </p>
-          <Link
-            href="/kontak"
-            className="inline-flex items-center space-x-2 px-8 py-4 bg-white text-purple-600 rounded-full font-semibold hover:bg-purple-50 transition-all duration-300 shadow-xl hover:scale-105"
-          >
-            <span>Hubungi Kami</span>
-            <ArrowRight className="w-5 h-5" />
-          </Link>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between mb-8">
+            <div>
+              <p className="text-xs uppercase tracking-[0.25em] text-white/80">
+                Update harian
+              </p>
+              <h2 className="text-3xl font-bold">Berita & tips terbaru</h2>
+              <p className="text-white/85 mt-2">
+                5 headline terbaru seputar wisata Pangandaran.
+              </p>
+            </div>
+            <Link
+              href="/berita"
+              className="inline-flex items-center gap-2 rounded-full border border-white/40 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-1"
+            >
+              Lihat semua
+              <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          {newsTop.length === 0 ? (
+            <div className="rounded-2xl border border-white/20 bg-white/10 p-6 text-white/80">
+              Belum ada berita terbit.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {newsTop.map((news) => (
+                <Link
+                  key={news.id}
+                  href={`/berita/${news.slug}`}
+                  className="group rounded-2xl border border-white/20 bg-white/10 p-5 shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-white/50"
+                >
+                  <p className="text-sm font-semibold text-white group-hover:text-amber-200 line-clamp-2">
+                    {news.judul}
+                  </p>
+                  <p className="text-xs text-white/70 mt-2">
+                    {formatNewsDate(news.publishedAt ?? news.createdAt)}
+                  </p>
+                  {news.ringkasan && (
+                    <p className="mt-3 text-xs text-white/75 line-clamp-2">
+                      {news.ringkasan}
+                    </p>
+                  )}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       </section>
     </div>
@@ -270,94 +425,10 @@ const themes = [
   { name: "Budget Friendly", icon: Wallet, count: 12 },
 ];
 
-const featuredRecommendations = [
-  {
-    id: 1,
-    title: "Petualangan Alam 3 Hari",
-    slug: "petualangan-alam-3-hari",
-    theme: "Petualangan",
-    description:
-      "Eksplorasi lengkap Green Canyon dengan kayak, cliff jumping, trekking goa Pananjung, dan camping di tepi pantai dengan api unggun.",
-    duration: "3 Hari 2 Malam",
-    budget: "Rp 800rb-1jt",
-    rating: 4.9,
-    image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1200&q=80",
-    destinations: ["Green Canyon", "Goa Pananjung", "Pantai Batu Karas"],
-    suitableFor: "Adventure Seekers",
-  },
-  {
-    id: 2,
-    title: "Romantis Sunset Getaway",
-    slug: "romantis-sunset-getaway",
-    theme: "Romantis",
-    description:
-      "Paket khusus untuk pasangan dengan private beach dinner, spa couple, sunrise di pantai, dan menginap di villa mewah tepi laut.",
-    duration: "2 Hari 1 Malam",
-    budget: "Rp 1.5-2jt",
-    rating: 5.0,
-    image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    destinations: ["Sunset Point", "Private Beach", "Villa Tepi Laut"],
-    suitableFor: "Pasangan",
-  },
-];
-
-const allRecommendations = [
-  {
-    id: 3,
-    title: "Liburan Keluarga Hemat",
-    slug: "liburan-keluarga-hemat",
-    theme: "Budget Friendly",
-    description:
-      "Paket lengkap untuk keluarga dengan budget terbatas namun tetap menyenangkan.",
-    duration: "2 Hari 1 Malam",
-    budget: "Rp 300-500rb",
-    rating: 4.7,
-    image:
-      "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=800&q=80",
-    suitableFor: "Keluarga",
-  },
-  {
-    id: 4,
-    title: "Weekend Surf & Chill",
-    slug: "weekend-surf-chill",
-    theme: "Petualangan",
-    description:
-      "Surfing lesson, yoga pagi, dan beach barbecue untuk weekend yang menyegarkan.",
-    duration: "2 Hari 1 Malam",
-    budget: "Rp 600-800rb",
-    rating: 4.8,
-    image:
-      "https://images.unsplash.com/photo-1502933691298-84fc14542831?auto=format&fit=crop&w=800&q=80",
-    suitableFor: "Solo/Grup",
-  },
-  {
-    id: 5,
-    title: "Edukasi Anak & Konservasi",
-    slug: "edukasi-anak-konservasi",
-    theme: "Keluarga",
-    description:
-      "Program edukatif tentang penyu, mangrove, dan ekosistem pantai untuk anak-anak.",
-    duration: "1 Hari",
-    budget: "Rp 200-300rb",
-    rating: 4.6,
-    image:
-      "https://images.unsplash.com/photo-1559827260-dc66d52bef19?auto=format&fit=crop&w=800&q=80",
-    suitableFor: "Keluarga dengan Anak",
-  },
-  {
-    id: 6,
-    title: "Honeymoon Paradise",
-    slug: "honeymoon-paradise",
-    theme: "Romantis",
-    description:
-      "Paket bulan madu eksklusif dengan private tour dan romantic dinner.",
-    duration: "4 Hari 3 Malam",
-    budget: "Rp 3-4jt",
-    rating: 5.0,
-    image:
-      "https://images.unsplash.com/photo-1519046904884-53103b34b206?auto=format&fit=crop&w=800&q=80",
-    suitableFor: "Newlyweds",
-  },
-];
+function formatNewsDate(date: Date) {
+  return new Intl.DateTimeFormat("id-ID", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
