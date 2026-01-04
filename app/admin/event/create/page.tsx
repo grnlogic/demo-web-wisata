@@ -302,12 +302,15 @@ export default function CreateEventPage() {
             </label>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="text"
+                inputMode="url"
+                pattern="https?://.*|/.*"
+                title="Boleh URL penuh atau path /uploads/..."
                 name="gambar"
                 value={formData.gambar}
                 onChange={handleChange}
                 className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/image.jpg"
+                placeholder="https://example.com/image.jpg atau /uploads/galeri/file.jpg"
               />
               <label
                 htmlFor="upload-gambar"
@@ -358,12 +361,15 @@ export default function CreateEventPage() {
             </label>
             <div className="flex gap-2">
               <input
-                type="url"
+                type="text"
+                inputMode="url"
+                pattern="https?://.*|/.*"
+                title="Boleh URL penuh atau path /uploads/..."
                 name="thumbnail"
                 value={formData.thumbnail}
                 onChange={handleChange}
                 className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="https://example.com/thumbnail.jpg"
+                placeholder="https://example.com/thumbnail.jpg atau /uploads/galeri/thumb.jpg"
               />
               <label
                 htmlFor="upload-thumbnail"

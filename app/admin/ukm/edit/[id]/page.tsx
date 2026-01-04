@@ -368,13 +368,16 @@ export default function EditUKMPage() {
               </label>
               <div className="flex gap-2">
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  pattern="https?://.*|/.*"
+                  title="Boleh URL penuh atau path /uploads/..."
                   value={formData.logo}
                   onChange={(e) =>
                     setFormData({ ...formData, logo: e.target.value })
                   }
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/logo.jpg"
+                  placeholder="https://example.com/logo.jpg atau /uploads/galeri/logo.jpg"
                 />
                 <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
                   {uploadingLogo ? "Mengunggah..." : "Upload"}
@@ -433,11 +436,14 @@ export default function EditUKMPage() {
             {gambar.map((img, index) => (
               <div key={index} className="flex gap-2">
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  pattern="https?://.*|/.*"
+                  title="Boleh URL penuh atau path /uploads/..."
                   value={img}
                   onChange={(e) => updateGambar(index, e.target.value)}
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/gambar.jpg"
+                  placeholder="https://example.com/gambar.jpg atau /uploads/galeri/file.jpg"
                 />
                 <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
                   {uploadingGallery[index] ? "Mengunggah..." : "Upload"}

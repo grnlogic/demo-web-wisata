@@ -297,7 +297,10 @@ export default function AdminLoginPage() {
                 </button>
 
                 <div className="relative py-2 text-center text-white/50 text-xs">
-                  <span className="absolute left-0 right-0 top-1/2 h-px bg-white/10" aria-hidden />
+                  <span
+                    className="absolute left-0 right-0 top-1/2 h-px bg-white/10"
+                    aria-hidden
+                  />
                   <span className="relative bg-slate-950 px-3">atau</span>
                 </div>
 
@@ -308,7 +311,9 @@ export default function AdminLoginPage() {
                   className="w-full inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-60"
                 >
                   <Chrome className="w-5 h-5 text-amber-300" />
-                  {googleLoading ? "Menghubungkan ke Google..." : "Masuk dengan Google"}
+                  {googleLoading
+                    ? "Menghubungkan ke Google..."
+                    : "Masuk dengan Google"}
                 </button>
               </form>
             ) : (
@@ -458,7 +463,10 @@ export default function AdminLoginPage() {
                 </button>
 
                 <div className="relative py-2 text-center text-white/50 text-xs">
-                  <span className="absolute left-0 right-0 top-1/2 h-px bg-white/10" aria-hidden />
+                  <span
+                    className="absolute left-0 right-0 top-1/2 h-px bg-white/10"
+                    aria-hidden
+                  />
                   <span className="relative bg-slate-950 px-3">atau</span>
                 </div>
 
@@ -469,7 +477,9 @@ export default function AdminLoginPage() {
                   className="w-full inline-flex items-center justify-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10 disabled:opacity-60"
                 >
                   <Chrome className="w-5 h-5 text-amber-300" />
-                  {googleLoading ? "Menghubungkan ke Google..." : "Daftar / Masuk dengan Google"}
+                  {googleLoading
+                    ? "Menghubungkan ke Google..."
+                    : "Daftar / Masuk dengan Google"}
                 </button>
 
                 <p className="text-xs text-white/60 text-center">

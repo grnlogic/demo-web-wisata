@@ -382,11 +382,14 @@ export default function CreateKulinerPage() {
             <div className="space-y-4">
               <div className="flex gap-2">
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  pattern="https?://.*|/.*"
+                  title="Boleh URL penuh atau path /uploads/..."
                   value={gambarInput}
                   onChange={(e) => setGambarInput(e.target.value)}
                   className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="URL gambar"
+                  placeholder="https://example.com/gambar.jpg atau /uploads/galeri/file.jpg"
                 />
                 <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold cursor-pointer transition-colors text-sm flex items-center gap-2">
                   {uploadingImage ? "Mengunggah..." : "Upload"}

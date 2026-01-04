@@ -141,7 +141,7 @@ export default function AdminGaleriPage() {
     setShowImageSearch(false);
   };
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       // Validate file type
@@ -171,6 +171,31 @@ export default function AdminGaleriPage() {
         setPreviewUrl(reader.result as string);
       };
       reader.readAsDataURL(file);
+
+      // Upload immediately
+      setUploading(true);
+      try {
+        const fd = new FormData();
+        fd.append("file", file);
+
+        const response = await fetch("/api/upload", {
+          method: "POST",
+          body: fd,
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setFormData({ ...formData, url: data.url });
+        } else {
+          const data = await response.json();
+          alert(`Gagal upload file: ${data.error}`);
+        }
+      } catch (error) {
+        console.error("Error uploading file:", error);
+        alert("Terjadi kesalahan saat upload file");
+      } finally {
+        setUploading(false);
+      }
     }
   };
 
@@ -209,16 +234,11 @@ export default function AdminGaleriPage() {
     setSaving(true);
 
     try {
-      let imageUrl = formData.url;
-
-      // Upload file if method is "file"
-      if (uploadMethod === "file" && selectedFile) {
-        const uploadedUrl = await handleUploadFile();
-        if (!uploadedUrl) {
-          setSaving(false);
-          return;
-        }
-        imageUrl = uploadedUrl;
+      // Validate URL is present
+      if (!formData.url) {
+        alert("URL gambar wajib diisi atau file harus diupload");
+        setSaving(false);
+        return;
       }
 
       const tagsArray = formData.tags
@@ -232,7 +252,7 @@ export default function AdminGaleriPage() {
         body: JSON.stringify({
           judul: formData.judul,
           deskripsi: formData.deskripsi,
-          url: imageUrl,
+          url: formData.url,
           kategori: formData.kategori,
           tags: tagsArray,
           featured: formData.featured,
@@ -551,15 +571,17 @@ export default function AdminGaleriPage() {
                 {uploadMethod === "url" && (
                   <div className="space-y-2">
                     <input
-                      type="url"
+                      type="text"
+                      inputMode="url"
+                      pattern="https?://.*|/.*"
+                      title="Boleh URL penuh atau path lokal seperti /uploads/galeri/..."
                       value={formData.url}
                       onChange={(e) => {
                         setFormData({ ...formData, url: e.target.value });
                         setPreviewUrl(e.target.value);
                       }}
-                      placeholder="https://example.com/image.jpg"
+                      placeholder="https://example.com/image.jpg atau /uploads/galeri/file.jpg"
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      required={uploadMethod === "url"}
                     />
                     <button
                       type="button"
@@ -579,11 +601,20 @@ export default function AdminGaleriPage() {
                       accept="image/jpeg,image/jpg,image/png,image/webp"
                       onChange={handleFileSelect}
                       className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                      required={uploadMethod === "file"}
                     />
                     <p className="text-xs text-slate-500">
                       Format: JPG, PNG, WebP. Maksimal 5MB.
                     </p>
+                    {uploading && (
+                      <p className="text-sm text-blue-600 font-medium">
+                        ⏳ Mengupload file...
+                      </p>
+                    )}
+                    {formData.url && uploadMethod === "file" && (
+                      <p className="text-sm text-green-600 font-medium">
+                        ✅ File berhasil diupload: {formData.url}
+                      </p>
+                    )}
                   </div>
                 )}
 

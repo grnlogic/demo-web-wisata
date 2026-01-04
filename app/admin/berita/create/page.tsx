@@ -210,12 +210,15 @@ export default function CreateBeritaPage() {
               <div className="flex-1 relative">
                 <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
-                  type="url"
+                  type="text"
+                  inputMode="url"
+                  pattern="https?://.*|/.*"
+                  title="Boleh URL penuh atau path /uploads/..."
                   name="gambarUtama"
                   value={formData.gambarUtama}
                   onChange={handleChange}
                   className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/image.jpg"
+                  placeholder="https://example.com/image.jpg atau /uploads/galeri/file.jpg"
                 />
               </div>
               <button

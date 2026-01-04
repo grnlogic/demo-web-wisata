@@ -57,8 +57,14 @@ export async function POST(request: NextRequest) {
     const filepath = join(uploadDir, filename);
     await writeFile(filepath, buffer);
 
-    // Return the public URL
-    const url = `/uploads/galeri/${filename}`;
+    // Get base URL from request or environment
+    const host = request.headers.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || `${protocol}://${host}`;
+    
+    // Return the full public URL
+    const relativePath = `/uploads/galeri/${filename}`;
+    const url = `${baseUrl}${relativePath}`;
 
     return NextResponse.json({
       url,
