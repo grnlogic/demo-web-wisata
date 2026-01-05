@@ -112,35 +112,37 @@ export default async function AdminDashboard() {
   ];
 
   return (
-    <div className="space-y-8">
-      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-500 p-8 text-white shadow-xl">
+    <div className="space-y-6 sm:space-y-8">
+      <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl bg-gradient-to-r from-blue-600 via-cyan-600 to-emerald-500 p-6 sm:p-8 text-white shadow-xl">
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_top,_var(--tw-gradient-stops))] from-white via-white to-transparent" />
         <div className="relative flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div className="space-y-2">
             <p className="inline-flex items-center rounded-full bg-white/10 px-3 py-1 text-xs font-semibold uppercase tracking-wide">
               Dasbor Langsung
-              <Sparkles className="ml-2 h-4 w-4" />
+              <Sparkles className="ml-2 h-3 w-3 sm:h-4 sm:w-4" />
             </p>
-            <h1 className="text-3xl font-bold leading-tight lg:text-4xl">
+            <h1 className="text-2xl sm:text-3xl font-bold leading-tight lg:text-4xl">
               Selamat datang di pusat kendali konten
             </h1>
-            <p className="max-w-2xl text-white/80">
+            <p className="max-w-2xl text-sm sm:text-base text-white/80">
               Lihat performa terbaru destinasi, event, berita, serta kelola
               konten wisata Pangandaran dengan data real-time.
             </p>
           </div>
-          <div className="rounded-2xl bg-white/10 px-5 py-4 backdrop-blur">
-            <div className="flex items-center gap-3">
-              <BarChart3 className="h-10 w-10 text-white" />
+          <div className="rounded-2xl bg-white/10 px-4 sm:px-5 py-3 sm:py-4 backdrop-blur">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <BarChart3 className="h-8 w-8 sm:h-10 sm:w-10 text-white flex-shrink-0" />
               <div>
-                <p className="text-sm text-white/70">Update bulan ini</p>
-                <p className="text-2xl font-bold">
+                <p className="text-xs sm:text-sm text-white/70">
+                  Update bulan ini
+                </p>
+                <p className="text-xl sm:text-2xl font-bold">
                   {formatNumber(
                     data.counts.destinationsThisMonth +
                       data.counts.galeriThisMonth +
                       data.counts.beritaThisMonth
                   )}
-                  <span className="text-base font-semibold text-white/80">
+                  <span className="text-sm sm:text-base font-semibold text-white/80">
                     {" "}
                     entri baru
                   </span>
@@ -151,21 +153,21 @@ export default async function AdminDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
         {statCards.map((stat) => (
           <div
             key={stat.label}
-            className="group relative overflow-hidden rounded-2xl border border-slate-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
+            className="group relative overflow-hidden rounded-xl sm:rounded-2xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm transition-all hover:-translate-y-1 hover:shadow-lg"
           >
             <div className="absolute inset-0 opacity-60" />
             <div className="flex items-start justify-between">
               <div
-                className={`flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br ${stat.gradient}`}
+                className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-xl bg-gradient-to-br ${stat.gradient}`}
               >
-                <stat.icon className="h-6 w-6 text-white" />
+                <stat.icon className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
               <span
-                className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                className={`rounded-full px-2 sm:px-3 py-1 text-xs font-semibold ${
                   stat.changeTone === "up"
                     ? "bg-emerald-50 text-emerald-700"
                     : stat.changeTone === "down"
@@ -176,44 +178,50 @@ export default async function AdminDashboard() {
                 {stat.change}
               </span>
             </div>
-            <div className="mt-6 space-y-1">
-              <p className="text-sm text-slate-500">{stat.label}</p>
-              <p className="text-3xl font-bold text-slate-900">{stat.value}</p>
+            <div className="mt-4 sm:mt-6 space-y-1">
+              <p className="text-xs sm:text-sm text-slate-500">{stat.label}</p>
+              <p className="text-2xl sm:text-3xl font-bold text-slate-900">
+                {stat.value}
+              </p>
             </div>
           </div>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-        <div className="lg:col-span-2 rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+      <div className="grid grid-cols-1 gap-4 sm:gap-6 lg:grid-cols-3">
+        <div className="lg:col-span-2 rounded-xl sm:rounded-2xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-slate-900">Aksi Cepat</h2>
-              <p className="text-sm text-slate-500">
+              <h2 className="text-lg sm:text-xl font-bold text-slate-900">
+                Aksi Cepat
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-500">
                 Buat konten baru tanpa membuka menu lain
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-3">
             {quickActions.map((action) => (
               <Link
                 key={action.title}
                 href={action.href}
-                className="group flex items-start gap-4 rounded-xl border border-slate-200 p-4 transition-all hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md"
+                className="group flex items-start gap-3 sm:gap-4 rounded-lg sm:rounded-xl border border-slate-200 p-3 sm:p-4 transition-all hover:-translate-y-0.5 hover:border-blue-400 hover:shadow-md"
               >
                 <div
-                  className={`flex h-12 w-12 items-center justify-center rounded-lg bg-gradient-to-br ${action.gradient} text-white transition-transform group-hover:scale-105`}
+                  className={`flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-lg bg-gradient-to-br ${action.gradient} text-white transition-transform group-hover:scale-105 flex-shrink-0`}
                 >
-                  <action.icon className="h-6 w-6" />
+                  <action.icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <div className="space-y-1">
+                <div className="space-y-1 min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-slate-900">
+                    <h3 className="font-semibold text-slate-900 text-sm sm:text-base truncate">
                       {action.title}
                     </h3>
-                    <TrendingUp className="h-4 w-4 text-blue-500" />
+                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-blue-500 flex-shrink-0" />
                   </div>
-                  <p className="text-sm text-slate-500">{action.description}</p>
+                  <p className="text-xs sm:text-sm text-slate-500 line-clamp-2">
+                    {action.description}
+                  </p>
                   <p className="text-xs font-semibold text-blue-600">
                     {action.cta}
                   </p>
@@ -223,9 +231,9 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
+        <div className="rounded-xl sm:rounded-2xl border border-slate-100 bg-white p-4 sm:p-6 shadow-sm">
           <div className="mb-4 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-slate-900">
+            <h2 className="text-lg sm:text-xl font-bold text-slate-900">
               Event Mendatang
             </h2>
             <Link

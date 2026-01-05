@@ -333,12 +333,12 @@ export default function EditKulinerPage() {
               address: string;
               displayName: string;
             }) => {
-              setFormData({
-                ...formData,
+              setFormData((prev) => ({
+                ...prev,
                 alamat: data.address,
                 koordinat: `${data.lat}, ${data.lon}`,
                 googleMapsUrl: `https://www.google.com/maps?q=${data.lat},${data.lon}`,
-              });
+              }));
             }}
             initialLocation={
               formData.koordinat
@@ -434,7 +434,7 @@ export default function EditKulinerPage() {
               Gambar
             </h2>
             <div className="space-y-4">
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <input
                   type="text"
                   inputMode="url"
@@ -442,32 +442,34 @@ export default function EditKulinerPage() {
                   title="Boleh URL penuh atau path /uploads/..."
                   value={gambarInput}
                   onChange={(e) => setGambarInput(e.target.value)}
-                  className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/gambar.jpg atau /uploads/galeri/file.jpg"
                 />
-                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold cursor-pointer transition-colors text-sm flex items-center gap-2">
-                  {uploadingImage ? "Mengunggah..." : "Upload"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleUpload(file);
-                        e.target.value = "";
-                      }
-                    }}
-                    disabled={uploadingImage}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={addGambar}
-                  className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold"
-                >
-                  Tambah
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold cursor-pointer transition-colors text-sm sm:text-base flex items-center justify-center gap-2">
+                    {uploadingImage ? "Mengunggah..." : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleUpload(file);
+                          e.target.value = "";
+                        }
+                      }}
+                      disabled={uploadingImage}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={addGambar}
+                    className="flex-1 px-6 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-sm sm:text-base"
+                  >
+                    Tambah
+                  </button>
+                </div>
               </div>
 
               {formData.gambar.length > 0 && (

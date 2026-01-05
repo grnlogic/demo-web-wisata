@@ -75,12 +75,12 @@ export default function CreateUKMPage() {
     address: string;
     displayName: string;
   }) => {
-    setFormData({
-      ...formData,
+    setFormData((prev) => ({
+      ...prev,
       koordinat: `${data.lat},${data.lon}`,
       lokasi: data.displayName || data.address,
       alamat: data.address || data.displayName,
-    });
+    }));
   };
 
   const openImageSearch = (field: "logo" | number) => {
@@ -309,7 +309,7 @@ export default function CreateUKMPage() {
               <label className="block text-sm font-medium text-slate-700 mb-2">
                 URL Logo
               </label>
-              <div className="flex gap-2">
+              <div className="space-y-2">
                 <input
                   type="text"
                   inputMode="url"
@@ -319,33 +319,35 @@ export default function CreateUKMPage() {
                   onChange={(e) =>
                     setFormData({ ...formData, logo: e.target.value })
                   }
-                  className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/logo.jpg atau /uploads/galeri/logo.jpg"
                 />
-                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
-                  {uploadingLogo ? "Mengunggah..." : "Upload"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleUpload(file, { type: "logo" });
-                        e.target.value = "";
-                      }
-                    }}
-                    disabled={uploadingLogo}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => openImageSearch("logo")}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors flex items-center gap-2"
-                >
-                  <Search className="w-5 h-5" />
-                  Cari
-                </button>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+                    {uploadingLogo ? "Mengunggah..." : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleUpload(file, { type: "logo" });
+                          e.target.value = "";
+                        }
+                      }}
+                      disabled={uploadingLogo}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => openImageSearch("logo")}
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                  >
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Cari
+                  </button>
+                </div>
               </div>
               {formData.logo && (
                 <div className="mt-4">
@@ -377,7 +379,7 @@ export default function CreateUKMPage() {
           </div>
           <div className="space-y-4">
             {gambar.map((img, index) => (
-              <div key={index} className="flex gap-2">
+              <div key={index} className="space-y-2">
                 <input
                   type="text"
                   inputMode="url"
@@ -385,41 +387,44 @@ export default function CreateUKMPage() {
                   title="Boleh URL penuh atau path /uploads/..."
                   value={img}
                   onChange={(e) => updateGambar(index, e.target.value)}
-                  className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/gambar.jpg atau /uploads/galeri/file.jpg"
                 />
-                <label className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm flex items-center gap-2 cursor-pointer">
-                  {uploadingGallery[index] ? "Mengunggah..." : "Upload"}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        handleUpload(file, { type: "gallery", index });
-                        e.target.value = "";
-                      }
-                    }}
-                    disabled={uploadingGallery[index]}
-                  />
-                </label>
-                <button
-                  type="button"
-                  onClick={() => openImageSearch(index)}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
-                >
-                  <Search className="w-5 h-5" />
-                </button>
-                {gambar.length > 1 && (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <label className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2 cursor-pointer">
+                    {uploadingGallery[index] ? "Mengunggah..." : "Upload"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          handleUpload(file, { type: "gallery", index });
+                          e.target.value = "";
+                        }
+                      }}
+                      disabled={uploadingGallery[index]}
+                    />
+                  </label>
                   <button
                     type="button"
-                    onClick={() => removeGambar(index)}
-                    className="px-4 py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors"
+                    onClick={() => openImageSearch(index)}
+                    className="flex-1 px-4 py-2.5 sm:py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center gap-2"
                   >
-                    <X className="w-5 h-5" />
+                    <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                    Cari
                   </button>
-                )}
+                  {gambar.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => removeGambar(index)}
+                      className="px-4 py-2.5 sm:py-3 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg transition-colors text-sm sm:text-base flex items-center justify-center"
+                    >
+                      <X className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

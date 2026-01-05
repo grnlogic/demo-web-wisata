@@ -270,9 +270,9 @@ export default function EditBeritaPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Gambar Utama
             </label>
-            <div className="flex gap-2">
-              <div className="flex-1 relative">
-                <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+            <div className="space-y-2">
+              <div className="relative">
+                <Image className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 sm:w-5 sm:h-5 text-slate-400" />
                 <input
                   type="text"
                   inputMode="url"
@@ -281,36 +281,38 @@ export default function EditBeritaPage() {
                   name="gambarUtama"
                   value={formData.gambarUtama}
                   onChange={handleChange}
-                  className="w-full pl-11 pr-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="https://example.com/image.jpg atau /uploads/galeri/file.jpg"
                 />
               </div>
-              <button
-                type="button"
-                onClick={() => setShowImageSearch(true)}
-                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
-              >
-                <Search className="w-5 h-5" />
-                Cari Gambar
-              </button>
-              <label
-                htmlFor="upload-gambar-utama"
-                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
-              >
-                <Upload className="w-4 h-4" />
-                Upload
-              </label>
-              <input
-                id="upload-gambar-utama"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleUpload(file);
-                  e.target.value = "";
-                }}
-              />
+              <div className="flex flex-col sm:flex-row gap-2">
+                <button
+                  type="button"
+                  onClick={() => setShowImageSearch(true)}
+                  className="flex-1 px-4 py-2.5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Cari Gambar
+                </button>
+                <label
+                  htmlFor="upload-gambar-utama"
+                  className="flex-1 px-4 py-2.5 sm:py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base"
+                >
+                  <Upload className="w-4 h-4" />
+                  Upload
+                </label>
+                <input
+                  id="upload-gambar-utama"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUpload(file);
+                    e.target.value = "";
+                  }}
+                />
+              </div>
             </div>
             {uploading && (
               <p className="text-xs text-blue-600 mt-1">Mengunggah gambar...</p>

@@ -300,7 +300,7 @@ export default function CreateEventPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Gambar Utama
             </label>
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <input
                 type="text"
                 inputMode="url"
@@ -309,37 +309,39 @@ export default function CreateEventPage() {
                 name="gambar"
                 value={formData.gambar}
                 onChange={handleChange}
-                className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://example.com/image.jpg atau /uploads/galeri/file.jpg"
               />
-              <label
-                htmlFor="upload-gambar"
-                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
-              >
-                Upload
-              </label>
-              <input
-                id="upload-gambar"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleUpload("gambar", file);
-                  e.target.value = "";
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentImageField("gambar");
-                  setShowImageSearch(true);
-                }}
-                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
-              >
-                <Search className="w-5 h-5" />
-                Cari Gambar
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <label
+                  htmlFor="upload-gambar"
+                  className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base"
+                >
+                  Upload
+                </label>
+                <input
+                  id="upload-gambar"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUpload("gambar", file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentImageField("gambar");
+                    setShowImageSearch(true);
+                  }}
+                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Cari Gambar
+                </button>
+              </div>
             </div>
             {uploadingField === "gambar" && (
               <p className="text-xs text-blue-600 mt-1">Mengunggah gambar...</p>
@@ -359,7 +361,7 @@ export default function CreateEventPage() {
             <label className="block text-sm font-medium text-slate-700 mb-2">
               URL Thumbnail
             </label>
-            <div className="flex gap-2">
+            <div className="space-y-2">
               <input
                 type="text"
                 inputMode="url"
@@ -368,37 +370,39 @@ export default function CreateEventPage() {
                 name="thumbnail"
                 value={formData.thumbnail}
                 onChange={handleChange}
-                className="flex-1 px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="https://example.com/thumbnail.jpg atau /uploads/galeri/thumb.jpg"
               />
-              <label
-                htmlFor="upload-thumbnail"
-                className="px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap cursor-pointer"
-              >
-                Upload
-              </label>
-              <input
-                id="upload-thumbnail"
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => {
-                  const file = e.target.files?.[0];
-                  if (file) handleUpload("thumbnail", file);
-                  e.target.value = "";
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => {
-                  setCurrentImageField("thumbnail");
-                  setShowImageSearch(true);
-                }}
-                className="px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2 whitespace-nowrap"
-              >
-                <Search className="w-5 h-5" />
-                Cari Gambar
-              </button>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <label
+                  htmlFor="upload-thumbnail"
+                  className="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 cursor-pointer text-sm sm:text-base"
+                >
+                  Upload
+                </label>
+                <input
+                  id="upload-thumbnail"
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) handleUpload("thumbnail", file);
+                    e.target.value = "";
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCurrentImageField("thumbnail");
+                    setShowImageSearch(true);
+                  }}
+                  className="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base"
+                >
+                  <Search className="w-4 h-4 sm:w-5 sm:h-5" />
+                  Cari Gambar
+                </button>
+              </div>
             </div>
             {uploadingField === "thumbnail" && (
               <p className="text-xs text-blue-600 mt-1">

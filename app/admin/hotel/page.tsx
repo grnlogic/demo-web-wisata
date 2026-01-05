@@ -70,34 +70,36 @@ export default function HotelAdminPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-start justify-between gap-4">
+      <div className="space-y-4">
         <div>
           <p className="text-xs uppercase tracking-[0.18em] text-slate-500">
             Akomodasi
           </p>
-          <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
-            <Hotel className="h-5 w-5 text-amber-600" /> Hotel Pangandaran
+          <h1 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
+            <Hotel className="h-4 w-4 sm:h-5 sm:w-5 text-amber-600" /> Hotel
+            Pangandaran
           </h1>
-          <p className="text-sm text-slate-600 mt-1">
+          <p className="text-xs sm:text-sm text-slate-600 mt-1">
             Tarik 50 data dari SerpAPI Google Hotels (1× klik tombol) lalu
             tersimpan di database. FE membaca dari cache ini.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div className="text-xs text-slate-500 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 sm:gap-3">
+          <div className="text-xs text-slate-500 bg-slate-100 px-3 py-1.5 sm:py-1 rounded-full border border-slate-200 w-full sm:w-auto text-center sm:text-left">
             Terakhir diperbarui: {lastUpdated}
           </div>
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-amber-500 disabled:opacity-70"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-amber-600 px-4 py-2.5 sm:py-2 text-sm font-semibold text-white shadow hover:bg-amber-500 disabled:opacity-70"
           >
             {refreshing ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <RefreshCw className="h-4 w-4" />
             )}
-            Perbarui (50 data)
+            <span className="hidden sm:inline">Perbarui (50 data)</span>
+            <span className="sm:hidden">Perbarui Data</span>
           </button>
         </div>
       </div>

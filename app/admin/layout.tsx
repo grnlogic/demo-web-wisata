@@ -87,12 +87,12 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 lg:translate-x-0",
+          "fixed top-0 left-0 z-50 h-full w-64 bg-white shadow-xl transform transition-transform duration-300 lg:translate-x-0 flex flex-col",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Header */}
-        <div className="p-6 border-b border-slate-200">
+        <div className="p-6 border-b border-slate-200 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
@@ -110,7 +110,7 @@ export default function AdminLayout({
         </div>
 
         {/* Navigation */}
-        <nav className="p-4 flex-1 overflow-y-auto">
+        <nav className="p-4 flex-1 overflow-y-auto min-h-0">
           <ul className="space-y-2">
             {navigation.map((item) => {
               const isActive =
@@ -137,7 +137,7 @@ export default function AdminLayout({
         </nav>
 
         {/* User Info & Logout */}
-        <div className="p-4 border-t border-slate-200">
+        <div className="p-4 border-t border-slate-200 flex-shrink-0">
           <div className="flex items-center space-x-3 px-4 py-3 bg-slate-50 rounded-lg mb-2">
             <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-white font-bold">
               {session.user?.name?.charAt(0) || "A"}
@@ -168,24 +168,25 @@ export default function AdminLayout({
           <div className="px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
               <button
-                className="lg:hidden"
+                className="lg:hidden p-2"
                 onClick={() => setSidebarOpen(true)}
               >
                 <Menu className="w-6 h-6 text-slate-600" />
               </button>
 
-              <h1 className="text-xl font-bold text-slate-800 lg:block hidden">
+              <h1 className="text-lg sm:text-xl font-bold text-slate-800 truncate flex-1 lg:flex-none">
                 {navigation.find((item) => pathname === item.href)?.name ||
                   "Admin Panel"}
               </h1>
 
-              <div className="flex items-center space-x-4">
+              <div className="flex items-center">
                 <Link
                   href="/"
                   target="_blank"
-                  className="text-sm text-slate-600 hover:text-blue-600 transition-colors"
+                  className="text-xs sm:text-sm text-slate-600 hover:text-blue-600 transition-colors whitespace-nowrap"
                 >
-                  Lihat Website
+                  <span className="hidden sm:inline">Lihat Website</span>
+                  <span className="sm:hidden">Website</span>
                 </Link>
               </div>
             </div>
@@ -193,7 +194,7 @@ export default function AdminLayout({
         </header>
 
         {/* Page Content */}
-        <main className="p-4 sm:p-6 lg:p-8">{children}</main>
+        <main className="p-3 sm:p-4 md:p-6 lg:p-8">{children}</main>
       </div>
     </div>
   );
