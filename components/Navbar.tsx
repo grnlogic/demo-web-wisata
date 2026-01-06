@@ -5,7 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import { Menu, X, Search, LogIn, User, LogOut } from "lucide-react";
+import { Menu, X, Search, LogIn, User, LogOut, Home } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navigation = [
@@ -37,7 +37,10 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (accountRef.current && !accountRef.current.contains(event.target as Node)) {
+      if (
+        accountRef.current &&
+        !accountRef.current.contains(event.target as Node)
+      ) {
         setIsAccountMenuOpen(false);
       }
     };
@@ -109,6 +112,26 @@ export default function Navbar() {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
+            {/* Link Kembali ke Beranda untuk Admin */}
+            {isAuthed && session?.user?.role === "ADMIN" && (
+              <Link
+                href="/"
+                className={cn(
+                  "px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 inline-flex items-center space-x-2",
+                  pathname === "/"
+                    ? isScrolled
+                      ? "bg-blue-500 text-white"
+                      : "bg-white/20 text-white backdrop-blur-sm"
+                    : isScrolled
+                    ? "text-slate-700 hover:bg-slate-100"
+                    : "text-white/90 hover:bg-white/10"
+                )}
+              >
+                <Home className="w-4 h-4" />
+                <span>Kembali ke Beranda</span>
+              </Link>
+            )}
+
             {navigation.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -216,6 +239,25 @@ export default function Navbar() {
         {isMobileMenuOpen && (
           <div className="md:hidden py-4 border-t border-slate-200/20">
             <div className="flex flex-col space-y-2">
+              {/* Link Kembali ke Beranda untuk Admin */}
+              {isAuthed && session?.user?.role === "ADMIN" && (
+                <Link
+                  href="/"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className={cn(
+                    "px-4 py-3 rounded-lg text-sm font-medium transition-colors inline-flex items-center space-x-2",
+                    pathname === "/"
+                      ? "bg-blue-500 text-white"
+                      : isScrolled
+                      ? "text-slate-700 hover:bg-slate-100"
+                      : "text-white hover:bg-white/10"
+                  )}
+                >
+                  <Home className="w-4 h-4" />
+                  <span>Kembali ke Beranda</span>
+                </Link>
+              )}
+
               {navigation.map((item) => {
                 const isActive = pathname === item.href;
                 return (

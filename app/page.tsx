@@ -74,15 +74,15 @@ export default async function Home() {
 
               <div className="space-y-4">
                 <h1 className="text-4xl md:text-6xl font-semibold leading-tight tracking-tight text-white">
-                  Wisata rasa lokal, <br />
+                  Jelajahi Pangandaran, <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-200 via-white to-blue-200">
-                    kurasi anti generik.
+                    rasakan pengalaman lokal yang asli.
                   </span>
                 </h1>
                 <p className="text-lg md:text-xl text-white/85 max-w-2xl">
-                  Hidupkan itinerari dengan spot yang disembunyikan warga lokal,
-                  event kecil yang tidak masuk brosur, dan kuliner yang tidak
-                  pasaran.
+                  Temukan destinasi tersembunyi favorit warga lokal, hadiri
+                  event budaya yang unik, dan nikmati kuliner khas yang tidak
+                  akan Anda temukan di panduan wisata biasa.
                 </p>
               </div>
 
@@ -197,11 +197,11 @@ export default async function Home() {
                 Pilihan hotel hari ini
               </p>
               <h3 className="text-2xl md:text-3xl font-semibold text-white">
-                3 rekomendasi yang berganti tiap hari
+                3 pilihan terbaik hari ini
               </h3>
               <p className="text-white/70">
-                Snapshot diambil dari basis data hotel. Refresh harian dengan
-                kombinasi berbeda, supaya opsi tidak monoton.
+                Rekomendasi hotel berubah setiap hari, jadi kamu selalu punya
+                pilihan segar untuk menginap.
               </p>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80">
@@ -377,10 +377,10 @@ export default async function Home() {
                 Berita terkini
               </p>
               <h3 className="text-3xl font-semibold text-white">
-                5 headline terbaru
+                Berita terbaru hari ini
               </h3>
               <p className="text-white/70 text-sm">
-                Auto-update harian, langsung dari redaksi.
+                Informasi terkini seputar Pangandaran, diperbarui setiap hari.
               </p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-amber-100/10 px-4 py-2 text-sm font-semibold text-amber-100 border border-amber-200/30">

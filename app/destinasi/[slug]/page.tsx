@@ -1,20 +1,11 @@
 import Link from "next/link";
-import {
-  MapPin,
-  Star,
-  Clock,
-  DollarSign,
-  Phone,
-  Navigation,
-  ChevronLeft,
-  Image as ImageIcon,
-  Calendar,
-  Check,
-} from "lucide-react";
+import { MapPin, Star, Navigation, ChevronLeft, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { KategoriDestinasi } from "@prisma/client";
 import DestinasiReviews from "@/components/DestinasiReviews";
+import PriceList from "@/components/PriceList";
+import ImageGallery from "@/components/ImageGallery";
 
 async function getDestinasiBySlug(slug: string) {
   const destinasi = await prisma.destinasi.findUnique({
@@ -47,6 +38,10 @@ export default async function DestinasiDetailPage({
     notFound();
   }
 
+  if (!destinasi) {
+    notFound();
+  }
+
   const getKategoriLabel = (kat: KategoriDestinasi) => {
     const labels: Record<KategoriDestinasi, string> = {
       PANTAI: "Pantai",
@@ -70,9 +65,6 @@ export default async function DestinasiDetailPage({
     }).format(harga);
   };
 
-  const primaryImage = destinasi.images.find((img) => img.isPrimary);
-  const otherImages = destinasi.images.filter((img) => !img.isPrimary);
-
   return (
     <div className="min-h-screen pt-20 bg-slate-50">
       {/* Back Button */}
@@ -91,49 +83,10 @@ export default async function DestinasiDetailPage({
       {/* Hero Image Gallery */}
       <section className="bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Main Image */}
-            <div className="md:col-span-3 h-96 rounded-2xl overflow-hidden relative group cursor-pointer">
-              {primaryImage ? (
-                <>
-                  <img
-                    src={primaryImage.url}
-                    alt={destinasi.nama}
-                    className="w-full h-full object-cover"
-                  />
-                  {primaryImage.caption && (
-                    <div className="absolute bottom-4 left-4 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-lg">
-                      <span className="text-sm">{primaryImage.caption}</span>
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="w-full h-full bg-linear-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                  <ImageIcon className="w-24 h-24 text-white/50" />
-                </div>
-              )}
-              <div className="absolute bottom-4 right-4 bg-black/50 backdrop-blur-sm text-white px-4 py-2 rounded-lg flex items-center space-x-2">
-                <ImageIcon className="w-4 h-4" />
-                <span className="text-sm">{destinasi.images.length} Foto</span>
-              </div>
-            </div>
-
-            {/* Thumbnail Grid */}
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-4">
-              {otherImages.slice(0, 2).map((img) => (
-                <div
-                  key={img.id}
-                  className="h-44 rounded-xl cursor-pointer hover:scale-105 transition-transform overflow-hidden"
-                >
-                  <img
-                    src={img.url}
-                    alt={img.caption || destinasi.nama}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
+          <ImageGallery
+            images={destinasi.images}
+            destinationName={destinasi.nama}
+          />
         </div>
       </section>
 
@@ -193,7 +146,7 @@ export default async function DestinasiDetailPage({
                     Fasilitas
                   </h2>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {destinasi.fasilitas.map((item) => (
+                    {destinasi.fasilitas.map((item: any) => (
                       <div
                         key={item.id}
                         className="flex items-center space-x-3 text-slate-600"
@@ -213,28 +166,7 @@ export default async function DestinasiDetailPage({
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Harga */}
-              {destinasi.harga && destinasi.harga.length > 0 && (
-                <div className="bg-white rounded-2xl p-6 shadow-lg sticky top-24">
-                  <h3 className="text-xl font-bold text-slate-800 mb-4">
-                    Harga Tiket
-                  </h3>
-                  <div className="space-y-3">
-                    {destinasi.harga.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex justify-between items-center py-3 border-b border-slate-200 last:border-0"
-                      >
-                        <span className="text-slate-700">
-                          {item.jenisHarga}
-                        </span>
-                        <span className="font-semibold text-blue-600">
-                          {formatPrice(item.harga)}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <PriceList prices={destinasi.harga} />
 
               {/* Info & Map */}
               <div className="bg-white rounded-2xl p-6 shadow-lg">
@@ -261,7 +193,7 @@ export default async function DestinasiDetailPage({
                         {(() => {
                           const [lat, lon] = destinasi.koordinat
                             .split(",")
-                            .map((s) => parseFloat(s.trim()));
+                            .map((s: string) => parseFloat(s.trim()));
                           if (!isNaN(lat) && !isNaN(lon)) {
                             return (
                               <>

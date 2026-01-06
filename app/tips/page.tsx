@@ -51,7 +51,7 @@ const snacks = [
   {
     title: "Belanja bijak",
     items: [
-      "Beli di UMKM tepi pantai",
+      "Beli di UKM tepi pantai",
       "Cek harga dulu sebelum order",
       "Tawar dengan sopan",
     ],

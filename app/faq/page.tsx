@@ -19,7 +19,7 @@ const faqs = [
   {
     question: "Apakah perlu uang tunai?",
     answer:
-      "Bawa kombinasi tunai dan non-tunai. UMKM dan warung kecil seringkali hanya menerima tunai, ATM tersedia di pusat kota.",
+      "Bawa kombinasi tunai dan non-tunai. UKM dan warung kecil seringkali hanya menerima tunai, ATM tersedia di pusat kota.",
   },
   {
     question: "Apakah ada dress code di tempat ibadah?",
