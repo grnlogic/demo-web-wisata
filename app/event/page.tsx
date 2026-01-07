@@ -126,7 +126,7 @@ export default function EventPage() {
                 </div>
                 <div className="space-y-3">
                   <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
-                    Event yang terasa, bukan sekadar poster.
+                    Lengkapi Rencana Liburanmu dengan Event dan Agenda
                   </h1>
                   <p className="text-lg text-white/80 max-w-2xl">
                     Musik pantai, festival kuliner, sunrise run, hingga ritual

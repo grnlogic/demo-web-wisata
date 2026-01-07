@@ -69,7 +69,7 @@ export default async function Home() {
             <div className="space-y-8">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm shadow-lg backdrop-blur">
                 <MapPin className="w-4 h-4" />
-                <span>Koordinat rasa: Pangandaran, Jawa Barat</span>
+                <span>Pangandaran, Jawa Barat</span>
               </div>
 
               <div className="space-y-4">
@@ -87,10 +87,10 @@ export default async function Home() {
               </div>
 
               <div className="flex flex-wrap items-center gap-3">
-                <Badge icon={Waves} label="Pantai sunrise" />
-                <Badge icon={Trees} label="Hutan & goa" />
-                <Badge icon={Camera} label="Frame-ready" />
-                <Badge icon={Compass} label="Peta rasa" />
+                <Badge icon={Sun} label="Sunset Spot" />
+                <Badge icon={Sun} label="Sunrise Spot" />
+                <Badge icon={Waves} label="Wisata Air" />
+                <Badge icon={Compass} label="Kuliner" />
               </div>
 
               <div className="flex flex-col sm:flex-row gap-4 pt-4">
@@ -112,8 +112,8 @@ export default async function Home() {
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-6">
                 {[
-                  { label: "Destinasi kurasi", value: "25+", icon: MapPin },
-                  { label: "Galeri asli", value: "500+", icon: ImageIcon },
+                  { label: "Total Destinasi", value: "25+", icon: MapPin },
+                  { label: "Galeri", value: "500+", icon: ImageIcon },
                   { label: "Event setahun", value: "30+", icon: Calendar },
                   { label: "Skor puas", value: "4.8", icon: Star },
                 ].map((item) => (
@@ -429,7 +429,7 @@ export default async function Home() {
                 Destinasi unggulan
               </p>
               <h2 className="text-3xl md:text-4xl font-semibold text-white">
-                Titik favorit warga, bukan brosur.
+                Titik favorit warga
               </h2>
               <p className="text-white/70 max-w-2xl">
                 Kami pilih spot yang punya rasa: sunrise sepi, jalur teduh, cafe

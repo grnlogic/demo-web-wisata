@@ -99,27 +99,27 @@ export default function KulinerPage() {
                 <Utensils className="w-4 h-4" />
                 <span>Radar rasa Pangandaran</span>
               </div>
-              <div className="space-y-3">
+              <div className="space-y-3">eg
                 <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
-                  Kuliner yang diceritakan warga, bukan brosur.
+                  Kuliner favorit wisatawan pangandaran
                 </h1>
                 <p className="text-lg text-white/80 max-w-2xl">
-                  Dari seafood hangat di bibir pantai sampai kopi malam di gang
-                  kecil. Pilih kategori, cari rasa, temukan meja favoritmu.
+                  Dari hidangan laut segar di pesisir pantai hingga kopi hangat untuk menemani malam
+                  Jelajahi kategori pilihan, temukan cita rasa terbaik dan duduk di meja favorit Anda.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-white/75">
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
                   <Sparkles className="w-4 h-4 text-amber-200" />
-                  Kurasi lidah lokal
+                  Pilihan Kuliner Lokal
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
                   <DollarSign className="w-4 h-4 text-emerald-200" />
-                  Rentang harga jujur
+                  Informasi Harga
                 </span>
                 <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
                   <Clock className="w-4 h-4 text-cyan-200" />
-                  Jam buka real-time
+                  Jam Operasional
                 </span>
               </div>
             </div>
@@ -409,7 +409,7 @@ export default function KulinerPage() {
             Punya rekomendasi rasa baru?
           </h2>
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            Drop lokasi hidden gem atau favorit keluarga. Kita bantu sebarkan.
+            ada hidden gem atau tempat favorit keluarga? Jangan disimpan sendiri, Yuk, bagikan ke semua!
           </p>
           <a
             href="https://wa.me/6281234567890"
