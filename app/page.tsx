@@ -24,7 +24,9 @@ import {
 } from "lucide-react";
 import VideoBackground from "@/components/VideoBackground";
 import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
+import SafeImage from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
+import { createBackgroundImageStyle, getSafeImageUrl } from "@/lib/utils";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -165,11 +167,10 @@ export default async function Home() {
                     >
                       <div
                         className="h-40"
-                        style={{
-                          backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.75) 70%), url(${item.image})`,
-                          backgroundSize: "cover",
-                          backgroundPosition: "center",
-                        }}
+                        style={createBackgroundImageStyle(
+                          item.image,
+                          "linear-gradient(180deg, rgba(15,23,42,0.3) 0%, rgba(15,23,42,0.75) 70%)"
+                        )}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent" />
                       <div className="absolute bottom-0 left-0 right-0 p-4 space-y-1">
@@ -225,20 +226,14 @@ export default async function Home() {
                     key={hotel.id}
                     className="group relative overflow-hidden rounded-2xl border border-white/10 bg-white/5 shadow-lg backdrop-blur transition hover:-translate-y-1 hover:border-cyan-200/40"
                   >
-                    {hotel.thumbnail ? (
-                      <div className="h-44 w-full overflow-hidden bg-slate-800/60">
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={hotel.thumbnail}
-                          alt={hotel.name}
-                          className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                        />
-                      </div>
-                    ) : (
-                      <div className="h-44 w-full bg-slate-800/50 flex items-center justify-center text-white/50 text-sm">
-                        Tidak ada gambar
-                      </div>
-                    )}
+                    <div className="h-44 w-full overflow-hidden bg-slate-800/60 relative">
+                      <SafeImage
+                        src={hotel.thumbnail}
+                        alt={hotel.name}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                    </div>
                     <div className="p-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <div className="space-y-1">
@@ -420,68 +415,6 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Destinations */}
-      <section className="py-20 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
-            <div className="space-y-3">
-              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
-                Destinasi unggulan
-              </p>
-              <h2 className="text-3xl md:text-4xl font-semibold text-white">
-                Titik favorit warga
-              </h2>
-              <p className="text-white/70 max-w-2xl">
-                Kami pilih spot yang punya rasa: sunrise sepi, jalur teduh, cafe
-                rooftop kecil, sampai tempat jajan habis diving.
-              </p>
-            </div>
-            <Link
-              href="/destinasi"
-              className="inline-flex items-center gap-2 rounded-full border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
-            >
-              Lihat semua destinasi
-              <ArrowRight className="w-4 h-4" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredDestinations.map((dest) => (
-              <Link
-                key={dest.name}
-                href={dest.href}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl transition hover:-translate-y-2 hover:border-cyan-200/50"
-              >
-                <div
-                  className="h-64"
-                  style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.15) 0%, rgba(15,23,42,0.65) 70%), url(${dest.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/30 to-slate-950/80" />
-                <div className="absolute top-4 right-4 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-slate-900 text-sm font-semibold shadow-lg">
-                  <Star className="w-4 h-4 text-yellow-500" /> {dest.rating}
-                </div>
-                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">
-                    <dest.icon className="w-4 h-4" />
-                    <span>{dest.vibe}</span>
-                  </div>
-                  <h3 className="text-2xl font-semibold text-white group-hover:text-cyan-100 transition">
-                    {dest.name}
-                  </h3>
-                  <p className="text-white/75 text-sm leading-relaxed line-clamp-2">
-                    {dest.description}
-                  </p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* Rekomendasi */}
       <section className="py-20 bg-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -516,14 +449,11 @@ export default async function Home() {
                 >
                   <div
                     className="relative h-48 rounded-2xl overflow-hidden"
-                    style={{
-                      backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.7) 70%), url(${
-                        pkg.gambarUtama ||
-                        "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80"
-                      })`,
-                      backgroundSize: "cover",
-                      backgroundPosition: "center",
-                    }}
+                    style={createBackgroundImageStyle(
+                      pkg.gambarUtama ||
+                        "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80",
+                      "linear-gradient(180deg, rgba(15,23,42,0.1) 0%, rgba(15,23,42,0.7) 70%)"
+                    )}
                   >
                     <div className="absolute inset-0 border border-white/10" />
                     {pkg.durasi && (
@@ -598,11 +528,10 @@ export default async function Home() {
               >
                 <div
                   className="h-60"
-                  style={{
-                    backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.12) 0%, rgba(15,23,42,0.8) 70%), url(${item.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                  }}
+                  style={createBackgroundImageStyle(
+                    item.image,
+                    "linear-gradient(180deg, rgba(15,23,42,0.12) 0%, rgba(15,23,42,0.8) 70%)"
+                  )}
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent" />
                 <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">

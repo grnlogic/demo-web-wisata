@@ -99,13 +99,15 @@ export default function KulinerPage() {
                 <Utensils className="w-4 h-4" />
                 <span>Radar rasa Pangandaran</span>
               </div>
-              <div className="space-y-3">eg
+              <div className="space-y-3">
+                eg
                 <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
                   Kuliner favorit wisatawan pangandaran
                 </h1>
                 <p className="text-lg text-white/80 max-w-2xl">
-                  Dari hidangan laut segar di pesisir pantai hingga kopi hangat untuk menemani malam
-                  Jelajahi kategori pilihan, temukan cita rasa terbaik dan duduk di meja favorit Anda.
+                  Dari hidangan laut segar di pesisir pantai hingga kopi hangat
+                  untuk menemani malam Jelajahi kategori pilihan, temukan cita
+                  rasa terbaik dan duduk di meja favorit Anda.
                 </p>
               </div>
               <div className="flex flex-wrap gap-3 text-sm text-white/75">
@@ -184,8 +186,8 @@ export default function KulinerPage() {
         </div>
       </section>
 
-      {/* Search & Filter sticky */}
-      <section className="sticky top-16 z-40 border-b border-white/10 bg-slate-900/80 backdrop-blur">
+      {/* Search & Filter */}
+      <section className="border-b border-white/10 bg-slate-900/80 backdrop-blur">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
             <div className="relative flex-1">
@@ -409,7 +411,8 @@ export default function KulinerPage() {
             Punya rekomendasi rasa baru?
           </h2>
           <p className="text-lg text-white/90 mb-8 max-w-2xl mx-auto">
-            ada hidden gem atau tempat favorit keluarga? Jangan disimpan sendiri, Yuk, bagikan ke semua!
+            ada hidden gem atau tempat favorit keluarga? Jangan disimpan
+            sendiri, Yuk, bagikan ke semua!
           </p>
           <a
             href="https://wa.me/6281234567890"

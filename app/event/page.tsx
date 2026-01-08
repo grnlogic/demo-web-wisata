@@ -196,8 +196,8 @@ export default function EventPage() {
           </div>
         </section>
 
-        {/* Search sticky */}
-        <section className="sticky top-16 z-40 border-b border-white/10 bg-slate-900/80 backdrop-blur">
+        {/* Search */}
+        <section className="border-b border-white/10 bg-slate-900/80 backdrop-blur">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
               <div className="relative flex-1">

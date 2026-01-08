@@ -62,13 +62,13 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="lg:col-span-1">
             <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center border-2 border-white/60">
+              <div className="w-12 h-12 rounded-lg overflow-hidden shadow-md flex items-center justify-center">
                 <Image
                   src="/logo.png"
                   alt="Logo Wisata Pangandaran"
                   width={48}
                   height={48}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-contain"
                   priority
                 />
               </div>
@@ -208,8 +208,8 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <p className="text-sm text-slate-400">
-              © {new Date().getFullYear()} Wisata Pangandaran. All rights
-              reserved.
+              © {new Date().getFullYear()} Pangandaran Tourism Portal - A KKN
+              126 PANGANDARAN Project
             </p>
             <div className="flex space-x-6">
               <Link
