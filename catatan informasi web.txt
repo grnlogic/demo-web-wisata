@@ -9,3 +9,9 @@ pass: fajargeran2005
 password email @amazingpangandara.com
 
 W0EPsZ1qmGk5y
+
+
+git checkout package-lock.json
+
+
+pm2 restart wisata-pangandaranic

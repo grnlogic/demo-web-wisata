@@ -248,6 +248,26 @@ const CardNav: React.FC<CardNavProps> = ({
             )}
           </div>
 
+          <div className="md:hidden flex items-center gap-2 h-full order-3">
+            {isAuthenticated ? (
+              <button
+                type="button"
+                onClick={onLogout}
+                className="border border-white/10 rounded-lg px-3 py-2 text-sm font-semibold cursor-pointer transition-all duration-300 bg-white/5 hover:bg-white/10 text-white shadow-md"
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={onLogin}
+                className="border border-white/10 rounded-lg px-3 py-2 text-sm font-semibold cursor-pointer transition-all duration-300 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-400 hover:to-blue-600 text-white shadow-md"
+              >
+                Login
+              </button>
+            )}
+          </div>
+
           {isAuthenticated ? (
             <div className="hidden md:flex items-center gap-3 h-full">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10">
