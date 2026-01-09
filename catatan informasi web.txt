@@ -14,4 +14,4 @@ W0EPsZ1qmGk5y
 git checkout package-lock.json
 
 
-pm2 restart wisata-pangandaranic
+pm2 restart wisata-pangandaran

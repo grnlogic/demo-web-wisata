@@ -84,41 +84,33 @@ export default function AdminLoginPage() {
     setRegisterLoading(true);
 
     try {
-      const res = await fetch("/api/auth/register", {
+      // Send OTP to email
+      const res = await fetch("/api/auth/otp/send", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: registerName,
           email: registerEmail,
-          password: registerPassword,
+          type: "REGISTER",
         }),
       });
 
       const json = await res.json();
 
       if (!res.ok) {
-        throw new Error(json.error || "Gagal mendaftar");
+        throw new Error(json.error || "Gagal mengirim OTP");
       }
 
-      setRegisterSuccess("Akun berhasil dibuat. Masuk otomatis...");
-
-      const loginResult = await signIn("credentials", {
-        identifier: registerEmail,
+      // Redirect to OTP verification page with data
+      const params = new URLSearchParams({
+        email: registerEmail,
+        type: "REGISTER",
+        name: registerName,
         password: registerPassword,
-        redirect: false,
       });
 
-      if (loginResult?.error) {
-        setRegisterError(
-          "Registrasi berhasil, tetapi gagal login. Coba login manual."
-        );
-        return;
-      }
-
-      router.push("/");
-      router.refresh();
+      router.push(`/admin/login/otp?${params.toString()}`);
     } catch (err: any) {
-      setRegisterError(err.message || "Gagal mendaftar");
+      setRegisterError(err.message || "Gagal mengirim OTP");
     } finally {
       setRegisterLoading(false);
     }

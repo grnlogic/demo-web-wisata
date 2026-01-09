@@ -35,17 +35,40 @@ model Admin {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  name      String?
-  email     String   @unique
-  password  String?
-  googleId  String?  @unique
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         String   @id @default(cuid())
+  name       String?
+  email      String   @unique
+  password   String?
+  googleId   String?  @unique
+  isVerified Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 
-  reviews DestinasiReview[]
+  reviews  DestinasiReview[]
+  otpCodes OtpVerification[]
 
   @@map("users")
+}
+
+model OtpVerification {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  type      OtpType // LOGIN or REGISTER
+  expiresAt DateTime
+  verified  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([email, code])
+  @@index([expiresAt])
+  @@map("otp_verifications")
+}
+
+enum OtpType {
+  LOGIN
+  REGISTER
 }
 
 // ========================================

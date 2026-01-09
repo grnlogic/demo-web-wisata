@@ -46,12 +46,14 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
-    if (status === "unauthenticated" && pathname !== "/admin/login") {
+    // Allow any /admin/login/* route (login, otp, etc) to be accessed without redirect
+    if (status === "unauthenticated" && !pathname?.startsWith("/admin/login")) {
       router.push("/admin/login");
     }
   }, [status, router, pathname]);
 
-  if (pathname === "/admin/login") {
+  // Skip admin shell for login-related routes
+  if (pathname?.startsWith("/admin/login")) {
     return children;
   }
 

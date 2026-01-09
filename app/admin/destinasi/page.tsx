@@ -213,7 +213,7 @@ export default function AdminDestinasiPage() {
               <div className="inline-block min-w-full align-middle">
                 <table className="min-w-full divide-y divide-slate-200">
                   <thead className="bg-slate-50\">
-                    \n{" "}
+                    {" "}
                     <tr>
                       <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-semibold text-slate-700 whitespace-nowrap">
                         Nama Destinasi
