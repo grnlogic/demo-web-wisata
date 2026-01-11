@@ -1,4 +1,4 @@
-import { Target, Flag, Users, Building2 } from "lucide-react";
+import { Target, Flag, Users, Building2, UserCircle } from "lucide-react";
 import Image from "next/image";
 
 const misiList = [
@@ -14,82 +14,67 @@ const perangkatDesa = {
   kepala: {
     nama: "Adi Fitriadi, S.IP.",
     jabatan: "Kepala Desa",
-    foto: "/koordinasi desa/ADI FITRIADI, S.I.P.jpg",
   },
   sekretariat: [
     {
-      nama: "Iman Sahman, S.E",
+      nama: "Imah Suherman, S.E",
       jabatan: "Sekretaris Desa",
-      foto: "/koordinasi desa/IMAN SAHMAN, S.E.png",
     },
     {
       nama: "Alvi Anisyah",
       jabatan: "Kaur Tata Usaha & Umum",
-      foto: "/koordinasi desa/ALVI ANISYAH.png",
     },
     {
       nama: "Fauzi, S.Ak",
       jabatan: "Staf Tata Usaha & Umum",
-      foto: "/koordinasi desa/FAUZI, S.Ak.png",
     },
     {
       nama: "Wenny Damayanti, S.E",
       jabatan: "Kaur Keuangan",
-      foto: "/koordinasi desa/WENNY DAMAYANTI, S.E.png",
     },
     {
       nama: "Wiwi Widaningsih",
       jabatan: "Staf Keuangan Bidang Pendapatan",
-      foto: "/koordinasi desa/WIWI WIDANINGSIH.png",
     },
     {
       nama: "N. Intan Gumilang, S.I.K",
       jabatan: "Kaur Perencanaan",
-      foto: "/koordinasi desa/N. INTAN GUMILANG, S.I.K.png",
     },
   ],
   pelaksanaTeknis: [
     {
       nama: "Slamet",
       jabatan: "Kasi Pemerintahan",
-      foto: "/koordinasi desa/SLAMET.png",
     },
     {
       nama: "Kuswanto Haditama",
       jabatan: "Staf Pemerintahan",
-      foto: "/koordinasi desa/KUSWANTO HADITAMA.png",
     },
     {
       nama: "Dini Indriandini. Y",
       jabatan: "Kasi Kesejahteraan",
-      foto: "/koordinasi desa/DINI INDRIANDINI. Y.png",
     },
     {
       nama: "Nuryamin",
       jabatan: "Kasi Pelayanan",
-      foto: "/koordinasi desa/nuryamin.jpg",
     },
     {
       nama: "Yoyo Suryono, S.IP",
       jabatan: "Staf Pelayanan",
-      foto: "/koordinasi desa/YOYO SURYONO, S.IP.png",
     },
   ],
   pelaksanaKewilayahan: [
     {
       nama: "Onih Ratnaningsih",
       jabatan: "Kadus Pangandaran Timur",
-      foto: "/koordinasi desa/ONIH RATNANINGSIH.png",
     },
     {
       nama: "Suryanti",
       jabatan: "Kadus Pangandaran Barat",
-      foto: "/koordinasi desa/suryanti.png",
     },
     {
       nama: "Wanto",
       jabatan: "Kadus Parapat",
-      foto: "/koordinasi desa/wanto png.png",
     },
   ],
 };
@@ -204,14 +189,10 @@ export default function TentangPage() {
           {/* Kepala Desa */}
           <div className="rounded-3xl border border-emerald-400/30 bg-gradient-to-br from-emerald-400/20 to-white/5 p-8 backdrop-blur shadow-xl text-center">
             <div className="inline-flex flex-col items-center space-y-4">
-              <div className="relative w-32 h-32 rounded-full border-4 border-emerald-400/30 overflow-hidden bg-white">
-                <Image
-                  src={perangkatDesa.kepala.foto}
-                  alt={perangkatDesa.kepala.nama}
-                  fill
-                  className="object-cover"
-                  sizes="128px"
-                />
+              <div className="relative w-32 h-32 rounded-full border-4 border-emerald-400/30 overflow-hidden bg-white/10">
+                <div className="w-full h-full flex items-center justify-center">
+                  <UserCircle className="w-20 h-20 text-white/30" />
+                </div>
               </div>
               <div>
                 <h3 className="text-2xl font-semibold text-white">
@@ -237,14 +218,10 @@ export default function TentangPage() {
                   key={index}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur shadow-lg text-center hover:bg-white/10 transition-colors"
                 >
-                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white">
-                    <Image
-                      src={person.foto}
-                      alt={person.nama}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
+                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white/5">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <UserCircle className="w-12 h-12 text-white/30" />
+                    </div>
                   </div>
                   <h4 className="text-lg font-semibold text-white mb-1">
                     {person.nama}
@@ -268,14 +245,10 @@ export default function TentangPage() {
                   key={index}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur shadow-lg text-center hover:bg-white/10 transition-colors"
                 >
-                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white">
-                    <Image
-                      src={person.foto}
-                      alt={person.nama}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
+                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white/5">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <UserCircle className="w-12 h-12 text-white/30" />
+                    </div>
                   </div>
                   <h4 className="text-lg font-semibold text-white mb-1">
                     {person.nama}
@@ -301,14 +274,10 @@ export default function TentangPage() {
                   key={index}
                   className="rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur shadow-lg text-center hover:bg-white/10 transition-colors"
                 >
-                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white">
-                    <Image
-                      src={person.foto}
-                      alt={person.nama}
-                      fill
-                      className="object-cover"
-                      sizes="80px"
-                    />
+                  <div className="relative w-20 h-20 mx-auto mb-4 rounded-full border-2 border-white/20 overflow-hidden bg-white/5">
+                    <div className="w-full h-full flex items-center justify-center">
+                      <UserCircle className="w-12 h-12 text-white/30" />
+                    </div>
                   </div>
                   <h4 className="text-lg font-semibold text-white mb-1">
                     {person.nama}

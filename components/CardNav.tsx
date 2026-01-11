@@ -1,5 +1,3 @@
-"use client";
-
 import React, { useLayoutEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { GoArrowUpRight } from "react-icons/go";
@@ -60,14 +58,6 @@ const CardNav: React.FC<CardNavProps> = ({
   const navRef = useRef<HTMLDivElement | null>(null);
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
-
-  // Debug logging
-  useLayoutEffect(() => {
-    console.log("CardNav component mounted");
-    return () => {
-      console.log("CardNav component unmounted");
-    };
-  }, []);
 
   const calculateHeight = () => {
     const navEl = navRef.current;
@@ -191,8 +181,7 @@ const CardNav: React.FC<CardNavProps> = ({
 
   return (
     <div
-      data-cardnav="true"
-      className={`card-nav-container fixed left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-[999] transition-all duration-300 ${className} ${
+      className={`card-nav-container fixed left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-[99] transition-all duration-300 ${className} ${
         isScrolled ? "top-3" : "top-4 md:top-6"
       }`}
     >

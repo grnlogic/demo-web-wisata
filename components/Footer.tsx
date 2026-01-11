@@ -14,6 +14,12 @@ import {
 import { useState, useEffect } from "react";
 
 const footerLinks = {
+  destinasi: [
+    { name: "Pantai Pasir Putih", href: "/destinasi/pantai-pasir-putih" },
+    { name: "Cagar Alam", href: "/destinasi/cagar-alam" },
+    { name: "Green Canyon", href: "/destinasi/green-canyon" },
+    { name: "Kampung Turis", href: "/destinasi/kampung-turis" },
+  ],
   informasi: [
     { name: "Tentang Pangandaran", href: "/tentang" },
     { name: "Tentang KKN 126", href: "/tentang-kkn" },
@@ -39,32 +45,14 @@ interface Settings {
   social_youtube?: string;
 }
 
-interface Destinasi {
-  id: number;
-  nama: string;
-  slug: string;
-}
-
 export default function Footer() {
   const [settings, setSettings] = useState<Settings>({});
-  const [destinasi, setDestinasi] = useState<Destinasi[]>([]);
 
   useEffect(() => {
-    // Fetch settings
     fetch("/api/settings")
       .then((res) => res.json())
       .then((data) => setSettings(data))
       .catch((err) => console.error("Failed to fetch settings:", err));
-
-    // Fetch destinasi populer (limit 4)
-    fetch("/api/destinasi?limit=4&status=PUBLISHED")
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.data && Array.isArray(data.data)) {
-          setDestinasi(data.data);
-        }
-      })
-      .catch((err) => console.error("Failed to fetch destinasi:", err));
   }, []);
   return (
     <footer className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white">
@@ -147,20 +135,16 @@ export default function Footer() {
           <div>
             <h4 className="font-semibold text-lg mb-4">Destinasi Populer</h4>
             <ul className="space-y-2">
-              {destinasi.length > 0 ? (
-                destinasi.map((dest) => (
-                  <li key={dest.id}>
-                    <Link
-                      href={`/destinasi/${dest.slug}`}
-                      className="text-slate-300 hover:text-white transition-colors text-sm"
-                    >
-                      {dest.nama}
-                    </Link>
-                  </li>
-                ))
-              ) : (
-                <li className="text-slate-400 text-sm">Loading...</li>
-              )}
+              {footerLinks.destinasi.map((link) => (
+                <li key={link.name}>
+                  <Link
+                    href={link.href}
+                    className="text-slate-300 hover:text-white transition-colors text-sm"
+                  >
+                    {link.name}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
