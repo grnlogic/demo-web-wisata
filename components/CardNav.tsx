@@ -183,6 +183,7 @@ const CardNav: React.FC<CardNavProps> = ({
 
   return (
     <div
+      data-cardnav="true"
       className={`card-nav-container fixed left-1/2 -translate-x-1/2 w-[92%] max-w-6xl z-[99] transition-all duration-300 ${className} ${
         isScrolled ? "top-3" : "top-4 md:top-6"
       }`}
