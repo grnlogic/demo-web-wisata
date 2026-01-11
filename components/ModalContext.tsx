@@ -22,7 +22,12 @@ export function ModalProvider({ children }: { children: ReactNode }) {
 export function useModal() {
   const context = useContext(ModalContext);
   if (context === undefined) {
-    throw new Error("useModal must be used within a ModalProvider");
+    // Return default values instead of throwing error
+    console.warn("useModal must be used within a ModalProvider. Using default values.");
+    return {
+      isModalOpen: false,
+      setIsModalOpen: () => {},
+    };
   }
   return context;
 }

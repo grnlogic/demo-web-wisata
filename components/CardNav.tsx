@@ -61,6 +61,14 @@ const CardNav: React.FC<CardNavProps> = ({
   const cardsRef = useRef<HTMLDivElement[]>([]);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
 
+  // Debug logging
+  useLayoutEffect(() => {
+    console.log("CardNav component mounted");
+    return () => {
+      console.log("CardNav component unmounted");
+    };
+  }, []);
+
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;

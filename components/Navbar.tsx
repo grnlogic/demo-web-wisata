@@ -47,8 +47,12 @@ function SimpleFallbackNavbar({
 }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
+  useEffect(() => {
+    console.log("🔄 Using SimpleFallbackNavbar");
+  }, []);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-900 border-b border-white/10 shadow-lg">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-slate-900/95 border-b border-white/10 shadow-xl backdrop-blur-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -58,22 +62,40 @@ function SimpleFallbackNavbar({
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">
-            <Link href="/" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/"
+              className="text-white/80 hover:text-white transition"
+            >
               Beranda
             </Link>
-            <Link href="/destinasi" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/destinasi"
+              className="text-white/80 hover:text-white transition"
+            >
               Destinasi
             </Link>
-            <Link href="/kuliner" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/kuliner"
+              className="text-white/80 hover:text-white transition"
+            >
               Kuliner
             </Link>
-            <Link href="/event" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/event"
+              className="text-white/80 hover:text-white transition"
+            >
               Event
             </Link>
-            <Link href="/galeri" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/galeri"
+              className="text-white/80 hover:text-white transition"
+            >
               Galeri
             </Link>
-            <Link href="/berita" className="text-white/80 hover:text-white transition">
+            <Link
+              href="/berita"
+              className="text-white/80 hover:text-white transition"
+            >
               Berita
             </Link>
 
@@ -169,7 +191,9 @@ function SimpleFallbackNavbar({
             <div className="px-4 pt-4 border-t border-white/10">
               {isAuthed ? (
                 <>
-                  <div className="text-white/70 text-sm mb-2">{displayName}</div>
+                  <div className="text-white/70 text-sm mb-2">
+                    {displayName}
+                  </div>
                   <button
                     onClick={onLogout}
                     className="w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
@@ -254,8 +278,23 @@ const cardNavItems: CardNavItem[] = [
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
-  const { isModalOpen } = useModal();
   const [useFallback, setUseFallback] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  
+  // Safe modal hook usage - will not crash if ModalProvider is missing
+  let isModalOpen = false;
+  try {
+    const modalContext = useModal();
+    isModalOpen = modalContext?.isModalOpen ?? false;
+  } catch (e) {
+    console.warn("Modal context not available in Navbar");
+  }
+
+  // Track mount status
+  useEffect(() => {
+    setMounted(true);
+    console.log("Navbar mounted successfully");
+  }, []);
 
   // Don't show navbar on admin pages
   if (pathname?.startsWith("/admin")) {
@@ -279,16 +318,20 @@ export default function Navbar() {
 
   // Fallback detector - check if CardNav fails to mount
   useEffect(() => {
+    if (!mounted) return;
+
     const timer = setTimeout(() => {
       const navElement = document.querySelector('[data-cardnav="true"]');
       if (!navElement && !useFallback) {
-        console.warn("CardNav not detected, using fallback navbar");
+        console.warn("⚠️ CardNav not detected after 2s, switching to fallback navbar");
         setUseFallback(true);
+      } else if (navElement) {
+        console.log("✓ CardNav detected and rendered successfully");
       }
-    }, 1000);
+    }, 2000); // Increase to 2 seconds
 
     return () => clearTimeout(timer);
-  }, [useFallback]);
+  }, [useFallback, mounted]);
 
   // If fallback mode is triggered, use simple navbar
   if (useFallback) {
