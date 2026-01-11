@@ -5,6 +5,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import SessionProvider from "@/components/SessionProvider";
 import ChatSupport from "@/components/ChatSupport";
+import { ModalProvider } from "@/components/ModalContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -73,10 +74,12 @@ export default function RootLayout({
     <html lang="id" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased bg-slate-50`}>
         <SessionProvider>
-          <Navbar />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-          <ChatSupport />
+          <ModalProvider>
+            <Navbar />
+            <main className="min-h-screen">{children}</main>
+            <Footer />
+            <ChatSupport />
+          </ModalProvider>
         </SessionProvider>
       </body>
     </html>

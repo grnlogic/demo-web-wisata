@@ -600,7 +600,7 @@ export default async function Home() {
       {/* Quick Planner */}
       <section className="py-16 bg-gradient-to-br from-blue-600 via-indigo-700 to-cyan-600 text-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-10">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6 mb-10">
             <div className="space-y-3 max-w-2xl">
               <p className="text-xs uppercase tracking-[0.25em] text-white/80">
                 Rencana 48 jam
@@ -613,7 +613,9 @@ export default async function Home() {
                 skip bagian sunset.
               </p>
             </div>
-            <QuickPlannerCalendar quickSteps={quickSteps} />
+            <div className="w-full lg:w-auto flex justify-center lg:justify-end">
+              <QuickPlannerCalendar quickSteps={quickSteps} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

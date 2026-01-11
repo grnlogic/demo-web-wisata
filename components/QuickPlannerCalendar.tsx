@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import {
   ArrowLeft,
   ArrowRight,
@@ -11,6 +11,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+import { useModal } from "./ModalContext";
 
 type QuickStep = {
   time: string;
@@ -84,6 +85,7 @@ export default function QuickPlannerCalendar({
   const [open, setOpen] = useState(false);
   const [viewDate, setViewDate] = useState(() => new Date());
   const [selectedDate, setSelectedDate] = useState(() => new Date());
+  const { setIsModalOpen } = useModal();
 
   const days = useMemo(() => buildCalendar(viewDate), [viewDate]);
   const selectedLabel = useMemo(
@@ -98,6 +100,21 @@ export default function QuickPlannerCalendar({
       return next;
     });
   };
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      setIsModalOpen(true);
+    } else {
+      document.body.style.overflow = "";
+      setIsModalOpen(false);
+    }
+    return () => {
+      document.body.style.overflow = "";
+      setIsModalOpen(false);
+    };
+  }, [open, setIsModalOpen]);
 
   return (
     <div className="flex items-center gap-3">
@@ -115,41 +132,46 @@ export default function QuickPlannerCalendar({
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm px-4">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.15),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(96,165,250,0.15),transparent_35%)]" />
-          <div className="relative w-full max-w-6xl overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-6 shadow-2xl">
-            <div className="flex flex-col gap-6 lg:flex-row">
-              <div className="flex-1 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-inner">
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/80 backdrop-blur-sm p-3 sm:p-4 overflow-y-auto"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(45,212,191,0.15),transparent_35%),radial-gradient(circle_at_80%_10%,rgba(96,165,250,0.15),transparent_35%)] pointer-events-none" />
+          <div className="relative w-full max-w-6xl my-auto rounded-2xl sm:rounded-3xl border border-white/10 bg-gradient-to-br from-slate-900 via-slate-900/95 to-slate-950 p-4 sm:p-6 shadow-2xl touch-pan-y">
+            <div className="flex flex-col gap-4 sm:gap-6 lg:flex-row">
+              <div className="flex-1 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 shadow-inner">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
+                    <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-cyan-200">
                       Kalender ekspres
                     </p>
-                    <p className="text-lg font-semibold text-white">
+                    <p className="text-base sm:text-lg font-semibold text-white">
                       {formatMonthYear(viewDate)}
                     </p>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 sm:gap-2">
                     <button
                       type="button"
                       onClick={() => changeMonth("prev")}
-                      className="rounded-full border border-white/10 bg-white/10 p-2 text-white transition hover:border-white/30 hover:bg-white/15"
+                      className="rounded-full border border-white/10 bg-white/10 p-1.5 sm:p-2 text-white transition hover:border-white/30 hover:bg-white/15"
                       aria-label="Bulan sebelumnya"
                     >
-                      <ArrowLeft className="w-4 h-4" />
+                      <ArrowLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                     <button
                       type="button"
                       onClick={() => changeMonth("next")}
-                      className="rounded-full border border-white/10 bg-white/10 p-2 text-white transition hover:border-white/30 hover:bg-white/15"
+                      className="rounded-full border border-white/10 bg-white/10 p-1.5 sm:p-2 text-white transition hover:border-white/30 hover:bg-white/15"
                       aria-label="Bulan selanjutnya"
                     >
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>
 
-                <div className="mt-4 grid grid-cols-7 gap-2 text-xs font-semibold uppercase tracking-wide text-white/60">
+                <div className="mt-3 sm:mt-4 grid grid-cols-7 gap-1 sm:gap-2 text-[10px] sm:text-xs font-semibold uppercase tracking-wide text-white/60">
                   {DAYS.map((day) => (
                     <div key={day} className="text-center">
                       {day}
@@ -157,7 +179,7 @@ export default function QuickPlannerCalendar({
                   ))}
                 </div>
 
-                <div className="mt-2 grid grid-cols-7 gap-2">
+                <div className="mt-1.5 sm:mt-2 grid grid-cols-7 gap-1 sm:gap-2">
                   {days.map((day) => {
                     const isSelected =
                       day.date.toDateString() === selectedDate.toDateString();
@@ -167,7 +189,7 @@ export default function QuickPlannerCalendar({
                         key={day.date.toISOString()}
                         type="button"
                         onClick={() => setSelectedDate(day.date)}
-                        className={`relative flex h-12 w-full items-center justify-center rounded-xl border text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 ${
+                        className={`relative flex h-9 sm:h-12 w-full items-center justify-center rounded-lg sm:rounded-xl border text-xs sm:text-sm transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400/70 ${
                           isSelected
                             ? "border-cyan-300/70 bg-cyan-300/20 text-white shadow-lg shadow-cyan-500/20"
                             : day.isToday
@@ -179,7 +201,7 @@ export default function QuickPlannerCalendar({
                       >
                         <span>{day.date.getDate()}</span>
                         {day.isToday && !isSelected && (
-                          <span className="absolute bottom-1 h-1 w-1 rounded-full bg-cyan-300" />
+                          <span className="absolute bottom-0.5 sm:bottom-1 h-1 w-1 rounded-full bg-cyan-300" />
                         )}
                       </button>
                     );
@@ -187,72 +209,76 @@ export default function QuickPlannerCalendar({
                 </div>
               </div>
 
-              <div className="w-full lg:w-80 rounded-2xl border border-white/10 bg-white/5 p-5 shadow-inner">
+              <div className="w-full lg:w-80 rounded-xl sm:rounded-2xl border border-white/10 bg-white/5 p-4 sm:p-5 shadow-inner">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-emerald-200">
+                    <p className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.25em] text-emerald-200">
                       Agenda pilihan
                     </p>
-                    <p className="text-lg font-semibold text-white">
+                    <p className="text-base sm:text-lg font-semibold text-white">
                       {selectedLabel}
                     </p>
                   </div>
-                  <Sparkles className="w-5 h-5 text-emerald-200" />
+                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-200" />
                 </div>
 
-                <div className="mt-4 space-y-3">
+                <div className="mt-3 sm:mt-4 space-y-2 sm:space-y-3">
                   {quickSteps.map((step, idx) => (
                     <div
                       key={step.title}
-                      className="rounded-xl border border-white/10 bg-white/5 p-3 text-sm text-white/80 shadow-sm"
+                      className="rounded-lg sm:rounded-xl border border-white/10 bg-white/5 p-2.5 sm:p-3 text-sm text-white/80 shadow-sm"
                     >
-                      <div className="flex items-center justify-between text-xs uppercase tracking-[0.2em] text-white/60">
+                      <div className="flex items-center justify-between text-[10px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/60">
                         <span className="inline-flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {step.time}
                         </span>
-                        <span className="rounded-full bg-emerald-400/15 px-2 py-1 text-[10px] font-semibold text-emerald-100">
+                        <span className="rounded-full bg-emerald-400/15 px-2 py-0.5 sm:py-1 text-[9px] sm:text-[10px] font-semibold text-emerald-100">
                           Hari {idx < 2 ? 1 : 2}
                         </span>
                       </div>
-                      <p className="mt-2 text-white font-semibold">
+                      <p className="mt-1.5 sm:mt-2 text-sm sm:text-base text-white font-semibold">
                         {step.title}
                       </p>
-                      <p className="text-xs text-white/70 leading-relaxed">
+                      <p className="text-[11px] sm:text-xs text-white/70 leading-relaxed">
                         {step.detail}
                       </p>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-4 flex items-center gap-3 text-xs text-white/60">
-                  <MapPin className="w-4 h-4 text-cyan-200" />
-                  Klik tanggal untuk menandai hari keberangkatan. Rute
-                  menyesuaikan dua hari tanpa detour.
+                <div className="mt-3 sm:mt-4 flex items-start sm:items-center gap-2 sm:gap-3 text-[11px] sm:text-xs text-white/60">
+                  <MapPin className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-cyan-200 flex-shrink-0 mt-0.5 sm:mt-0" />
+                  <span className="leading-snug">
+                    Klik tanggal untuk menandai hari keberangkatan. Rute
+                    menyesuaikan dua hari tanpa detour.
+                  </span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-xs font-semibold text-white/70">
-                <Sparkles className="w-4 h-4 text-amber-300" />
-                Kalender ini hanya simulasi cepat; daftar lengkap ada di halaman
-                event.
+            <div className="mt-4 sm:mt-5 flex flex-col gap-2 sm:gap-3">
+              <div className="inline-flex items-start sm:items-center gap-2 rounded-full bg-white/10 px-3 py-2 text-[11px] sm:text-xs font-semibold text-white/70">
+                <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300 flex-shrink-0" />
+                <span className="leading-snug">
+                  Kalender ini hanya simulasi cepat; daftar lengkap ada di
+                  halaman event.
+                </span>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3">
                 <Link
                   href="/event"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 sm:py-2 text-xs sm:text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
                 >
                   Buka halaman event
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                 </Link>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
+                  className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2.5 sm:py-2 text-xs sm:text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:border-white/40"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   Tutup
                 </button>
               </div>

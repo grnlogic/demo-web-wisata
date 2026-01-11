@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import CardNav, { CardNavItem } from "./CardNav";
+import { useModal } from "./ModalContext";
 
 const cardNavItems: CardNavItem[] = [
   {
@@ -65,6 +66,7 @@ const cardNavItems: CardNavItem[] = [
 export default function Navbar() {
   const pathname = usePathname();
   const { data: session, status } = useSession();
+  const { isModalOpen } = useModal();
 
   // Don't show navbar on admin pages
   if (pathname?.startsWith("/admin")) {
@@ -79,20 +81,28 @@ export default function Navbar() {
   const isAuthed = status === "authenticated" && !!session?.user;
 
   return (
-    <CardNav
-      logo="/logo.png"
-      logoAlt="Logo Wisata Pangandaran"
-      logoText="Pangandaran"
-      logoSubtext="Portal Wisata"
-      items={cardNavItems}
-      baseColor="#ffffff"
-      menuColor="#1e293b"
-      buttonBgColor="#0ea5e9"
-      buttonTextColor="#ffffff"
-      isAuthenticated={isAuthed}
-      userName={displayName}
-      onLogout={async () => await signOut({ callbackUrl: "/" })}
-      onLogin={() => (window.location.href = "/admin/login")}
-    />
+    <div
+      className={`transition-all duration-300 ${
+        isModalOpen
+          ? "opacity-0 -translate-y-full pointer-events-none"
+          : "opacity-100 translate-y-0"
+      }`}
+    >
+      <CardNav
+        logo="/logo.png"
+        logoAlt="Logo Wisata Pangandaran"
+        logoText="Pangandaran"
+        logoSubtext="Portal Wisata"
+        items={cardNavItems}
+        baseColor="#ffffff"
+        menuColor="#1e293b"
+        buttonBgColor="#0ea5e9"
+        buttonTextColor="#ffffff"
+        isAuthenticated={isAuthed}
+        userName={displayName}
+        onLogout={async () => await signOut({ callbackUrl: "/" })}
+        onLogin={() => (window.location.href = "/admin/login")}
+      />
+    </div>
   );
 }

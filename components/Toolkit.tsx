@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import {
   ArrowRight,
   Bus,
@@ -13,6 +13,7 @@ import {
   Wallet,
   X,
 } from "lucide-react";
+import { useModal } from "./ModalContext";
 
 type ToolkitId = "map" | "transport" | "budget";
 
@@ -136,15 +137,24 @@ function ToolkitModal({
   item: ToolkitItem;
   onClose: () => void;
 }) {
+  const { setIsModalOpen } = useModal();
+
+  useEffect(() => {
+    setIsModalOpen(true);
+    return () => {
+      setIsModalOpen(false);
+    };
+  }, [setIsModalOpen]);
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
       <div
         className="absolute inset-0 bg-slate-950/70 backdrop-blur-sm"
         aria-hidden
         onClick={onClose}
       />
-      <div className="relative w-full max-w-5xl overflow-hidden rounded-3xl border border-white/10 bg-slate-900 text-white shadow-2xl">
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5">
+      <div className="relative w-full max-w-5xl my-auto max-h-[90vh] flex flex-col rounded-3xl border border-white/10 bg-slate-900 text-white shadow-2xl">
+        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-6 py-5 flex-shrink-0">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-cyan-200">
               {item.title}
@@ -161,7 +171,7 @@ function ToolkitModal({
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto">
           {item.id === "map" && <MapContent />}
           {item.id === "transport" && <TransportContent />}
           {item.id === "budget" && <BudgetContent />}
