@@ -52,7 +52,7 @@ function SimpleFallbackNavbar({
   }, []);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-slate-900/95 border-b border-white/10 shadow-xl backdrop-blur-lg">
+    <nav className="fixed top-0 left-0 right-0 z-[998] bg-slate-900/95 border-b border-white/10 shadow-xl backdrop-blur-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -322,16 +322,18 @@ export default function Navbar() {
 
     const timer = setTimeout(() => {
       const navElement = document.querySelector('[data-cardnav="true"]');
-      if (!navElement && !useFallback) {
-        console.warn("⚠️ CardNav not detected after 2s, switching to fallback navbar");
+      if (!navElement) {
+        console.warn("⚠️ CardNav not detected after 1.5s, switching to fallback navbar");
         setUseFallback(true);
-      } else if (navElement) {
+      } else {
         console.log("✓ CardNav detected and rendered successfully");
+        // CardNav found, make sure fallback is not shown
+        setUseFallback(false);
       }
-    }, 2000); // Increase to 2 seconds
+    }, 1500);
 
     return () => clearTimeout(timer);
-  }, [useFallback, mounted]);
+  }, [mounted]);
 
   // If fallback mode is triggered, use simple navbar
   if (useFallback) {
