@@ -453,14 +453,16 @@ function OtpVerificationContent() {
 
 export default function OtpVerificationPage() {
   return (
-    <Suspense fallback={
-      <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-300 mx-auto mb-4"></div>
-          <p className="text-white/60">Memuat...</p>
+    <Suspense
+      fallback={
+        <div className="relative min-h-screen overflow-hidden bg-slate-950 text-white flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-300 mx-auto mb-4"></div>
+            <p className="text-white/60">Memuat...</p>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <OtpVerificationContent />
     </Suspense>
   );

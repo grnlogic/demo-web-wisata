@@ -16,9 +16,6 @@ import {
   Trees,
   Ship,
   Sparkles,
-  Map,
-  Bus,
-  Wallet,
   Store,
   Newspaper,
 } from "lucide-react";
@@ -26,7 +23,8 @@ import VideoBackground from "@/components/VideoBackground";
 import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
 import SafeImage from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
-import { createBackgroundImageStyle, getSafeImageUrl } from "@/lib/utils";
+import { createBackgroundImageStyle } from "@/lib/utils";
+import ToolkitSection from "@/components/Toolkit";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -53,7 +51,24 @@ export default async function Home() {
     select: { judul: true, slug: true, publishedAt: true, createdAt: true },
   });
 
+  const allGaleri = await prisma.galeri.findMany({
+    where: {
+      tipeMedia: "IMAGE",
+    },
+    orderBy: [{ urutan: "asc" }, { createdAt: "desc" }],
+    select: {
+      id: true,
+      judul: true,
+      deskripsi: true,
+      url: true,
+      thumbnail: true,
+      kategori: true,
+      tags: true,
+    },
+  });
+
   const dailyHotels = pickDailySubset(hotels, 3);
+  const galeriMoodboard = pickDailySubset(allGaleri, 3);
 
   return (
     <div className="relative min-h-screen bg-slate-950 text-slate-50">
@@ -507,11 +522,11 @@ export default async function Home() {
                 Moodboard
               </p>
               <h3 className="text-3xl font-semibold text-white">
-                Pilih vibe, tinggal ikuti
+                Jelajahi koleksi foto dan momen terbaik.
               </h3>
               <p className="text-white/70 max-w-2xl">
-                Kombinasi foto, rute, dan rasa yang langsung bisa kamu duplikat.
-                Tidak perlu mikir lama.
+                Semua gambar tersedia sebagai referensi untuk membantu Anda
+                mengenal tempat lebih dekat.
               </p>
             </div>
             <div className="flex items-center gap-2 text-sm text-white/70">
@@ -520,35 +535,65 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {moodTrips.map((item) => (
-              <div
-                key={item.title}
-                className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-slate-900 shadow-2xl"
-              >
-                <div
-                  className="h-60"
-                  style={createBackgroundImageStyle(
-                    item.image,
-                    "linear-gradient(180deg, rgba(15,23,42,0.12) 0%, rgba(15,23,42,0.8) 70%)"
-                  )}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent" />
-                <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">
-                    <item.icon className="w-4 h-4" />
-                    <span>{item.badge}</span>
-                  </div>
-                  <h4 className="text-2xl font-semibold text-white group-hover:text-cyan-100 transition">
-                    {item.title}
-                  </h4>
-                  <p className="text-sm text-white/75 leading-relaxed">
-                    {item.description}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
+          {galeriMoodboard.length === 0 ? (
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-center text-white/70">
+              Belum ada galeri tersedia. Silakan upload galeri di panel admin.
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {galeriMoodboard.map((item) => {
+                const KategoriIcon = getCategoryIcon(item.kategori);
+                return (
+                  <Link
+                    key={item.id}
+                    href="/galeri"
+                    className="group relative overflow-hidden rounded-3xl border border-white/10 bg-gradient-to-b from-white/5 to-slate-900 shadow-2xl transition hover:-translate-y-1 hover:border-cyan-200/40"
+                  >
+                    <div className="relative h-60 overflow-hidden">
+                      <SafeImage
+                        src={item.thumbnail || item.url}
+                        alt={item.judul}
+                        fill
+                        className="object-cover transition duration-500 group-hover:scale-105"
+                      />
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          background:
+                            "linear-gradient(180deg, rgba(15,23,42,0.12) 0%, rgba(15,23,42,0.8) 70%)",
+                        }}
+                      />
+                    </div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+                      <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs text-white/85">
+                        <KategoriIcon className="w-4 h-4" />
+                        <span>{formatKategori(item.kategori)}</span>
+                      </div>
+                      <h4 className="text-2xl font-semibold text-white group-hover:text-cyan-100 transition">
+                        {item.judul}
+                      </h4>
+                      <p className="text-sm text-white/75 leading-relaxed line-clamp-2">
+                        {item.deskripsi || "Lihat galeri untuk lebih detail"}
+                      </p>
+                      {item.tags.length > 0 && (
+                        <div className="flex flex-wrap gap-1.5 pt-1">
+                          {item.tags.slice(0, 3).map((tag) => (
+                            <span
+                              key={tag}
+                              className="inline-flex items-center rounded-full bg-cyan-400/10 px-2 py-0.5 text-[10px] font-medium text-cyan-100"
+                            >
+                              #{tag}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
       </section>
 
@@ -593,48 +638,7 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Toolkit */}
-      <section className="py-16 bg-slate-950">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
-            <div className="space-y-2">
-              <p className="text-xs uppercase tracking-[0.25em] text-cyan-200">
-                Toolkit
-              </p>
-              <h3 className="text-3xl font-semibold text-white">
-                Perlengkapan cepat sebelum berangkat
-              </h3>
-              <p className="text-white/70 max-w-2xl">
-                Peta, transport, dan budget yang bisa dibaca sepintas tapi cukup
-                detail untuk langsung dipakai.
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {toolkit.map((tool) => (
-              <div
-                key={tool.title}
-                className="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl transition hover:-translate-y-1 hover:border-cyan-200/40"
-              >
-                <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-500/15 text-cyan-100">
-                  <tool.icon className="w-6 h-6" />
-                </div>
-                <h4 className="mt-4 text-xl font-semibold text-white">
-                  {tool.title}
-                </h4>
-                <p className="mt-2 text-sm text-white/75 leading-relaxed">
-                  {tool.description}
-                </p>
-                <div className="mt-4 inline-flex items-center gap-2 text-sm font-semibold text-cyan-100 transition hover:gap-3">
-                  {tool.cta}
-                  <ArrowRight className="w-4 h-4" />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <ToolkitSection />
 
       {/* CTA */}
       <section className="py-20 bg-gradient-to-br from-cyan-400 via-blue-600 to-indigo-700 text-white">
@@ -705,21 +709,18 @@ const featuredDestinations = [
 
 const moodTrips = [
   {
-    title: "Escape Tropis",
-    badge: "Santai di pantai",
+    title: "Sunset pantai",
+    badge: "Matahari Terbenam & santai",
     description:
       "Hamparan pasir, hammock, kopi dingin, plus sunset jingga untuk recharge total.",
-    image:
-      "https://images.unsplash.com/photo-1500375592092-40eb2168fd21?auto=format&fit=crop&w=1400&q=80",
+    image: "/sunset.jpg",
     icon: Waves,
   },
   {
-    title: "Adrenalin Hijau",
-    badge: "Arung jeram & goa",
-    description:
-      "Kayak di sungai jernih, susur goa, dan cliff jump ringan ditemani guide lokal.",
-    image:
-      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1400&q=80",
+    title: "Tugu marlin",
+    badge: "Pintu Masuk Pangandaran",
+    description: "Landmark ikonik, pintu masuk pantai pangandaran.",
+    image: "/tugu%20marlin.jpg",
     icon: Ship,
   },
   {
@@ -757,30 +758,6 @@ const quickSteps = [
     title: "Kuliner & bazar",
     detail:
       "Cicip sate seafood, belanja kerajinan bambu, lalu jalan kaki di promenade.",
-  },
-];
-
-const toolkit = [
-  {
-    title: "Peta interaktif",
-    description:
-      "Navigasi spot foto, parkir, toilet umum, dan titik kuliner favorit warga.",
-    cta: "Buka peta",
-    icon: Map,
-  },
-  {
-    title: "Transport & akses",
-    description:
-      "Rute bus/travel, sewa motor/mobil, plus estimasi waktu tempuh dari Bandung/Jakarta.",
-    cta: "Lihat opsi",
-    icon: Bus,
-  },
-  {
-    title: "Kalkulator budget",
-    description:
-      "Hitung cepat biaya makan, tiket, sewa, dan aktivitas utama per orang per hari.",
-    cta: "Cek estimasi",
-    icon: Wallet,
   },
 ];
 
@@ -822,4 +799,33 @@ function Badge({ icon: Icon, label }: BadgeProps) {
       <span>{label}</span>
     </div>
   );
+}
+
+function getCategoryIcon(kategori: string) {
+  switch (kategori) {
+    case "PANTAI":
+      return Waves;
+    case "GUNUNG":
+      return Mountain;
+    case "KULINER":
+      return Store;
+    case "BUDAYA":
+      return Trees;
+    case "AKTIVITAS":
+      return Ship;
+    default:
+      return Camera;
+  }
+}
+
+function formatKategori(kategori: string) {
+  const mapping: Record<string, string> = {
+    PANTAI: "Pantai & Laut",
+    GUNUNG: "Pegunungan",
+    KULINER: "Kuliner Lokal",
+    BUDAYA: "Budaya & Seni",
+    AKTIVITAS: "Aktivitas Seru",
+    UMUM: "Umum",
+  };
+  return mapping[kategori] || kategori;
 }

@@ -15,3 +15,6 @@ git checkout package-lock.json
 
 
 pm2 restart wisata-pangandaran
+
+
+npx prisma db push6
