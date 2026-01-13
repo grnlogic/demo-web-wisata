@@ -1,98 +1,115 @@
-"use client";
+import { cookies } from "next/headers";
+import NavbarClient from "./NavbarClient";
+import { CardNavItem } from "./CardNav";
+import { translateText } from "@/lib/translation";
 
-import { usePathname } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
-import CardNav, { CardNavItem } from "./CardNav";
+export default async function Navbar() {
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
 
-const cardNavItems: CardNavItem[] = [
-  {
-    label: "Jelajah Wisata",
-    bgColor: "#0f172a",
-    textColor: "#e2e8f0",
-    links: [
-      {
-        label: "Beranda",
-        href: "/",
-        ariaLabel: "Kembali ke beranda",
-      },
-      {
-        label: "Destinasi",
-        href: "/destinasi",
-        ariaLabel: "Jelajahi Destinasi Wisata",
-      },
-      {
-        label: "Kuliner",
-        href: "/kuliner",
-        ariaLabel: "Kuliner Khas Pangandaran",
-      },
-      { label: "Galeri", href: "/galeri", ariaLabel: "Galeri Foto Wisata" },
-    ],
-  },
-  {
-    label: "Informasi",
-    bgColor: "#111827",
-    textColor: "#e2e8f0",
-    links: [
-      { label: "Berita", href: "/berita", ariaLabel: "Berita Terkini" },
-      {
-        label: "Event & Agenda",
-        href: "/event",
-        ariaLabel: "Event dan Agenda",
-      },
-      { label: "UKM Lokal", href: "/ukm", ariaLabel: "UKM Lokal Pangandaran" },
-    ],
-  },
-  {
-    label: "Lainnya",
-    bgColor: "#0b1224",
-    textColor: "#e2e8f0",
-    links: [
-      {
-        label: "Tentang",
-        href: "/tentang",
-        ariaLabel: "Tentang Wisata Pangandaran",
-      },
-      { label: "Tips Perjalanan", href: "/tips", ariaLabel: "Tips Perjalanan" },
-      {
-        label: "Transportasi",
-        href: "/transportasi",
-        ariaLabel: "Info Transportasi",
-      },
-    ],
-  },
-];
+  // Default Items (Indonesian)
+  const defaultItems: CardNavItem[] = [
+    {
+      label: "Beranda",
+      bgColor: "#0f172a",
+      textColor: "#e2e8f0",
+      links: [
+        {
+          label: "Beranda",
+          href: `/`,
+          ariaLabel: "Beranda",
+        },
+        {
+          label: "Destinasi",
+          href: `/destinasi`,
+          ariaLabel: "Destinasi Wisata",
+        },
+        {
+          label: "Kuliner",
+          href: `/kuliner`,
+          ariaLabel: "Kuliner Khas",
+        },
+        { 
+          label: "Galeri", 
+          href: `/galeri`, 
+          ariaLabel: "Galeri Foto"
+        },
+      ],
+    },
+    {
+      label: "Berita",
+      bgColor: "#111827",
+      textColor: "#e2e8f0",
+      links: [
+        { 
+          label: "Berita", 
+          href: `/berita`, 
+          ariaLabel: "Berita Terkini"
+        },
+        {
+          label: "Event",
+          href: `/event`,
+          ariaLabel: "Event & Acara",
+        },
+        { 
+          label: "UKM", 
+          href: `/ukm`, 
+          ariaLabel: "Usaha Kecil Menengah"
+        },
+      ],
+    },
+    {
+      label: "Tentang",
+      bgColor: "#0b1224",
+      textColor: "#e2e8f0",
+      links: [
+        {
+          label: "Tentang Kami",
+          href: `/tentang`,
+          ariaLabel: "Tentang Pangandaran",
+        },
+        { 
+          label: "Tips Wisata", 
+          href: `/tips`, 
+          ariaLabel: "Tips Berwisata"
+        },
+        {
+          label: "Transportasi",
+          href: `/transportasi`,
+          ariaLabel: "Transportasi & Akses",
+        },
+      ],
+    },
+  ];
 
-export default function Navbar() {
-  const pathname = usePathname();
-  const { data: session, status } = useSession();
+  let items = defaultItems;
+  let logoSubtext = "Portal Wisata";
 
-  // Don't show navbar on admin pages
-  if (pathname?.startsWith("/admin")) {
-    return null;
+  // Translate if English
+  if (lang === "en") {
+    // Parallel translation for performance
+    logoSubtext = await translateText("Portal Wisata", "id", "en");
+    
+    items = await Promise.all(
+      defaultItems.map(async (group) => {
+        const groupLabel = await translateText(group.label, "id", "en");
+        
+        const links = await Promise.all(
+          group.links.map(async (link) => ({
+            ...link,
+            label: await translateText(link.label, "id", "en"),
+            ariaLabel: await translateText(link.ariaLabel, "id", "en"),
+          }))
+        );
+
+        return {
+          ...group,
+          label: groupLabel,
+          links,
+        };
+      })
+    );
   }
 
-  const displayName =
-    session?.user?.name ||
-    session?.user?.username ||
-    session?.user?.email?.split("@")[0] ||
-    "Pengguna";
-  const isAuthed = status === "authenticated" && !!session?.user;
-
-  return (
-    <CardNav
-      logo="/logo.png"
-      logoAlt="Logo Wisata Pangandaran"
-      logoText="Pangandaran"
-      logoSubtext="Portal Wisata"
-      items={cardNavItems}
-      baseColor="#ffffff"
-      menuColor="#1e293b"
-      buttonBgColor="#0ea5e9"
-      buttonTextColor="#ffffff"
-      isAuthenticated={isAuthed}
-      userName={displayName}
-      onLogout={async () => await signOut({ callbackUrl: "/" })}
-      onLogin={() => (window.location.href = "/admin/login")}
-    />
-  );
+  return <NavbarClient items={items} logoSubtext={logoSubtext} />;
 }

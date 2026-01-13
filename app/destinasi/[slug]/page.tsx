@@ -26,20 +26,39 @@ async function getDestinasiBySlug(slug: string) {
   return destinasi;
 }
 
+import { translateText } from "@/lib/translation";
+import { cookies } from "next/headers";
+
 export default async function DestinasiDetailPage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const destinasi = await getDestinasiBySlug(slug);
+  let destinasi = await getDestinasiBySlug(slug);
 
   if (!destinasi) {
     notFound();
   }
 
-  if (!destinasi) {
-    notFound();
+  // Handle Translation
+  const cookieStore = await cookies();
+  const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
+
+  if (lang === "en") {
+    destinasi = {
+      ...destinasi,
+      nama: await translateText(destinasi.nama, "id", "en"),
+      deskripsi: await translateText(destinasi.deskripsi, "id", "en"),
+      lokasi: await translateText(destinasi.lokasi, "id", "en"),
+      harga: await Promise.all(
+        destinasi.harga.map(async (h) => ({
+          ...h,
+          jenisHarga: await translateText(h.jenisHarga, "id", "en"),
+        }))
+      ),
+      // Fasilitas translation can be added here if needed, but it's complex structure
+    };
   }
 
   const getKategoriLabel = (kat: KategoriDestinasi) => {

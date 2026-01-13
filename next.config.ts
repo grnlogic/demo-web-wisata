@@ -11,18 +11,6 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
-        hostname: '**.unsplash.com',
-      },
-      {
-        protocol: 'https',
-        hostname: 'newsdata.io',
-      },
-      {
-        protocol: 'https',
-        hostname: '**.newsdata.io',
-      },
-      {
-        protocol: 'https',
         hostname: 'news.mypangandaran.com',
       },
       {

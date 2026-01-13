@@ -69,18 +69,13 @@ export const metadata: Metadata = {
   },
 };
 
-import { cookies } from 'next/headers';
-
-export default async function RootLayout({
+export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
-  const cookieStore = await cookies();
-  const lang = cookieStore.get('NEXT_LOCALE')?.value || 'id';
-
+}>) {
   return (
-    <html lang={lang} className="scroll-smooth">
+    <html lang="id" className="scroll-smooth">
       <body className={`${inter.variable} font-sans antialiased bg-white`}>
         <SessionProvider>
           <Navbar />

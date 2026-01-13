@@ -34,6 +34,7 @@ export interface CardNavProps {
   userName?: string;
   onLogout?: () => void;
   onLogin?: () => void;
+  languageSwitcher?: React.ReactNode;
 }
 
 export default function CardNav({
@@ -46,6 +47,7 @@ export default function CardNav({
   userName,
   onLogout,
   onLogin,
+  languageSwitcher,
 }: CardNavProps) {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -169,10 +171,17 @@ export default function CardNav({
               ))}
             </div>
 
-            {/* User Login/Profile */}
-            <div className="hidden md:flex items-center">
+            {/* Actions Section */}
+            <div className="hidden md:flex items-center gap-4">
+               {languageSwitcher && (
+                 <div className="hidden lg:block">
+                   {languageSwitcher}
+                 </div>
+               )}
+
+              {/* User Login/Profile */}
               {isAuthenticated ? (
-                <div className="flex items-center gap-3 pl-4">
+                <div className="flex items-center gap-3 pl-4 border-l border-white/10">
                   <div className="flex items-center gap-2 text-right">
                     <div className="flex flex-col">
                       <span className={`text-sm font-semibold ${isScrolled ? "text-white" : "text-white drop-shadow-md"}`}>
@@ -225,7 +234,10 @@ export default function CardNav({
       >
         <div className="h-full flex flex-col p-6 overflow-y-auto">
           <div className="flex items-center justify-between mb-8">
-            <span className="text-xl font-bold text-white">{logoText}</span>
+             <div className="flex items-center gap-4">
+                <span className="text-xl font-bold text-white">{logoText}</span>
+                {languageSwitcher}
+             </div>
             <button
               onClick={() => setMobileMenuOpen(false)}
               className="p-2 rounded-full bg-white/10 text-white hover:bg-white/20"

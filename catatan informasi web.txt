@@ -17,4 +17,22 @@ git checkout package-lock.json
 pm2 restart wisata-pangandaran
 
 
-npx prisma db push6
+npx prisma db push
+
+
+backup
+PGPASSWORD=postgres pg_dump -U postgres -h localhost -d wisata_pangandaran -Fc > /home/pangandaran/backup_wisata_$(date +%Y-%m-%d).dump
+
+cara ambil backup
+scp username@ip_server:/path/di/server/backup_wisata_2026-01-12.sql /path/tujuan/di/lokal/
+
+
+
+# Download
+scp pangandaran@72.62.125.104:/home/pangandaran/backup_wisata_2026-01-12.dump "D:\Coding\wisata_pangandaran\prisma"
+
+# Restore (drop & recreate database)
+$env:PGPASSWORD="postgres"
+dropdb -U postgres wisata_pangandaran
+createdb -U postgres wisata_pangandaran
+pg_restore -U postgres -d wisata_pangandaran -v "D:\Coding\wisata_pangandaran\prisma\backup_wisata_2026-01-12.dump"

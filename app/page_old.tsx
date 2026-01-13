@@ -1,7 +1,6 @@
 import type { SVGProps } from "react";
 import React from "react";
 import Link from "next/link";
-import { cookies } from "next/headers";
 import {
   MapPin,
   Calendar,
@@ -26,18 +25,16 @@ import SafeImage from "@/components/SafeImage";
 import { prisma } from "@/lib/prisma";
 import { createBackgroundImageStyle } from "@/lib/utils";
 import ToolkitSection from "@/components/Toolkit";
-import { translateText, translateObject } from "@/lib/translation";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
-
-  // 1. Fetch Real Data
-  let rekomendasi = await prisma.rekomendasi.findMany({
-    where: { status: "PUBLISHED" },
+  // Fetch real data from database
+  const rekomendasi = await prisma.rekomendasi.findMany({
+    where: {
+      status: "PUBLISHED",
+    },
     orderBy: [{ featured: "desc" }, { urutan: "asc" }, { createdAt: "desc" }],
     take: 3,
   });
@@ -47,7 +44,7 @@ export default async function Home() {
     take: 24,
   });
 
-  let latestNews = await prisma.berita.findMany({
+  const latestNews = await prisma.berita.findMany({
     where: { status: "PUBLISHED" },
     orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
     take: 5,
@@ -55,7 +52,9 @@ export default async function Home() {
   });
 
   const allGaleri = await prisma.galeri.findMany({
-    where: { tipeMedia: "IMAGE" },
+    where: {
+      tipeMedia: "IMAGE",
+    },
     orderBy: [{ urutan: "asc" }, { createdAt: "desc" }],
     select: {
       id: true,
@@ -68,192 +67,8 @@ export default async function Home() {
     },
   });
 
-  let dailyHotels = pickDailySubset(hotels, 3);
-  let galeriMoodboard = pickDailySubset(allGaleri, 3);
-
-  // 2. Define Static Content Structure (Default ID)
-  let content = {
-    hero: {
-      location: "Pangandaran, Jawa Barat",
-      titleMain: "Jelajahi",
-      titleSub: "Pangandaran",
-      description: "Rasakan pesona pantai eksotis, jelajahi Green Canyon yang memukau, dan nikmati kuliner laut segar langsung dari nelayan lokal.",
-      badges: {
-        sunset: "Sunset Spot",
-        pantai: "Pantai Eksotis",
-        adventure: "Adventure",
-        ig: "Instagramable"
-      },
-      cta: {
-        start: "Mulai Petualangan",
-        gallery: "Lihat Galeri"
-      },
-      stats: {
-        dest: "Destinasi",
-        foto: "Foto & Video",
-        event: "Event/Tahun",
-        rating: "Rating"
-      }
-    },
-    quickPlan: {
-      title: "Rencana Instan",
-      subtitle: "Siap pakai, tinggal berangkat",
-      tag: "GRATIS"
-    },
-    dailyHotels: {
-      tag: "Pilihan hotel hari ini",
-      title: "3 pilihan terbaik hari ini",
-      desc: "Rekomendasi hotel berubah setiap hari, jadi kamu selalu punya pilihan segar untuk menginap.",
-      badge: "Kurasi otomatis harian",
-      empty: "Data hotel belum tersedia. Jalankan POST /api/hotels untuk memuat snapshot, lalu coba lagi.",
-      price: "Lihat harga",
-      details: "Lihat detail harga dan ketersediaan di penyedia.",
-      reviews: "ulasan",
-      noReviews: "Ulasan belum ada",
-      visit: "Kunjungi halaman",
-      noLink: "Link tidak tersedia"
-    },
-    quickAccess: {
-      tag: "Akses cepat",
-      title: "Jalur singkat buat langsung aksi",
-      desc: "Tanpa scroll panjang. Pilih portal yang sesuai kebutuhanmu.",
-      cta: "Lihat"
-    },
-    news: {
-      tag: "Berita terkini",
-      title: "Berita terbaru hari ini",
-      desc: "Informasi terkini seputar Pangandaran, diperbarui setiap hari.",
-      badge: "Live feed",
-      empty: "Belum ada berita terbit hari ini.",
-      dailyUpdate: "Update harian"
-    },
-    rekomendasi: {
-      tag: "Itinerary pilihan",
-      title: "Paket anti bosan",
-      desc: "Tema disusun bareng warga dan pegiat lokal. Lengkap dengan durasi, estimasi budget, dan vibe unik tiap perjalanan.",
-      cta: "Lihat daftar lengkap",
-      detail: "Detail perjalanan",
-      empty: "Belum ada paket rekomendasi siap tampil. Kembali lagi sebentar lagi."
-    },
-    mood: {
-      tag: "Moodboard",
-      title: "Jelajahi koleksi foto dan momen terbaik.",
-      desc: "Semua gambar tersedia sebagai referensi untuk membantu Anda mengenal tempat lebih dekat.",
-      badge: "Kurasi ekspres",
-      empty: "Belum ada galeri tersedia. Silakan upload galeri di panel admin.",
-      viewMore: "Lihat galeri untuk lebih detail"
-    },
-    planner: {
-      tag: "Rencana 48 jam",
-      title: "Dua hari penuh cerita, tanpa detour.",
-      desc: "Blok jadwal ini tinggal diikuti. Sesuaikan tempo, tapi jangan skip bagian sunset.",
-      day: "Hari"
-    },
-    footerCta: {
-      title: "Siap merapat? Bawa rasa penasaranmu.",
-      desc: "Mulai dari event terkini atau jelajahi cerita kota. Kamu tentukan alur, kami siapkan jalurnya.",
-      event: "Lihat event terbaru",
-      about: "Kenali Pangandaran"
-    }
-  };
-
-  // Re-define arrays that need translation inside Home scope or modify them
-  // We'll treat the imported consts as initial values
-  let moodTripsData = [...moodTrips];
-  let quickStepsData = [...quickSteps];
-  let quickAccessItems = [
-    {
-      href: "/destinasi",
-      title: "Destinasi",
-      copy: "Kurasi lokal",
-      icon: MapPin,
-      tone: "from-blue-500 to-cyan-500",
-      bg: "bg-blue-50",
-    },
-    {
-      href: "/event",
-      title: "Agenda",
-      copy: "Kalender hidup",
-      icon: Calendar,
-      tone: "from-purple-500 to-pink-500",
-      bg: "bg-purple-50",
-    },
-    {
-      href: "/ukm",
-      title: "UKM",
-      copy: "Belanja lokal",
-      icon: Store,
-      tone: "from-emerald-500 to-teal-500",
-      bg: "bg-emerald-50",
-    },
-    {
-      href: "/berita",
-      title: "Berita",
-      copy: "Apa yang baru",
-      icon: Newspaper,
-      tone: "from-orange-500 to-amber-500",
-      bg: "bg-orange-50",
-    },
-  ];
-
-  // 3. Translation Logic
-  if (lang === "en") {
-    const [
-      trContent,
-      trMoodTrips,
-      trQuickSteps,
-      trQuickAccess,
-      trHotels,
-      trNews,
-      trRekomendasi,
-      trGaleri
-    ] = await Promise.all([
-      translateObject(content, "id", "en"),
-      translateObject(moodTripsData, "id", "en"),
-      translateObject(quickStepsData, "id", "en"),
-      translateObject(quickAccessItems, "id", "en"),
-      // Dynamic Data
-      Promise.all(dailyHotels.map(async (h) => ({
-        ...h,
-        description: await translateText(h.description || "", "id", "en"),
-        location: await translateText(h.location || "", "id", "en"),
-        source: await translateText(h.source || "", "id", "en"), // translate source e.g. "Google Hotels" -> might stay same, but safe to try
-      }))),
-      Promise.all(latestNews.map(async (n) => ({
-        ...n,
-        judul: await translateText(n.judul, "id", "en")
-      }))),
-      Promise.all(rekomendasi.map(async (r) => ({
-        ...r,
-        judul: await translateText(r.judul, "id", "en"),
-        deskripsi: await translateText(r.deskripsi, "id", "en"),
-        tema: await translateText(r.tema, "id", "en"),
-        durasi: await translateText(r.durasi || "", "id", "en"),
-        estimasiBudget: await translateText(r.estimasiBudget || "", "id", "en")
-      }))),
-      Promise.all(galeriMoodboard.map(async (g) => ({
-        ...g,
-        judul: await translateText(g.judul, "id", "en"),
-        deskripsi: await translateText(g.deskripsi || "", "id", "en"),
-        kategori: g.kategori, // Kategori biasanya enum, maybe skip? Or translate display name later.
-        tags: await translateObject(g.tags, "id", "en")
-      })))
-    ]);
-
-    // Apply translations
-    content = trContent;
-    moodTripsData = trMoodTrips;
-    quickStepsData = trQuickSteps;
-    quickAccessItems = trQuickAccess;
-    // @ts-ignore - Partial overwrite is fine for display
-    dailyHotels = trHotels;
-    // @ts-ignore
-    latestNews = trNews;
-    // @ts-ignore
-    rekomendasi = trRekomendasi;
-    // @ts-ignore
-    galeriMoodboard = trGaleri;
-  }
+  const dailyHotels = pickDailySubset(hotels, 3);
+  const galeriMoodboard = pickDailySubset(allGaleri, 3);
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white via-blue-50/30 to-white text-slate-800">
@@ -284,31 +99,31 @@ export default async function Home() {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-white font-medium tracking-wide">{content.hero.location}</span>
+                <span className="text-white font-medium tracking-wide">Pangandaran, Jawa Barat</span>
               </div>
 
               {/* Main Heading */}
               <div className="space-y-6">
                 <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
                   <span className="text-white drop-shadow-2xl" style={{ textShadow: "0 4px 30px rgba(0,0,0,0.3)" }}>
-                    {content.hero.titleMain}
+                    Jelajahi
                   </span>
                   <br />
                   <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white" style={{ textShadow: "none" }}>
-                    {content.hero.titleSub}
+                    Pangandaran
                   </span>
                 </h1>
                 <p className="text-xl md:text-2xl text-white/95 max-w-xl leading-relaxed font-light" style={{ textShadow: "0 2px 15px rgba(0,0,0,0.2)" }}>
-                  {content.hero.description}
+                  Rasakan pesona pantai eksotis, jelajahi <span className="font-semibold text-cyan-200">Green Canyon</span> yang memukau, dan nikmati kuliner laut segar langsung dari nelayan lokal.
                 </p>
               </div>
 
               {/* Feature Badges */}
               <div className="flex flex-wrap items-center gap-3">
-                <Badge icon={Sun} label={content.hero.badges.sunset} />
-                <Badge icon={Waves} label={content.hero.badges.pantai} />
-                <Badge icon={Compass} label={content.hero.badges.adventure} />
-                <Badge icon={Camera} label={content.hero.badges.ig} />
+                <Badge icon={Sun} label="Sunset Spot" />
+                <Badge icon={Waves} label="Pantai Eksotis" />
+                <Badge icon={Compass} label="Adventure" />
+                <Badge icon={Camera} label="Instagramable" />
               </div>
 
               {/* CTA Buttons */}
@@ -317,7 +132,7 @@ export default async function Home() {
                   href="/destinasi"
                   className="group inline-flex items-center justify-center gap-3 rounded-full bg-gradient-to-r from-blue-600 to-cyan-500 px-8 py-4 text-white font-bold shadow-2xl transition-all duration-300 hover:-translate-y-1 hover:shadow-cyan-500/25 hover:shadow-3xl"
                 >
-                  <span>{content.hero.cta.start}</span>
+                  <span>Mulai Petualangan</span>
                   <ArrowRight className="w-5 h-5 transition group-hover:translate-x-1" />
                 </Link>
                 <Link
@@ -325,17 +140,17 @@ export default async function Home() {
                   className="group inline-flex items-center justify-center gap-3 rounded-full border-2 border-white/60 bg-white/20 px-8 py-4 font-bold text-white transition-all duration-300 hover:-translate-y-1 hover:bg-white/30 hover:border-white backdrop-blur-md"
                 >
                   <Camera className="w-5 h-5" />
-                  <span>{content.hero.cta.gallery}</span>
+                  <span>Lihat Galeri</span>
                 </Link>
               </div>
 
               {/* Stats Row */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
                 {[
-                  { label: content.hero.stats.dest, value: "25+", icon: MapPin },
-                  { label: content.hero.stats.foto, value: "500+", icon: ImageIcon },
-                  { label: content.hero.stats.event, value: "30+", icon: Calendar },
-                  { label: content.hero.stats.rating, value: "4.8", icon: Star },
+                  { label: "Destinasi", value: "25+", icon: MapPin },
+                  { label: "Foto & Video", value: "500+", icon: ImageIcon },
+                  { label: "Event/Tahun", value: "30+", icon: Calendar },
+                  { label: "Rating", value: "4.8", icon: Star },
                 ].map((item, idx) => (
                   <div
                     key={item.label}
@@ -368,17 +183,17 @@ export default async function Home() {
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold">{content.quickPlan.title}</p>
-                        <p className="text-xs text-white/60">{content.quickPlan.subtitle}</p>
+                        <p className="text-white font-semibold">Rencana Instan</p>
+                        <p className="text-xs text-white/60">Siap pakai, tinggal berangkat</p>
                       </div>
                     </div>
                     <div className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 text-xs font-bold text-white shadow">
-                      {content.quickPlan.tag}
+                      GRATIS
                     </div>
                   </div>
                   <div className="space-y-4">
-                    {quickStepsData.slice(0, 3).map((step, idx) => (
-                      <div key={idx} className="flex items-start gap-4 group/step">
+                    {quickSteps.slice(0, 3).map((step, idx) => (
+                      <div key={step.title} className="flex items-start gap-4 group/step">
                         <div className="flex flex-col items-center">
                           <div className={`w-3 h-3 rounded-full ${idx === 0 ? 'bg-gradient-to-r from-cyan-400 to-blue-400' : 'bg-white/40'} shadow`} />
                           {idx < 2 && <div className="w-0.5 h-8 bg-white/20 mt-1" />}
@@ -397,7 +212,7 @@ export default async function Home() {
 
                 {/* Mood Cards */}
                 <div className="grid grid-cols-2 gap-4">
-                  {moodTripsData.slice(0, 2).map((item) => (
+                  {moodTrips.slice(0, 2).map((item) => (
                     <div
                       key={item.title}
                       className="group relative overflow-hidden rounded-2xl border border-white/30 shadow-xl transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl"
@@ -443,24 +258,26 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div className="space-y-3 max-w-2xl">
               <p className="text-xs uppercase tracking-[0.25em] text-blue-600 font-semibold">
-                {content.dailyHotels.tag}
+                Pilihan hotel hari ini
               </p>
               <h3 className="text-3xl md:text-4xl font-bold text-slate-800">
-                {content.dailyHotels.title}
+                3 pilihan terbaik hari ini
               </h3>
               <p className="text-slate-600 text-lg">
-                {content.dailyHotels.desc}
+                Rekomendasi hotel berubah setiap hari, jadi kamu selalu punya
+                pilihan segar untuk menginap.
               </p>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg">
               <Star className="w-4 h-4" />
-              {content.dailyHotels.badge}
+              Kurasi otomatis harian
             </div>
           </div>
 
           {dailyHotels.length === 0 ? (
             <div className="rounded-3xl border border-blue-100 bg-blue-50/50 p-10 text-center text-slate-600">
-              {content.dailyHotels.empty}
+              Data hotel belum tersedia. Jalankan POST /api/hotels untuk memuat
+              snapshot, lalu coba lagi.
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -505,16 +322,17 @@ export default async function Home() {
                         </p>
                       ) : null}
                       <p className="text-sm text-slate-600 line-clamp-2">
-                        {hotel.description ?? content.dailyHotels.details}
+                        {hotel.description ??
+                          "Lihat detail harga dan ketersediaan di penyedia."}
                       </p>
                       <div className="flex items-center justify-between pt-2">
                         <span className="text-lg font-bold text-emerald-600">
-                          {hotel.price ?? content.dailyHotels.price}
+                          {hotel.price ?? "Lihat harga"}
                         </span>
                         <span className="text-xs text-slate-400">
                           {hotel.reviews
-                            ? `${hotel.reviews} ${content.dailyHotels.reviews}`
-                            : content.dailyHotels.noReviews}
+                            ? `${hotel.reviews} ulasan`
+                            : "Ulasan belum ada"}
                         </span>
                       </div>
                       <div className="pt-3">
@@ -525,11 +343,11 @@ export default async function Home() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Hotel className="w-4 h-4" /> {content.dailyHotels.visit}
+                            <Hotel className="w-4 h-4" /> Kunjungi halaman
                           </a>
                         ) : (
                           <span className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-400">
-                            <Hotel className="w-4 h-4" /> {content.dailyHotels.noLink}
+                            <Hotel className="w-4 h-4" /> Link tidak tersedia
                           </span>
                         )}
                       </div>
@@ -548,17 +366,50 @@ export default async function Home() {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div className="space-y-3 max-w-xl">
               <p className="text-xs uppercase tracking-[0.25em] text-blue-600 font-semibold">
-                {content.quickAccess.tag}
+                Akses cepat
               </p>
               <h3 className="text-3xl font-bold text-slate-800">
-                {content.quickAccess.title}
+                Jalur singkat buat langsung aksi
               </h3>
               <p className="text-slate-600 text-lg">
-                {content.quickAccess.desc}
+                Tanpa scroll panjang. Pilih portal yang sesuai kebutuhanmu.
               </p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full lg:w-auto">
-              {quickAccessItems.map((item) => (
+              {[
+                {
+                  href: "/destinasi",
+                  title: "Destinasi",
+                  copy: "Kurasi lokal",
+                  icon: MapPin,
+                  tone: "from-blue-500 to-cyan-500",
+                  bg: "bg-blue-50",
+                },
+                {
+                  href: "/event",
+                  title: "Agenda",
+                  copy: "Kalender hidup",
+                  icon: Calendar,
+                  tone: "from-purple-500 to-pink-500",
+                  bg: "bg-purple-50",
+                },
+                {
+                  href: "/ukm",
+                  title: "UKM",
+                  copy: "Belanja lokal",
+                  icon: Store,
+                  tone: "from-emerald-500 to-teal-500",
+                  bg: "bg-emerald-50",
+                },
+                {
+                  href: "/berita",
+                  title: "Berita",
+                  copy: "Apa yang baru",
+                  icon: Newspaper,
+                  tone: "from-orange-500 to-amber-500",
+                  bg: "bg-orange-50",
+                },
+              ].map((item) => (
                 <Link
                   key={item.title}
                   href={item.href}
@@ -570,7 +421,7 @@ export default async function Home() {
                   <div className="text-sm text-slate-500 mb-1">{item.copy}</div>
                   <div className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition">{item.title}</div>
                   <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
-                    {content.quickAccess.cta}
+                    Lihat
                     <ArrowRight className="w-4 h-4 transition group-hover:translate-x-1" />
                   </div>
                 </Link>
@@ -586,23 +437,23 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.25em] text-orange-500 font-semibold">
-                {content.news.tag}
+                Berita terkini
               </p>
               <h3 className="text-3xl md:text-4xl font-bold text-slate-800">
-                {content.news.title}
+                Berita terbaru hari ini
               </h3>
               <p className="text-slate-600 text-lg">
-                {content.news.desc}
+                Informasi terkini seputar Pangandaran, diperbarui setiap hari.
               </p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg">
-              <Newspaper className="w-4 h-4" /> {content.news.badge}
+              <Newspaper className="w-4 h-4" /> Live feed
             </span>
           </div>
 
           {latestNews.length === 0 ? (
             <div className="rounded-3xl border border-orange-100 bg-orange-50/50 p-8 text-slate-600 text-center">
-              {content.news.empty}
+              Belum ada berita terbit hari ini.
             </div>
           ) : (
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -616,7 +467,7 @@ export default async function Home() {
                   <div className="relative space-y-4">
                     <div className="inline-flex items-center gap-2 rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
                       <span className="h-2 w-2 rounded-full bg-orange-500 animate-pulse" />
-                      {content.news.dailyUpdate}
+                      Update harian
                     </div>
                     <h4 className="text-lg font-bold text-slate-800 group-hover:text-orange-600 transition line-clamp-2">
                       {news.judul}
@@ -638,20 +489,21 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-12">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.25em] text-emerald-600 font-semibold">
-                {content.rekomendasi.tag}
+                Itinerary pilihan
               </p>
               <h2 className="text-3xl md:text-4xl font-bold text-slate-800">
-                {content.rekomendasi.title}
+                Paket anti bosan
               </h2>
               <p className="text-slate-600 text-lg max-w-2xl">
-                {content.rekomendasi.desc}
+                Tema disusun bareng warga dan pegiat lokal. Lengkap dengan
+                durasi, estimasi budget, dan vibe unik tiap perjalanan.
               </p>
             </div>
             <Link
               href="/rekomendasi"
               className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3 text-sm font-semibold text-white shadow-lg transition hover:-translate-y-0.5 hover:shadow-xl"
             >
-              {content.rekomendasi.cta}
+              Lihat daftar lengkap
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -698,7 +550,7 @@ export default async function Home() {
                       href={`/rekomendasi/${pkg.slug}`}
                       className="inline-flex items-center gap-2 text-sm font-semibold text-emerald-600 transition hover:gap-3"
                     >
-                      {content.rekomendasi.detail}
+                      Detail perjalanan
                       <ArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -707,7 +559,8 @@ export default async function Home() {
             </div>
           ) : (
             <div className="rounded-3xl border border-emerald-100 bg-emerald-50/50 p-12 text-center text-slate-600">
-              {content.rekomendasi.empty}
+              Belum ada paket rekomendasi siap tampil. Kembali lagi sebentar
+              lagi.
             </div>
           )}
         </div>
@@ -719,24 +572,25 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-12">
             <div className="space-y-3">
               <p className="text-xs uppercase tracking-[0.25em] text-blue-600 font-semibold">
-                {content.mood.tag}
+                Moodboard
               </p>
               <h3 className="text-3xl md:text-4xl font-bold text-slate-800">
-                {content.mood.title}
+                Jelajahi koleksi foto dan momen terbaik.
               </h3>
               <p className="text-slate-600 text-lg max-w-2xl">
-                {content.mood.desc}
+                Semua gambar tersedia sebagai referensi untuk membantu Anda
+                mengenal tempat lebih dekat.
               </p>
             </div>
             <div className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-4 py-2 text-sm font-semibold text-blue-600">
               <Compass className="w-4 h-4" />
-              {content.mood.badge}
+              Kurasi ekspres
             </div>
           </div>
 
           {galeriMoodboard.length === 0 ? (
             <div className="rounded-3xl border border-blue-100 bg-blue-50/50 p-10 text-center text-slate-600">
-              {content.mood.empty}
+              Belum ada galeri tersedia. Silakan upload galeri di panel admin.
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -766,7 +620,7 @@ export default async function Home() {
                         {item.judul}
                       </h4>
                       <p className="text-sm text-white/90 leading-relaxed line-clamp-2 drop-shadow">
-                        {item.deskripsi || content.mood.viewMore}
+                        {item.deskripsi || "Lihat galeri untuk lebih detail"}
                       </p>
                       {item.tags.length > 0 && (
                         <div className="flex flex-wrap gap-2 pt-1">
@@ -799,28 +653,29 @@ export default async function Home() {
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-8 mb-12">
             <div className="space-y-4 max-w-2xl">
               <p className="text-xs uppercase tracking-[0.25em] text-blue-200 font-semibold">
-                {content.planner.tag}
+                Rencana 48 jam
               </p>
               <h3 className="text-3xl md:text-5xl font-bold leading-tight">
-                {content.planner.title}
+                Dua hari penuh cerita, tanpa detour.
               </h3>
               <p className="text-blue-100 text-lg">
-                {content.planner.desc}
+                Blok jadwal ini tinggal diikuti. Sesuaikan tempo, tapi jangan
+                skip bagian sunset.
               </p>
             </div>
-            <QuickPlannerCalendar quickSteps={quickStepsData} />
+            <QuickPlannerCalendar quickSteps={quickSteps} />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-5">
-            {quickStepsData.map((step, idx) => (
+            {quickSteps.map((step, idx) => (
               <div
-                key={idx}
+                key={step.title}
                 className="rounded-3xl border border-white/20 bg-white/10 p-6 shadow-xl backdrop-blur-md transition hover:-translate-y-1 hover:bg-white/15"
               >
                 <div className="flex items-center justify-between text-xs font-bold uppercase tracking-[0.2em] text-blue-200">
                   <span>{step.time}</span>
                   <span className="rounded-full bg-white/20 px-3 py-1 text-[11px]">
-                    {content.planner.day} {idx < 2 ? 1 : 2}
+                    Hari {idx < 2 ? 1 : 2}
                   </span>
                 </div>
                 <h4 className="mt-4 text-xl font-bold">{step.title}</h4>
@@ -843,24 +698,25 @@ export default async function Home() {
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-8">
           <h2 className="text-4xl md:text-6xl font-bold">
-            {content.footerCta.title}
+            Siap merapat? Bawa rasa penasaranmu.
           </h2>
           <p className="text-lg md:text-xl text-blue-100 max-w-3xl mx-auto">
-            {content.footerCta.desc}
+            Mulai dari event terkini atau jelajahi cerita kota. Kamu tentukan
+            alur, kami siapkan jalurnya.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-4">
             <Link
               href="/event"
               className="inline-flex items-center justify-center gap-2 rounded-full bg-white px-10 py-4 text-blue-600 font-bold shadow-2xl transition hover:-translate-y-1 hover:shadow-3xl hover:bg-blue-50"
             >
-              {content.footerCta.event}
+              Lihat event terbaru
               <ArrowRight className="w-5 h-5" />
             </Link>
             <Link
               href="/tentang"
               className="inline-flex items-center justify-center gap-2 rounded-full border-2 border-white/50 bg-white/10 px-10 py-4 font-bold text-white transition hover:-translate-y-1 hover:border-white hover:bg-white/20 backdrop-blur"
             >
-              {content.footerCta.about}
+              Kenali Pangandaran
             </Link>
           </div>
         </div>
@@ -869,7 +725,6 @@ export default async function Home() {
   );
 }
 
-// Static Data
 const featuredDestinations = [
   {
     name: "Pantai Pasir Putih",
@@ -1028,4 +883,3 @@ function formatKategori(kategori: string) {
   };
   return mapping[kategori] || kategori;
 }
-

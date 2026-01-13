@@ -97,52 +97,56 @@ export default function EventPage() {
     const end = new Date(tanggalSelesai);
 
     if (now < start) {
-      return { label: "Akan Datang", color: "bg-blue-500" };
+      return { label: "Akan Datang", color: "bg-blue-500", textColor: "text-blue-600", bgLight: "bg-blue-100" };
     } else if (now >= start && now <= end) {
-      return { label: "Sedang Berlangsung", color: "bg-green-500" };
+      return { label: "Sedang Berlangsung", color: "bg-emerald-500", textColor: "text-emerald-600", bgLight: "bg-emerald-100" };
     } else {
-      return { label: "Selesai", color: "bg-gray-500" };
+      return { label: "Selesai", color: "bg-slate-400", textColor: "text-slate-500", bgLight: "bg-slate-100" };
     }
   };
 
   return (
     <>
-      <div className="relative min-h-screen bg-slate-950 text-slate-50">
-        <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-24 top-0 h-64 w-64 bg-purple-500/25 blur-3xl" />
-          <div className="absolute right-0 top-10 h-80 w-80 bg-pink-500/20 blur-[120px]" />
-          <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 bg-indigo-400/15 blur-[120px]" />
+      <div className="relative min-h-screen bg-gradient-to-b from-white via-purple-50/30 to-white text-slate-800">
+        {/* Decorative Background */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-24 top-0 h-64 w-64 bg-purple-400/20 blur-[100px] rounded-full" />
+          <div className="absolute right-0 top-10 h-80 w-80 bg-pink-400/15 blur-[100px] rounded-full" />
+          <div className="absolute left-1/2 bottom-0 h-72 w-72 -translate-x-1/2 bg-indigo-300/10 blur-[100px] rounded-full" />
         </div>
 
         {/* Header */}
-        <section className="relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900/80 to-slate-950" />
+        <section className="relative overflow-hidden bg-gradient-to-br from-purple-600 via-purple-700 to-pink-600">
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute -left-20 -top-20 h-80 w-80 bg-white/20 blur-[80px] rounded-full" />
+            <div className="absolute right-0 bottom-0 h-96 w-96 bg-pink-300/30 blur-[100px] rounded-full" />
+          </div>
           <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16">
             <div className="grid lg:grid-cols-2 gap-10 items-center">
               <div className="space-y-6">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm shadow-lg backdrop-blur">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/20 px-4 py-2 text-sm shadow-lg backdrop-blur text-white">
                   <Sparkles className="w-4 h-4" />
                   <span>Agenda hidup Pangandaran</span>
                 </div>
                 <div className="space-y-3">
-                  <h1 className="text-4xl md:text-5xl font-semibold leading-tight">
+                  <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
                     Lengkapi Rencana Liburanmu dengan Event dan Agenda
                   </h1>
-                  <p className="text-lg text-white/80 max-w-2xl">
+                  <p className="text-lg text-purple-100 max-w-2xl">
                     Musik pantai, festival kuliner, sunrise run, hingga ritual
                     lokal. Pilih tanggal, lihat status, dan tandai kalendermu.
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-3 text-sm text-white/75">
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                <div className="flex flex-wrap gap-3 text-sm">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-2 text-white backdrop-blur">
                     <Calendar className="w-4 h-4 text-amber-200" /> Jadwal
                     real-time
                   </span>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-2 text-white backdrop-blur">
                     <Clock className="w-4 h-4 text-cyan-200" /> Jam & status
                     jelas
                   </span>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-2 text-white backdrop-blur">
                     <MapPin className="w-4 h-4 text-emerald-200" /> Koordinat
                     siap pakai
                   </span>
@@ -150,21 +154,21 @@ export default function EventPage() {
               </div>
 
               <div className="relative">
-                <div className="absolute -inset-6 bg-gradient-to-br from-purple-300/20 via-pink-200/15 to-indigo-200/10 blur-3xl" />
-                <div className="relative rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl backdrop-blur">
-                  <div className="flex items-center justify-between text-sm text-white/70">
+                <div className="absolute -inset-6 bg-gradient-to-br from-white/20 via-pink-200/15 to-transparent blur-3xl rounded-full" />
+                <div className="relative rounded-3xl border border-white/20 bg-white/15 p-6 shadow-2xl backdrop-blur-lg">
+                  <div className="flex items-center justify-between text-sm text-white/80">
                     <span>Filter cepat</span>
-                    <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">
+                    <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">
                       Live search
                     </span>
                   </div>
                   <div className="mt-4 space-y-4">
                     <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/50" />
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
                       <input
                         type="text"
                         placeholder="Cari konser pantai, festival kuliner, atau lari pagi..."
-                        className="w-full rounded-2xl border border-white/10 bg-white/10 px-12 py-3 text-sm text-white placeholder:text-white/50 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-300/40"
+                        className="w-full rounded-2xl border border-white/20 bg-white/20 px-12 py-3 text-sm text-white placeholder:text-white/60 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/30"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                       />
@@ -179,8 +183,8 @@ export default function EventPage() {
                               onClick={() => setStatusFilter(status)}
                               className={`rounded-full border px-4 py-2 text-sm font-semibold transition ${
                                 active
-                                  ? "border-purple-300 bg-purple-300/20 text-purple-50 shadow-lg shadow-purple-400/25"
-                                  : "border-white/10 bg-white/5 text-white/80 hover:border-purple-200 hover:text-white"
+                                  ? "border-white bg-white text-purple-600 shadow-lg"
+                                  : "border-white/30 bg-white/10 text-white hover:border-white hover:bg-white/20"
                               }`}
                             >
                               {status || "Semua status"}
@@ -197,17 +201,17 @@ export default function EventPage() {
         </section>
 
         {/* Search */}
-        <section className="border-b border-white/10 bg-slate-900/80 backdrop-blur">
+        <section className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
               <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/60" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   placeholder="Cari event..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full rounded-2xl border border-white/10 bg-white/10 px-12 py-3 text-sm text-white placeholder:text-white/50 focus:border-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-300/40"
+                  className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-12 py-3 text-sm text-slate-800 placeholder:text-slate-400 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
               <div className="flex gap-2 overflow-x-auto pb-1 md:pb-0">
@@ -220,8 +224,8 @@ export default function EventPage() {
                         onClick={() => setStatusFilter(status)}
                         className={`whitespace-nowrap rounded-full px-4 py-2 text-sm font-semibold transition ${
                           active
-                            ? "bg-purple-400 text-slate-950 shadow-lg shadow-purple-400/40"
-                            : "bg-white/5 text-white/80 hover:bg-white/10"
+                            ? "bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                         }`}
                       >
                         {status || "Semua status"}
@@ -238,15 +242,15 @@ export default function EventPage() {
         <section className="py-16">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             {loading ? (
-              <div className="text-center py-16 text-white/75">
-                <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-white/20 border-t-purple-300" />
+              <div className="text-center py-16 text-slate-600">
+                <div className="mx-auto mb-4 h-12 w-12 animate-spin rounded-full border-2 border-slate-200 border-t-purple-500" />
                 Memuat event...
               </div>
             ) : filteredEvents.length === 0 ? (
-              <div className="text-center py-16 text-white/75">
-                <Calendar className="w-16 h-16 text-white/40 mx-auto mb-4" />
-                <h3 className="text-2xl font-semibold mb-2">Tidak ada event</h3>
-                <p className="text-sm text-white/60">
+              <div className="text-center py-16 text-slate-600">
+                <Calendar className="w-16 h-16 text-slate-300 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold mb-2">Tidak ada event</h3>
+                <p className="text-sm text-slate-400">
                   {search
                     ? "Tidak ada event yang sesuai dengan pencarian Anda."
                     : "Belum ada event yang tersedia saat ini."}
@@ -263,14 +267,14 @@ export default function EventPage() {
                     <Link
                       key={event.id}
                       href={`/event/${event.slug}`}
-                      className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl transition hover:-translate-y-2 hover:border-purple-200/40"
+                      className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-purple-300"
                     >
                       <div
                         className="relative h-64"
                         style={
                           event.thumbnail || event.gambar
                             ? {
-                                backgroundImage: `linear-gradient(180deg, rgba(15,23,42,0.2) 0%, rgba(15,23,42,0.7) 70%), url(${
+                                backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 70%), url(${
                                   event.thumbnail || event.gambar
                                 })`,
                                 backgroundSize: "cover",
@@ -282,9 +286,8 @@ export default function EventPage() {
                               }
                         }
                       >
-                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-slate-950/20 to-slate-950/70" />
                         <div className="absolute top-3 right-3 space-y-2 text-xs font-semibold">
-                          <span className="inline-flex items-center gap-2 rounded-full bg-white/90 px-3 py-1 text-slate-900 shadow">
+                          <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-slate-800 shadow-lg">
                             {format(
                               new Date(event.tanggalMulai),
                               "dd MMM yyyy",
@@ -294,12 +297,12 @@ export default function EventPage() {
                             )}
                           </span>
                           <span
-                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-white shadow ${eventStatus.color} bg-opacity-90`}
+                            className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-white shadow-lg ${eventStatus.color}`}
                           >
                             {eventStatus.label}
                           </span>
                           {event.featured && (
-                            <span className="inline-flex items-center gap-2 rounded-full bg-amber-300 text-slate-900 px-3 py-1 shadow">
+                            <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 text-white px-3 py-1.5 shadow-lg">
                               Highlight
                             </span>
                           )}
@@ -307,16 +310,16 @@ export default function EventPage() {
                       </div>
 
                       <div className="p-6 space-y-3">
-                        <h3 className="text-2xl font-semibold text-white group-hover:text-purple-100 transition line-clamp-2">
+                        <h3 className="text-2xl font-bold text-slate-800 group-hover:text-purple-600 transition line-clamp-2">
                           {event.nama}
                         </h3>
-                        <p className="text-sm text-white/75 leading-relaxed line-clamp-2">
+                        <p className="text-sm text-slate-600 leading-relaxed line-clamp-2">
                           {event.deskripsi}
                         </p>
 
-                        <div className="space-y-2 text-sm text-white/75">
+                        <div className="space-y-2 text-sm text-slate-500">
                           <div className="flex items-center gap-2">
-                            <Calendar className="h-4 w-4" />
+                            <Calendar className="h-4 w-4 text-purple-500" />
                             <span>
                               {format(
                                 new Date(event.tanggalMulai),
@@ -337,7 +340,7 @@ export default function EventPage() {
                           </div>
                           {(event.jamMulai || event.jamSelesai) && (
                             <div className="flex items-center gap-2">
-                              <Clock className="h-4 w-4" />
+                              <Clock className="h-4 w-4 text-purple-500" />
                               <span>
                                 {event.jamMulai || "00:00"} –{" "}
                                 {event.jamSelesai || "23:59"} WIB
@@ -345,14 +348,14 @@ export default function EventPage() {
                             </div>
                           )}
                           <div className="flex items-center gap-2">
-                            <MapPin className="h-4 w-4" />
+                            <MapPin className="h-4 w-4 text-purple-500" />
                             <span className="line-clamp-1">{event.lokasi}</span>
                           </div>
                         </div>
 
-                        <div className="flex items-center justify-between pt-2 text-sm font-semibold text-purple-100">
-                          <span className="text-white/65">Lihat detail</span>
-                          <ArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
+                        <div className="flex items-center justify-between pt-2 text-sm font-semibold">
+                          <span className="text-slate-400">Lihat detail</span>
+                          <ArrowRight className="h-4 w-4 text-purple-500 transition group-hover:translate-x-1" />
                         </div>
                       </div>
                     </Link>

@@ -1,0 +1,21 @@
+// scripts/test-cache-simple.js
+// Manual import since ts-node is finicky with paths/ESM
+
+const crypto = require('crypto');
+
+// Mock request to localhost:3000/api or similar? 
+// No, we need to test the lib directly. 
+// Since we can't easily import TS files without ts-node working perfectly,
+// Let's rely on checking the DB directly via prisma CLI and a simple curl/fetch script.
+
+// Option 2: Transpile only the necessary files? Too complex.
+// Option 3: Create a minimal script that uses the compiled output if available, or just fetch.
+
+// Let's try to just hit the actual API endpoint of the Next.js app once we integrate it.
+// BUT, we haven't integrated it into an API route yet, only the lib function.
+
+// Okay, let's fix the ts-node issue.
+// The issue is likely "cannot find module".
+// We need to use 'tsconfig-paths' with ts-node.
+
+console.log("Usage: npx ts-node -r tsconfig-paths/register scripts/test-cache.ts");

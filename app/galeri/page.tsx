@@ -136,63 +136,64 @@ export default function GaleriPage() {
       {[...Array(8)].map((_, idx) => (
         <div
           key={idx}
-          className="aspect-square rounded-2xl bg-white/5 border border-white/10 animate-pulse"
+          className="aspect-square rounded-2xl bg-slate-100 border border-slate-200 animate-pulse"
         />
       ))}
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-50">
-      <section className="relative overflow-hidden border-b border-white/5 bg-gradient-to-b from-slate-950 via-slate-900 to-emerald-950">
-        <div className="absolute inset-0 opacity-70 blur-3xl" aria-hidden>
-          <div className="absolute -top-20 -left-10 h-64 w-64 rounded-full bg-emerald-500/20" />
-          <div className="absolute top-10 right-0 h-72 w-72 rounded-full bg-cyan-400/15" />
+    <div className="min-h-screen bg-gradient-to-b from-white via-emerald-50/30 to-white text-slate-800">
+      {/* Header */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-600 via-teal-600 to-cyan-600 border-b border-emerald-500">
+        <div className="absolute inset-0 opacity-30" aria-hidden>
+          <div className="absolute -top-20 -left-10 h-64 w-64 rounded-full bg-white/30 blur-[80px]" />
+          <div className="absolute top-10 right-0 h-72 w-72 rounded-full bg-cyan-300/30 blur-[100px]" />
         </div>
         <div className="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-24 pb-16 space-y-10">
-          <div className="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/10 px-3 py-1 text-sm text-white/80 backdrop-blur">
+          <div className="inline-flex items-center gap-2 rounded-full bg-white/20 border border-white/30 px-3 py-1 text-sm text-white backdrop-blur">
             <Sparkles className="h-4 w-4" />
             Kurasi visual Pangandaran
           </div>
           <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-8">
             <div className="space-y-4 max-w-3xl">
-              <h1 className="text-4xl md:text-5xl font-semibold leading-tight text-white">
+              <h1 className="text-4xl md:text-5xl font-bold leading-tight text-white">
                 Galeri premium: suasana, laut, kuliner, dan budaya
               </h1>
-              <p className="text-lg text-white/80">
-                Koleksi foto dan video dengan presentasi gelap elegan, filter
+              <p className="text-lg text-emerald-100">
+                Koleksi foto dan video dengan presentasi elegan, filter
                 kategori cepat, dan modal detail yang kinclong.
               </p>
-              <div className="flex flex-wrap gap-3 text-sm text-white/80">
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+              <div className="flex flex-wrap gap-3 text-sm">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-white border border-white/20">
                   <Camera className="h-4 w-4" />
                   Foto & video siap unduh
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-white border border-white/20">
                   <Waves className="h-4 w-4" />
                   Pantai, sunrise, underwater
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 border border-white/10">
+                <span className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1.5 text-white border border-white/20">
                   <Sparkles className="h-4 w-4" />
                   Sorotan featured terpilih
                 </span>
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 w-full sm:w-auto">
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
-                <p className="text-xs text-white/60">Total item</p>
-                <p className="text-2xl font-semibold text-white">
+              <div className="rounded-2xl border border-white/20 bg-white/15 px-4 py-3 backdrop-blur">
+                <p className="text-xs text-white/70">Total item</p>
+                <p className="text-2xl font-bold text-white">
                   {pagination.total}
                 </p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur">
-                <p className="text-xs text-white/60">Halaman</p>
-                <p className="text-2xl font-semibold text-white">
+              <div className="rounded-2xl border border-white/20 bg-white/15 px-4 py-3 backdrop-blur">
+                <p className="text-xs text-white/70">Halaman</p>
+                <p className="text-2xl font-bold text-white">
                   {pagination.page}/{pagination.totalPages || 1}
                 </p>
               </div>
-              <div className="col-span-2 rounded-2xl border border-white/10 bg-gradient-to-r from-emerald-400/15 to-cyan-400/10 px-4 py-3 backdrop-blur flex items-center gap-3">
-                <ImageIcon className="h-5 w-5 text-emerald-200" />
+              <div className="col-span-2 rounded-2xl border border-white/20 bg-gradient-to-r from-emerald-400/20 to-cyan-400/20 px-4 py-3 backdrop-blur flex items-center gap-3">
+                <ImageIcon className="h-5 w-5 text-white" />
                 <div>
                   <p className="text-xs text-white/70">Kategori aktif</p>
                   <p className="text-sm font-semibold text-white">
@@ -203,7 +204,7 @@ export default function GaleriPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-white/10 bg-white/5 backdrop-blur p-4 shadow-lg">
+          <div className="rounded-3xl border border-white/20 bg-white/15 backdrop-blur p-4 shadow-lg">
             <div className="flex gap-2 overflow-x-auto pb-2">
               {categories.map((cat) => {
                 const active = selectedKategori === cat;
@@ -213,8 +214,8 @@ export default function GaleriPage() {
                     onClick={() => handleKategoriChange(cat)}
                     className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm font-medium transition border ${
                       active
-                        ? "bg-emerald-300 text-slate-950 border-emerald-200 shadow-emerald-900/30 shadow"
-                        : "bg-white/10 border-white/15 text-white/80 hover:border-white/40"
+                        ? "bg-white text-emerald-700 border-white shadow-lg"
+                        : "bg-white/10 border-white/20 text-white hover:border-white hover:bg-white/20"
                     }`}
                   >
                     {kategoriIcons[cat] || <Layers className="h-4 w-4" />}
@@ -227,17 +228,18 @@ export default function GaleriPage() {
         </div>
       </section>
 
+      {/* Gallery Grid */}
       <section className="py-14">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           {loading && pagination.page === 1 ? (
             gridSkeleton
           ) : galeri.length === 0 ? (
-            <div className="rounded-3xl border border-white/10 bg-white/5 p-12 text-center">
-              <ImageIcon className="w-14 h-14 text-white/30 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-white mb-2">
+            <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center shadow-lg">
+              <ImageIcon className="w-14 h-14 text-slate-300 mx-auto mb-4" />
+              <h3 className="text-xl font-bold text-slate-800 mb-2">
                 Belum ada galeri
               </h3>
-              <p className="text-white/70 max-w-xl mx-auto">
+              <p className="text-slate-500 max-w-xl mx-auto">
                 Konten akan muncul setelah tim mengunggah foto atau video pada
                 kategori ini.
               </p>
@@ -250,36 +252,36 @@ export default function GaleriPage() {
                     type="button"
                     key={item.id}
                     onClick={() => setSelectedImage(item)}
-                    className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 backdrop-blur shadow-lg shadow-emerald-950/20 transition hover:-translate-y-1 hover:border-emerald-200/70"
+                    className="group relative overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-emerald-300"
                   >
                     <div
                       className="aspect-[4/3] w-full overflow-hidden"
                       style={{
-                        backgroundImage: `linear-gradient(180deg, rgba(2,6,23,0.25) 0%, rgba(2,6,23,0.75) 100%), url(${
+                        backgroundImage: `linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.5) 100%), url(${
                           item.thumbnail || item.url
                         })`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
                       }}
                     />
-                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-2 bg-gradient-to-t from-slate-950/90 via-slate-950/50 to-transparent">
-                      <div className="flex items-center gap-2 text-xs text-white/70">
+                    <div className="absolute inset-x-0 bottom-0 p-4 space-y-2 bg-gradient-to-t from-black/70 via-black/40 to-transparent">
+                      <div className="flex items-center gap-2 text-xs text-white/90">
                         {kategoriIcons[item.kategori] || (
                           <Layers className="h-4 w-4" />
                         )}
                         <span>{getKategoriLabel(item.kategori)}</span>
                         {item.featured && (
-                          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-300 text-slate-950 px-2 py-0.5 text-[11px] font-semibold">
+                          <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 text-white px-2 py-0.5 text-[11px] font-semibold">
                             <Sparkles className="h-3 w-3" />
                             Featured
                           </span>
                         )}
                       </div>
-                      <h3 className="text-lg font-semibold text-white line-clamp-2 group-hover:text-emerald-200 transition">
+                      <h3 className="text-lg font-bold text-white line-clamp-2 group-hover:text-emerald-200 transition">
                         {item.judul}
                       </h3>
                       {item.deskripsi && (
-                        <p className="text-sm text-white/70 line-clamp-2">
+                        <p className="text-sm text-white/80 line-clamp-2">
                           {item.deskripsi}
                         </p>
                       )}
@@ -288,7 +290,7 @@ export default function GaleriPage() {
                           {item.tags.slice(0, 3).map((tag, idx) => (
                             <span
                               key={idx}
-                              className="text-[11px] rounded-full bg-white/10 px-3 py-1 text-white/80 border border-white/10"
+                              className="text-[11px] rounded-full bg-white/20 px-3 py-1 text-white"
                             >
                               #{tag}
                             </span>
@@ -307,7 +309,7 @@ export default function GaleriPage() {
                   <button
                     onClick={handleLoadMore}
                     disabled={loading}
-                    className="inline-flex items-center gap-2 rounded-full bg-emerald-300 text-slate-950 px-6 py-3 font-semibold shadow-lg shadow-emerald-900/30 hover:shadow-emerald-800/40 transition disabled:opacity-50"
+                    className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-6 py-3 font-semibold shadow-lg hover:shadow-xl transition disabled:opacity-50"
                   >
                     {loading ? (
                       <>
@@ -321,7 +323,7 @@ export default function GaleriPage() {
                 </div>
               )}
 
-              <div className="text-center text-sm text-white/60">
+              <div className="text-center text-sm text-slate-500">
                 Menampilkan {galeri.length} dari {pagination.total} konten
               </div>
             </>
@@ -329,6 +331,7 @@ export default function GaleriPage() {
         </div>
       </section>
 
+      {/* Modal */}
       {selectedImage && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur"
@@ -345,30 +348,30 @@ export default function GaleriPage() {
             className="max-w-5xl w-full mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-2xl">
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-white shadow-2xl">
               <img
                 src={selectedImage.url}
                 alt={selectedImage.judul}
-                className="w-full max-h-[70vh] object-contain bg-slate-900"
+                className="w-full max-h-[70vh] object-contain bg-slate-100"
               />
               <div className="p-6 space-y-3">
-                <div className="flex items-center gap-2 text-xs text-white/70">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
                   {kategoriIcons[selectedImage.kategori] || (
                     <Layers className="h-4 w-4" />
                   )}
                   <span>{getKategoriLabel(selectedImage.kategori)}</span>
                   {selectedImage.featured && (
-                    <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-emerald-300 text-slate-950 px-2.5 py-0.5 text-[11px] font-semibold">
+                    <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-gradient-to-r from-emerald-500 to-teal-500 text-white px-2.5 py-0.5 text-[11px] font-semibold">
                       <Sparkles className="h-3.5 w-3.5" />
                       Featured
                     </span>
                   )}
                 </div>
-                <h2 className="text-2xl font-semibold text-white">
+                <h2 className="text-2xl font-bold text-slate-800">
                   {selectedImage.judul}
                 </h2>
                 {selectedImage.deskripsi && (
-                  <p className="text-white/75 leading-relaxed">
+                  <p className="text-slate-600 leading-relaxed">
                     {selectedImage.deskripsi}
                   </p>
                 )}
@@ -377,7 +380,7 @@ export default function GaleriPage() {
                     {selectedImage.tags.map((tag, idx) => (
                       <span
                         key={idx}
-                        className="text-xs rounded-full bg-white/10 px-3 py-1 text-white/80 border border-white/10"
+                        className="text-xs rounded-full bg-emerald-100 px-3 py-1 text-emerald-700 border border-emerald-200"
                       >
                         #{tag}
                       </span>
