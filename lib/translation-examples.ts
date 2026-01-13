@@ -4,7 +4,7 @@
  * File ini berisi berbagai contoh cara menggunakan API translasi
  */
 
-import { translateText, translateObject, translateBatch } from '@/lib/translation';
+import { translateText, translateObject } from '@/lib/translation';
 
 // ============================================
 // CONTOH 1: Translate Simple Text
@@ -29,7 +29,6 @@ async function autoTranslateBerita(data: any) {
   // Auto translate ke English
   const beritaEnglish = await translateObject(
     beritaIndo,
-    ['judul', 'konten', 'deskripsi'],
     'id',
     'en'
   );
@@ -57,7 +56,8 @@ async function translateMultipleDestinations() {
     'Pantai Batu Karas'
   ];
 
-  const translated = await translateBatch(destinations, 'id', 'en');
+  // Menggunakan translateObject untuk array
+  const translated = await translateObject(destinations, 'id', 'en');
   console.log(translated);
   // ["Pangandaran Beach", "Green Canyon", "Shark Stone", "Batu Karas Beach"]
 }
