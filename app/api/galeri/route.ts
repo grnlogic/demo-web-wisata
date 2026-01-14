@@ -3,6 +3,15 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(request: NextRequest) {
   try {
+    // Check if Prisma client is connected
+    if (!prisma) {
+      console.error("Prisma client is not initialized");
+      return NextResponse.json(
+        { error: "Database connection error" },
+        { status: 500 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const kategori = searchParams.get("kategori") || "";
     const featured = searchParams.get("featured") === "true";
@@ -42,8 +51,24 @@ export async function GET(request: NextRequest) {
     });
   } catch (error) {
     console.error("Error fetching galeri:", error);
+    console.error("Error details:", {
+      message: error instanceof Error ? error.message : "Unknown error",
+      stack: error instanceof Error ? error.stack : undefined,
+      env: {
+        DATABASE_URL: process.env.DATABASE_URL ? "Set" : "Not set",
+        NODE_ENV: process.env.NODE_ENV,
+      },
+    });
     return NextResponse.json(
-      { error: "Failed to fetch galeri" },
+      {
+        error: "Failed to fetch galeri",
+        details:
+          process.env.NODE_ENV === "development"
+            ? error instanceof Error
+              ? error.message
+              : "Unknown error"
+            : undefined,
+      },
       { status: 500 }
     );
   }
