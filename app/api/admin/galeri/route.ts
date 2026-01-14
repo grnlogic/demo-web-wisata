@@ -17,6 +17,7 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get("search") || "";
     const kategori = searchParams.get("kategori") || "";
     const tipeMedia = searchParams.get("tipeMedia") || "";
+    const status = searchParams.get("status") || "";
 
     const skip = (page - 1) * limit;
 
@@ -36,6 +37,10 @@ export async function GET(request: NextRequest) {
 
     if (tipeMedia) {
       where.tipeMedia = tipeMedia as TipeMedia;
+    }
+
+    if (status) {
+      where.status = status;
     }
 
     const [galeri, total] = await Promise.all([

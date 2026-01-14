@@ -30,6 +30,7 @@ model Admin {
   infoUpdated      InformasiUmum[]
   beritaCreated    Berita[]
   profilUkmCreated ProfilUkm[]
+  galeriApproved   Galeri[] @relation("GaleriApprover")
 
   @@map("admins")
 }
@@ -46,6 +47,7 @@ model User {
 
   reviews  DestinasiReview[]
   otpCodes OtpVerification[]
+  galeriUploaded Galeri[]
 
   @@map("users")
 }
@@ -223,15 +225,34 @@ model Galeri {
   // Media type
   tipeMedia TipeMedia @default(IMAGE)
 
-  featured Boolean @default(false)
-  urutan   Int     @default(0)
+  status     StatusGaleri @default(APPROVED) // Admin uploads are APPROVED by default
+  featured   Boolean      @default(false)
+  urutan     Int          @default(0)
 
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-  uploadedBy String
-  admin      Admin    @relation(fields: [uploadedBy], references: [id])
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  
+  // Uploader info
+  uploadedBy String?      // Optional because it could be User OR Admin (legacy)
+  userId     String?
+  
+  admin      Admin?       @relation(fields: [uploadedBy], references: [id])
+  user       User?        @relation(fields: [userId], references: [id])
+  
+  // Approval info (if uploaded by User)
+  approvedBy String?
+  approvedAt DateTime?
+  approver   Admin?       @relation("GaleriApprover", fields: [approvedBy], references: [id])
 
   @@map("galeri")
+}
+
+enum StatusGaleri {
+  PENDING
+  APPROVED
+  REJECTED
+  
+  @@map("status_galeri")
 }
 
 // ========================================

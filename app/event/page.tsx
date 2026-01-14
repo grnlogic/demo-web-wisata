@@ -201,7 +201,7 @@ export default function EventPage() {
         </section>
 
         {/* Search */}
-        <section className="border-b border-slate-200 bg-white shadow-sm sticky top-0 z-20">
+        <section className="border-b border-slate-200 bg-white shadow-sm sticky top-16 z-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex flex-col gap-3 md:flex-row md:items-center md:gap-4">
               <div className="relative flex-1">

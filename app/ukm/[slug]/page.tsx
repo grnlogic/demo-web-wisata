@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -55,18 +55,19 @@ interface UKM {
 export default function UkmDetailPage({
   params,
 }: {
-  params: { slug: string };
+  params: Promise<{ slug: string }>;
 }) {
+  const { slug } = use(params);
   const [ukm, setUkm] = useState<UKM | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchUKMDetail();
-  }, [params.slug]);
+  }, [slug]);
 
   const fetchUKMDetail = async () => {
     try {
-      const response = await fetch(`/api/ukm?slug=${params.slug}`);
+      const response = await fetch(`/api/ukm?slug=${slug}`);
       if (response.ok) {
         const data = await response.json();
         // API returns array, get first item

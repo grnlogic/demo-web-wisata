@@ -10,7 +10,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export async function sendOtpEmail(email: string, otp: string, type: "register" | "login") {
-  const subject = type === "register" 
+  const subject = type === "register"
     ? "Verifikasi Email Anda - Wisata Pangandaran"
     : "Kode OTP Login Anda - Wisata Pangandaran";
 
@@ -104,9 +104,9 @@ export async function sendOtpEmail(email: string, otp: string, type: "register" 
             </h2>
             
             <p>
-              ${type === "register" 
-                ? "Terima kasih telah mendaftar di Wisata Pangandaran. Untuk melanjutkan, silakan verifikasi email Anda dengan memasukkan kode OTP berikut:"
-                : "Anda telah meminta untuk login ke akun Wisata Pangandaran. Gunakan kode OTP berikut untuk melanjutkan:"}
+              ${type === "register"
+      ? "Terima kasih telah mendaftar di Wisata Pangandaran. Untuk melanjutkan, silakan verifikasi email Anda dengan memasukkan kode OTP berikut:"
+      : "Anda telah meminta untuk login ke akun Wisata Pangandaran. Gunakan kode OTP berikut untuk melanjutkan:"}
             </p>
 
             <div class="otp-box">
@@ -166,6 +166,52 @@ Portal Wisata Terpercaya
     return { success: true };
   } catch (error) {
     console.error("Error sending email:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendGalleryApprovedEmail(email: string, userName: string, count: number) {
+  const subject = " Foto Galeri Anda Telah Disetujui! 📸 - Wisata Pangandaran";
+  const html = `
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <style>
+          body { font-family: sans-serif; line-height: 1.6; color: #333; }
+          .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+          .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+          .content { border: 1px solid #ddd; padding: 20px; border-radius: 0 0 8px 8px; }
+          .button { display: inline-block; padding: 10px 20px; background: #667eea; color: white; text-decoration: none; border-radius: 5px; margin-top: 20px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>Selamat! 🎉</h1>
+          </div>
+          <div class="content">
+            <p>Halo ${userName},</p>
+            <p>Kami punya kabar gembira! <strong>${count} foto</strong> yang Anda upload ke Galeri Wisata Pangandaran telah disetujui oleh admin.</p>
+            <p>Foto-foto tersebut kini dapat dilihat oleh publik dan akan membantu wisatawan lain melihat keindahan Pangandaran.</p>
+            <p>Terima kasih atas kontribusi Anda!</p>
+            <a href="${process.env.NEXTAUTH_URL}/galeri" class="button">Lihat Galeri</a>
+          </div>
+        </div>
+      </body>
+    </html>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: `"Wisata Pangandaran" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject,
+      html,
+    });
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending approval email:", error);
     return { success: false, error };
   }
 }

@@ -7,10 +7,15 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const kategori = searchParams.get("kategori") || "";
     const featured = searchParams.get("featured") || "";
+    const slug = searchParams.get("slug") || "";
 
     const where: any = {
       status: "PUBLISHED",
     };
+
+    if (slug) {
+      where.slug = slug;
+    }
 
     if (kategori) {
       where.kategori = kategori;

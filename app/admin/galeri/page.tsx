@@ -7,10 +7,17 @@ import {
   Trash2,
   X,
   Star,
+  Check,
+  CheckSquare,
+  Square,
+  User,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { KategoriGaleri, TipeMedia } from "@prisma/client";
 import ImageSearchModal from "@/components/ImageSearchModal";
+
+// Add Status type manually if not available via import yet (due to generation failure)
+type StatusGaleri = "PENDING" | "APPROVED" | "REJECTED";
 
 interface Galeri {
   id: string;
@@ -21,11 +28,12 @@ interface Galeri {
   kategori: KategoriGaleri;
   tags: string[];
   tipeMedia: TipeMedia;
+  status: StatusGaleri;
   featured: boolean;
   createdAt: string;
   admin: {
     nama: string;
-  };
+  } | null; // Made nullable
 }
 
 interface PaginationData {
@@ -41,12 +49,19 @@ export default function AdminGaleriPage() {
   const [search, setSearch] = useState("");
   const [kategori, setKategori] = useState("");
   const [tipeMedia, setTipeMedia] = useState("");
+  const [status, setStatus] = useState<StatusGaleri>("APPROVED"); // Default to Approved
+  const [activeTab, setActiveTab] = useState<StatusGaleri>("APPROVED");
+
   const [pagination, setPagination] = useState<PaginationData>({
     total: 0,
     page: 1,
     limit: 12,
     totalPages: 0,
   });
+
+  // Batch actions
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [processingBatch, setProcessingBatch] = useState(false);
 
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
@@ -67,10 +82,12 @@ export default function AdminGaleriPage() {
 
   const fetchGaleri = async () => {
     setLoading(true);
+    setSelectedIds([]); // Reset selection on fetch
     try {
       const params = new URLSearchParams({
         page: pagination.page.toString(),
         limit: pagination.limit.toString(),
+        status: activeTab, // Use activeTab as status
       });
 
       if (search) params.append("search", search);
@@ -95,7 +112,7 @@ export default function AdminGaleriPage() {
 
   useEffect(() => {
     fetchGaleri();
-  }, [pagination.page, search, kategori, tipeMedia]);
+  }, [pagination.page, search, kategori, tipeMedia, activeTab]);
 
   const handleSearchChange = (value: string) => {
     setSearch(value);
@@ -110,6 +127,57 @@ export default function AdminGaleriPage() {
   const handleTipeMediaChange = (value: string) => {
     setTipeMedia(value);
     setPagination({ ...pagination, page: 1 });
+  };
+
+  const handleTabChange = (tab: StatusGaleri) => {
+    setActiveTab(tab);
+    setPagination({ ...pagination, page: 1 });
+  };
+
+  const toggleSelect = (id: string) => {
+    if (selectedIds.includes(id)) {
+      setSelectedIds(selectedIds.filter((item) => item !== id));
+    } else {
+      setSelectedIds([...selectedIds, id]);
+    }
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedIds.length === galeri.length) {
+      setSelectedIds([]);
+    } else {
+      setSelectedIds(galeri.map((g) => g.id));
+    }
+  };
+
+  const handleBatchAction = async (action: "approve" | "reject") => {
+    if (selectedIds.length === 0) return;
+    if (!confirm(`Yakin ingin ${action === "approve" ? "menyetujui" : "menolak"} ${selectedIds.length} item terpilih?`)) return;
+
+    setProcessingBatch(true);
+    try {
+      const response = await fetch(`/api/admin/galeri/${action}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: selectedIds }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Berhasil: ${data.count} item diproses.`);
+        if (data.emailsSent && data.emailsSent > 0) {
+           // Optional: notify about emails sent
+        }
+        fetchGaleri();
+      } else {
+        alert("Gagal memproses item.");
+      }
+    } catch (error) {
+      console.error("Batch action error:", error);
+      alert("Terjadi kesalahan.");
+    } finally {
+      setProcessingBatch(false);
+    }
   };
 
   const handleDelete = async (id: string, judul: string) => {
@@ -196,36 +264,6 @@ export default function AdminGaleriPage() {
       } finally {
         setUploading(false);
       }
-    }
-  };
-
-  const handleUploadFile = async (): Promise<string | null> => {
-    if (!selectedFile) return null;
-
-    setUploading(true);
-    try {
-      const formData = new FormData();
-      formData.append("file", selectedFile);
-
-      const response = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        return data.url;
-      } else {
-        const data = await response.json();
-        alert(`Gagal upload file: ${data.error}`);
-        return null;
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      alert("Terjadi kesalahan saat upload file");
-      return null;
-    } finally {
-      setUploading(false);
     }
   };
 
@@ -320,8 +358,44 @@ export default function AdminGaleriPage() {
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="border-b border-slate-200">
+        <div className="flex space-x-8">
+          <button
+            onClick={() => handleTabChange("APPROVED")}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "APPROVED"
+                ? "border-blue-600 text-blue-600"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+            }`}
+          >
+             Galeri Publik
+          </button>
+          <button
+            onClick={() => handleTabChange("PENDING")}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors relative ${
+              activeTab === "PENDING"
+                ? "border-amber-500 text-amber-600"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+            }`}
+          >
+             Menunggu Persetujuan
+          </button>
+          <button
+            onClick={() => handleTabChange("REJECTED")}
+            className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
+              activeTab === "REJECTED"
+                ? "border-red-500 text-red-600"
+                : "border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300"
+            }`}
+          >
+             Ditolak
+          </button>
+        </div>
+      </div>
+
       {/* Search & Filters */}
-      <div className="bg-white rounded-xl p-6 shadow-lg">
+      <div className="bg-white rounded-xl p-6 shadow-lg space-y-4">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1 relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
@@ -359,6 +433,35 @@ export default function AdminGaleriPage() {
             <option value="LAINNYA">Lainnya</option>
           </select>
         </div>
+
+        {/* Batch Actions for PENDING */}
+        {activeTab === "PENDING" && (
+           <div className="flex items-center justify-between bg-amber-50 p-4 rounded-lg border border-amber-100">
+             <div className="flex items-center gap-3">
+               <button onClick={toggleSelectAll} className="flex items-center gap-2 text-sm font-medium text-slate-700 hover:text-slate-900">
+                  {selectedIds.length === galeri.length && galeri.length > 0 ? <CheckSquare className="w-5 h-5 text-blue-600"/> : <Square className="w-5 h-5 text-slate-400"/>}
+                  Pilih Semua
+               </button>
+               <span className="text-sm text-slate-500">{selectedIds.length} terpilih</span>
+             </div>
+             <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => handleBatchAction("reject")}
+                  disabled={selectedIds.length === 0 || processingBatch}
+                  className="px-4 py-2 bg-white border border-red-200 text-red-600 rounded-lg text-sm font-medium hover:bg-red-50 disabled:opacity-50"
+                >
+                  Tolak
+                </button>
+                <button 
+                   onClick={() => handleBatchAction("approve")}
+                   disabled={selectedIds.length === 0 || processingBatch}
+                   className="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 disabled:opacity-50"
+                >
+                  {processingBatch ? "Memproses..." : "Setujui"}
+                </button>
+             </div>
+           </div>
+        )}
       </div>
 
       {/* Gallery Grid */}
@@ -374,18 +477,11 @@ export default function AdminGaleriPage() {
               <ImageIcon className="w-10 h-10 text-slate-400" />
             </div>
             <h3 className="text-xl font-semibold text-slate-800 mb-2">
-              Belum Ada Media
+              Tidak ada data
             </h3>
             <p className="text-slate-600 mb-6 max-w-md mx-auto">
-              Mulai upload foto untuk galeri website.
+              Tidak ada media di kategori status ini.
             </p>
-            <button
-              onClick={() => setShowAddModal(true)}
-              className="inline-flex items-center space-x-2 px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold transition-colors"
-            >
-              <Plus className="w-5 h-5" />
-              <span>Upload Media Pertama</span>
-            </button>
           </div>
         ) : (
           <>
@@ -393,8 +489,21 @@ export default function AdminGaleriPage() {
               {galeri.map((item) => (
                 <div
                   key={item.id}
-                  className="group relative bg-white rounded-xl overflow-hidden border border-slate-200 hover:shadow-xl transition-all"
+                  className={`group relative bg-white rounded-xl overflow-hidden border transition-all ${selectedIds.includes(item.id) ? "ring-2 ring-blue-500 border-transparent" : "border-slate-200 hover:shadow-xl"}`}
                 >
+                  {/* Selection Checkbox (Only for Pending) */}
+                  {activeTab === "PENDING" && (
+                    <div className="absolute top-2 left-2 z-10" onClick={(e) => e.stopPropagation()}>
+                       <button onClick={() => toggleSelect(item.id)} className="bg-white rounded md:rounded-lg shadow-sm">
+                          {selectedIds.includes(item.id) ? (
+                            <CheckSquare className="w-6 h-6 text-blue-600 fill-white" />
+                          ) : (
+                            <Square className="w-6 h-6 text-slate-400 fill-white/80" />
+                          )}
+                       </button>
+                    </div>
+                  )}
+
                   {/* Image */}
                   <div className="relative aspect-square overflow-hidden bg-slate-100">
                     <img
@@ -438,17 +547,18 @@ export default function AdminGaleriPage() {
                         {new Date(item.createdAt).toLocaleDateString("id-ID")}
                       </span>
                     </div>
-                    {item.tags.length > 0 && (
-                      <div className="mt-2 flex flex-wrap gap-1">
-                        {item.tags.slice(0, 3).map((tag, idx) => (
-                          <span
-                            key={idx}
-                            className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded"
-                          >
-                            #{tag}
-                          </span>
-                        ))}
-                      </div>
+                    {/* Uploader info if pending */}
+                    {!item.admin && (
+                         <div className="mt-2 text-xs text-slate-500 flex items-center gap-1">
+                            <User className="w-3 h-3" />
+                            <span>User Upload</span>
+                         </div>
+                    )}
+                    {item.admin && (
+                         <div className="mt-2 text-xs text-emerald-600 flex items-center gap-1">
+                            <Check className="w-3 h-3" />
+                            <span>Admin: {item.admin.nama}</span>
+                         </div>
                     )}
                   </div>
                 </div>
