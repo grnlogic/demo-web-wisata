@@ -51,27 +51,13 @@ export async function translateText(
     // 2. Generate Lookup Key
     const lookupKey = generateLookupKey(text, from, to);
 
-    // 3. Check Cache in DB
-    const cached = await prisma.translationCache.findUnique({
-      where: { lookupKey },
-    });
-
-    if (cached) {
-      if (process.env.DEBUG_TRANSLATION === 'true') {
-        console.log(`[Cache Hit] "${text.substring(0, 20)}..."`);
-      }
-      // Safety check: if cached text is empty somehow, return original
-      return cached.translatedText || text;
-    }
-
-    // 4. API Call (Cache Miss)
+    // 4. API Call (Direct)
     if (process.env.DEBUG_TRANSLATION === 'true') {
-      console.log(`[Cache Miss] Calling API for "${text.substring(0, 20)}..."`);
+      console.log(`[API Call] Translating "${text.substring(0, 20)}..."`);
     }
 
-    // Add a simple timeout/retry mechanism if needed? For now just try-catch.
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8s timeout
 
     const response = await fetch(`${TRANSLATION_API_URL}/translate`, {
       method: 'POST',
@@ -100,20 +86,6 @@ export async function translateText(
       console.warn(`Translation API returned empty for: "${text.substring(0, 20)}..."`);
       return text;
     }
-
-    // 5. Save to Cache (Fire and Forget / Await)
-    await prisma.translationCache.create({
-      data: {
-        lookupKey,
-        sourceText: text,
-        sourceLang: from,
-        targetLang: to,
-        translatedText: translatedText,
-      },
-    }).catch(err => {
-      // Ignore unique constraint error (race condition) or other DB errors
-      console.error("Failed to save translation cache:", err);
-    });
 
     return translatedText;
 
