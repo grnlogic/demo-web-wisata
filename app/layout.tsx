@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter, Playfair_Display } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
@@ -15,6 +15,16 @@ const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
 });
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#06b6d4" },
+    { media: "(prefers-color-scheme: dark)", color: "#020617" },
+  ],
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+};
 
 export const metadata: Metadata = {
   title: "Wisata Pangandaran - Portal Informasi Wisata",
@@ -53,21 +63,13 @@ export const metadata: Metadata = {
     ],
   },
   manifest: "/manifest.json",
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#06b6d4" },
-    { media: "(prefers-color-scheme: dark)", color: "#020617" },
-  ],
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Wisata Pangandaran",
   },
 };
+
 
 
 
