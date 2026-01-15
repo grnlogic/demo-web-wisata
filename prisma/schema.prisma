@@ -539,25 +539,4 @@ enum StatusPublish {
   @@map("status_publish")
 }
 
-// ========================================
-// TRANSLATION CACHE System
-// ========================================
 
-model TranslationCache {
-  id             String   @id @default(cuid())
-  
-  // Hashed key for fast lookup (MD5/SHA256 of sourceText + sourceLang + targetLang)
-  lookupKey      String   @unique 
-  
-  sourceText     String   @db.Text
-  translatedText String   @db.Text
-  
-  sourceLang     String   @default("id")
-  targetLang     String   @default("en")
-  
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-  
-  @@index([lookupKey])
-  @@map("translation_cache")
-}

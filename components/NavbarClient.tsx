@@ -3,7 +3,7 @@
 import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import CardNav, { CardNavItem } from "./CardNav";
-import LanguageToggle from "./LanguageToggle";
+
 
 interface NavbarClientProps {
   items: CardNavItem[];
@@ -42,7 +42,7 @@ export default function NavbarClient({ items, logoSubtext }: NavbarClientProps) 
         userName={displayName}
         onLogout={async () => await signOut({ callbackUrl: `/` })}
         onLogin={() => (window.location.href = "/admin/login")}
-        languageSwitcher={<LanguageToggle />}
+
       />
     </div>
   );

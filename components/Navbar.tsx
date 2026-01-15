@@ -1,12 +1,7 @@
-import { cookies } from "next/headers";
 import NavbarClient from "./NavbarClient";
 import { CardNavItem } from "./CardNav";
-import { translateText } from "@/lib/translation";
 
-export default async function Navbar() {
-  const cookieStore = await cookies();
-  const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
-
+export default function Navbar() {
   // Default Items (Indonesian)
   const defaultItems: CardNavItem[] = [
     {
@@ -82,34 +77,7 @@ export default async function Navbar() {
     },
   ];
 
-  let items = defaultItems;
-  let logoSubtext = "Portal Wisata";
+  const logoSubtext = "Portal Wisata";
 
-  // Translate if English
-  if (lang === "en") {
-    // Parallel translation for performance
-    logoSubtext = await translateText("Portal Wisata", "id", "en");
-    
-    items = await Promise.all(
-      defaultItems.map(async (group) => {
-        const groupLabel = await translateText(group.label, "id", "en");
-        
-        const links = await Promise.all(
-          group.links.map(async (link) => ({
-            ...link,
-            label: await translateText(link.label, "id", "en"),
-            ariaLabel: await translateText(link.ariaLabel, "id", "en"),
-          }))
-        );
-
-        return {
-          ...group,
-          label: groupLabel,
-          links,
-        };
-      })
-    );
-  }
-
-  return <NavbarClient items={items} logoSubtext={logoSubtext} />;
+  return <NavbarClient items={defaultItems} logoSubtext={logoSubtext} />;
 }
