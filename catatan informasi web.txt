@@ -1,5 +1,9 @@
 kvm password
 
+domain nesia
+Your Backup Code is
+fea1 e25a 066e 507d
+
 Fajar-geran2005
 
 ssh pangandaran@72.62.125.104
