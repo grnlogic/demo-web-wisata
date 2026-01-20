@@ -14,82 +14,82 @@ const perangkatDesa = {
   kepala: {
     nama: "Adi Fitriadi, S.IP.",
     jabatan: "Kepala Desa",
-    foto: "/koordinasi desa/ADI FITRIADI, S.I.P.jpg",
+    foto: "/koordinasi%20desa/ADI FITRIADI, S.I.P.jpg",
   },
   sekretariat: [
     {
       nama: "Imah Suherman, S.E",
       jabatan: "Sekretaris Desa",
-      foto: "/koordinasi desa/IMAN SAHMAN, S.E.png",
+      foto: "/koordinasi%20desa/IMAN SAHMAN, S.E.png",
     },
     {
       nama: "Alvi Anisyah",
       jabatan: "Kaur Tata Usaha & Umum",
-      foto: "/koordinasi desa/ALVI ANISYAH.png",
+      foto: "/koordinasi%20desa/ALVI ANISYAH.png",
     },
     {
       nama: "Fauzi, S.Ak",
       jabatan: "Staf Tata Usaha & Umum",
-      foto: "/koordinasi desa/FAUZI, S.Ak.png",
+      foto: "/koordinasi%20desa/FAUZI, S.Ak.png",
     },
     {
       nama: "Wenny Damayanti, S.E",
       jabatan: "Kaur Keuangan",
-      foto: "/koordinasi desa/WENNY DAMAYANTI, S.E.png",
+      foto: "/koordinasi%20desa/WENNY DAMAYANTI, S.E.png",
     },
     {
       nama: "Wiwi Widaningsih",
       jabatan: "Staf Keuangan Bidang Pendapatan",
-      foto: "/koordinasi desa/WIWI WIDANINGSIH.png",
+      foto: "/koordinasi%20desa/WIWI WIDANINGSIH.png",
     },
     {
       nama: "N. Intan Gumilang, S.I.K",
       jabatan: "Kaur Perencanaan",
-      foto: "/koordinasi desa/N. INTAN GUMILANG, S.I.K.png",
+      foto: "/koordinasi%20desa/N. INTAN GUMILANG, S.I.K.png",
     },
   ],
   pelaksanaTeknis: [
     {
       nama: "Slamet",
       jabatan: "Kasi Pemerintahan",
-      foto: "/koordinasi desa/SLAMET.png",
+      foto: "/koordinasi%20desa/SLAMET.png",
     },
     {
       nama: "Kuswanto Haditama",
       jabatan: "Staf Pemerintahan",
-      foto: "/koordinasi desa/KUSWANTO HADITAMA.png",
+      foto: "/koordinasi%20desa/KUSWANTO HADITAMA.png",
     },
     {
       nama: "Dini Indriandini. Y",
       jabatan: "Kasi Kesejahteraan",
-      foto: "/koordinasi desa/DINI INDRIANDINI. Y.png",
+      foto: "/koordinasi%20desa/DINI INDRIANDINI. Y.png",
     },
     {
       nama: "Nuryamin",
       jabatan: "Kasi Pelayanan",
-      foto: "/koordinasi desa/nuryamin.jpg",
+      foto: "/koordinasi%20desa/nuryamin.jpg",
     },
     {
       nama: "Yoyo Suryono, S.IP",
       jabatan: "Staf Pelayanan",
-      foto: "/koordinasi desa/YOYO SURYONO, S.IP.png",
+      foto: "/koordinasi%20desa/YOYO SURYONO, S.IP.png",
     },
   ],
   pelaksanaKewilayahan: [
     {
       nama: "Onih Ratnaningsih",
       jabatan: "Kadus Pangandaran Timur",
-      foto: "/koordinasi desa/ONIH RATNANINGSIH.png",
+      foto: "/koordinasi%20desa/ONIH RATNANINGSIH.png",
     },
     {
       nama: "Suryanti",
       jabatan: "Kadus Pangandaran Barat",
-      foto: "/koordinasi desa/suryanti.png",
+      foto: "/koordinasi%20desa/suryanti.png",
     },
     {
       nama: "Wanto",
       jabatan: "Kadus Parapat",
-      foto: "/koordinasi desa/wanto png.png",
+      foto: "/koordinasi%20desa/wanto png.png",
     },
   ],
 };
