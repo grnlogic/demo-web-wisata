@@ -14,13 +14,13 @@ const perangkatDesa = {
   kepala: {
     nama: "Adi Fitriadi, S.IP.",
     jabatan: "Kepala Desa",
-    foto: "/koordinasi%20desa/ADI FITRIADI, S.I.P.jpg",
+    foto: "/koordinasi%20desa/ADI%20FITRIADI%2C%20S.I.P.jpg",
   },
   sekretariat: [
     {
       nama: "Imah Suherman, S.E",
       jabatan: "Sekretaris Desa",
-      foto: "/koordinasi%20desa/IMAN SAHMAN, S.E.png",
+      foto: "/koordinasi%20desa/IMAN%20SAHMAN%2C%20S.E.png",
     },
     {
       nama: "Alvi Anisyah",
@@ -30,12 +30,12 @@ const perangkatDesa = {
     {
       nama: "Fauzi, S.Ak",
       jabatan: "Staf Tata Usaha & Umum",
-      foto: "/koordinasi%20desa/FAUZI, S.Ak.png",
+      foto: "/koordinasi%20desa/FAUZI%2C%20S.Ak.png",
     },
     {
       nama: "Wenny Damayanti, S.E",
       jabatan: "Kaur Keuangan",
-      foto: "/koordinasi%20desa/WENNY DAMAYANTI, S.E.png",
+      foto: "/koordinasi%20desa/WENNY%20DAMAYANTI%2C%20S.E.png",
     },
     {
       nama: "Wiwi Widaningsih",
@@ -45,7 +45,7 @@ const perangkatDesa = {
     {
       nama: "N. Intan Gumilang, S.I.K",
       jabatan: "Kaur Perencanaan",
-      foto: "/koordinasi%20desa/N. INTAN GUMILANG, S.I.K.png",
+      foto: "/koordinasi%20desa/N.%20INTAN%20GUMILANG%2C%20S.I.K.png",
     },
   ],
   pelaksanaTeknis: [
@@ -57,12 +57,12 @@ const perangkatDesa = {
     {
       nama: "Kuswanto Haditama",
       jabatan: "Staf Pemerintahan",
-      foto: "/koordinasi%20desa/KUSWANTO HADITAMA.png",
+      foto: "/koordinasi%20desa/KUSWANTO%20HADITAMA.png",
     },
     {
       nama: "Dini Indriandini. Y",
       jabatan: "Kasi Kesejahteraan",
-      foto: "/koordinasi%20desa/DINI INDRIANDINI. Y.png",
+      foto: "/koordinasi%20desa/DINI%20INDRIANDINI.%20Y.png",
     },
     {
       nama: "Nuryamin",
@@ -72,7 +72,7 @@ const perangkatDesa = {
     {
       nama: "Yoyo Suryono, S.IP",
       jabatan: "Staf Pelayanan",
-      foto: "/koordinasi%20desa/YOYO SURYONO, S.IP.png",
+      foto: "/koordinasi%20desa/YOYO%20SURYONO%2C%20S.IP.png",
     },
   ],
   pelaksanaKewilayahan: [
@@ -89,7 +89,7 @@ const perangkatDesa = {
     {
       nama: "Wanto",
       jabatan: "Kadus Parapat",
-      foto: "/koordinasi%20desa/wanto png.png",
+      foto: "/koordinasi%20desa/wanto%20png.png",
     },
   ],
 };
