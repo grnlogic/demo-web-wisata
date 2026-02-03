@@ -1,23 +1,27 @@
 import Link from "next/link";
 import { MapPin, Star, Navigation, ChevronLeft, Check } from "lucide-react";
 import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { KategoriDestinasi } from "@prisma/client";
 import DestinasiReviews from "@/components/DestinasiReviews";
 import PriceList from "@/components/PriceList";
 import ImageGallery from "@/components/ImageGallery";
 
 async function getDestinasiBySlug(slug: string) {
-  const destinasi = await prisma.destinasi.findUnique({
-    where: { slug, status: "PUBLISHED" },
-    include: {
-      images: {
-        orderBy: { isPrimary: "desc" },
-      },
-      harga: true,
-      fasilitas: true,
-    },
-  });
+  const destinasi = await safeQuery(
+    () =>
+      prisma.destinasi.findUnique({
+        where: { slug, status: "PUBLISHED" },
+        include: {
+          images: {
+            orderBy: { isPrimary: "desc" },
+          },
+          harga: true,
+          fasilitas: true,
+        },
+      }),
+    null,
+  );
 
   if (!destinasi) {
     return null;
@@ -55,7 +59,7 @@ export default async function DestinasiDetailPage({
         destinasi.harga.map(async (h) => ({
           ...h,
           jenisHarga: await translateText(h.jenisHarga, "id", "en"),
-        }))
+        })),
       ),
       // Fasilitas translation can be added here if needed, but it's complex structure
     };

@@ -16,7 +16,7 @@ import {
   Utensils,
 } from "lucide-react";
 import { StatusPublish } from "@prisma/client";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 
 export const revalidate = 0;
 export const dynamic = "force-dynamic";
@@ -49,11 +49,11 @@ export default async function AdminDashboard() {
       value: formatNumber(data.counts.destinationsTotal),
       change: `${formatChange(
         data.counts.destinationsThisMonth,
-        data.counts.destinationsPrevMonth
+        data.counts.destinationsPrevMonth,
       )} vs bulan lalu`,
       changeTone: getTone(
         data.counts.destinationsThisMonth,
-        data.counts.destinationsPrevMonth
+        data.counts.destinationsPrevMonth,
       ),
       gradient: "from-blue-500 to-blue-600",
     },
@@ -71,11 +71,11 @@ export default async function AdminDashboard() {
       value: formatNumber(data.counts.galeriTotal),
       change: `${formatChange(
         data.counts.galeriThisMonth,
-        data.counts.galeriPrevMonth
+        data.counts.galeriPrevMonth,
       )} konten baru`,
       changeTone: getTone(
         data.counts.galeriThisMonth,
-        data.counts.galeriPrevMonth
+        data.counts.galeriPrevMonth,
       ),
       gradient: "from-pink-500 to-pink-600",
     },
@@ -85,11 +85,11 @@ export default async function AdminDashboard() {
       value: formatNumber(data.counts.beritaPublished),
       change: `${formatChange(
         data.counts.beritaThisMonth,
-        data.counts.beritaPrevMonth
+        data.counts.beritaPrevMonth,
       )} bulan ini`,
       changeTone: getTone(
         data.counts.beritaThisMonth,
-        data.counts.beritaPrevMonth
+        data.counts.beritaPrevMonth,
       ),
       gradient: "from-orange-500 to-amber-500",
     },
@@ -140,7 +140,7 @@ export default async function AdminDashboard() {
                   {formatNumber(
                     data.counts.destinationsThisMonth +
                       data.counts.galeriThisMonth +
-                      data.counts.beritaThisMonth
+                      data.counts.beritaThisMonth,
                   )}
                   <span className="text-sm sm:text-base font-semibold text-white/80">
                     {" "}
@@ -171,8 +171,8 @@ export default async function AdminDashboard() {
                   stat.changeTone === "up"
                     ? "bg-emerald-50 text-emerald-700"
                     : stat.changeTone === "down"
-                    ? "bg-red-50 text-red-700"
-                    : "bg-slate-100 text-slate-700"
+                      ? "bg-red-50 text-red-700"
+                      : "bg-slate-100 text-slate-700"
                 }`}
               >
                 {stat.change}
@@ -568,115 +568,196 @@ async function getDashboardData() {
     latestNews,
     latestReviews,
   ] = await Promise.all([
-    prisma.destinasi.count(),
-    prisma.destinasi.count({ where: { createdAt: { gte: startOfMonth } } }),
-    prisma.destinasi.count({
-      where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } },
-    }),
-    prisma.event.count({
-      where: {
-        status: StatusPublish.PUBLISHED,
-        tanggalMulai: { lte: now },
-        tanggalSelesai: { gte: now },
-      },
-    }),
-    prisma.event.count({
-      where: { status: StatusPublish.PUBLISHED, tanggalMulai: { gte: now } },
-    }),
-    prisma.galeri.count(),
-    prisma.galeri.count({ where: { createdAt: { gte: startOfMonth } } }),
-    prisma.galeri.count({
-      where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } },
-    }),
-    prisma.berita.count({ where: { status: StatusPublish.PUBLISHED } }),
-    prisma.berita.count({
-      where: {
-        status: StatusPublish.PUBLISHED,
-        createdAt: { gte: startOfMonth },
-      },
-    }),
-    prisma.berita.count({
-      where: {
-        status: StatusPublish.PUBLISHED,
-        createdAt: { gte: startOfPrevMonth, lt: startOfMonth },
-      },
-    }),
-    prisma.kuliner.count(),
-    prisma.profilUkm.count(),
-    prisma.destinasi.findMany({
-      where: { status: StatusPublish.PUBLISHED },
-      orderBy: [
-        { rating: "desc" },
-        { jumlahReview: "desc" },
-        { createdAt: "desc" },
-      ],
-      take: 5,
-      select: { nama: true, rating: true, jumlahReview: true, slug: true },
-    }),
-    prisma.berita.findMany({
-      where: { status: StatusPublish.PUBLISHED },
-      orderBy: [
-        { views: "desc" },
-        { publishedAt: "desc" },
-        { createdAt: "desc" },
-      ],
-      take: 5,
-      select: { judul: true, views: true, slug: true, publishedAt: true },
-    }),
-    prisma.event.findMany({
-      where: { status: StatusPublish.PUBLISHED, tanggalMulai: { gte: now } },
-      orderBy: { tanggalMulai: "asc" },
-      take: 5,
-      select: { nama: true, slug: true, tanggalMulai: true, lokasi: true },
-    }),
-    prisma.destinasi.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { nama: true, slug: true, createdAt: true },
-    }),
-    prisma.event.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { nama: true, slug: true, createdAt: true },
-    }),
-    prisma.berita.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { judul: true, slug: true, createdAt: true },
-    }),
-    prisma.galeri.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { judul: true, id: true, createdAt: true },
-    }),
-    prisma.profilUkm.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 3,
-      select: { namaUsaha: true, slug: true, createdAt: true },
-    }),
-    prisma.berita.findMany({
-      where: { status: StatusPublish.PUBLISHED },
-      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-      take: 5,
-      select: {
-        judul: true,
-        slug: true,
-        publishedAt: true,
-        createdAt: true,
-      },
-    }),
-    prisma.destinasiReview.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 6,
-      select: {
-        id: true,
-        rating: true,
-        comment: true,
-        userName: true,
-        createdAt: true,
-        destinasi: { select: { nama: true, slug: true } },
-      },
-    }),
+    safeQuery(() => prisma.destinasi.count(), 0),
+    safeQuery(
+      () =>
+        prisma.destinasi.count({ where: { createdAt: { gte: startOfMonth } } }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.destinasi.count({
+          where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } },
+        }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.event.count({
+          where: {
+            status: StatusPublish.PUBLISHED,
+            tanggalMulai: { lte: now },
+            tanggalSelesai: { gte: now },
+          },
+        }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.event.count({
+          where: {
+            status: StatusPublish.PUBLISHED,
+            tanggalMulai: { gte: now },
+          },
+        }),
+      0,
+    ),
+    safeQuery(() => prisma.galeri.count(), 0),
+    safeQuery(
+      () =>
+        prisma.galeri.count({ where: { createdAt: { gte: startOfMonth } } }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.galeri.count({
+          where: { createdAt: { gte: startOfPrevMonth, lt: startOfMonth } },
+        }),
+      0,
+    ),
+    safeQuery(
+      () => prisma.berita.count({ where: { status: StatusPublish.PUBLISHED } }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.count({
+          where: {
+            status: StatusPublish.PUBLISHED,
+            createdAt: { gte: startOfMonth },
+          },
+        }),
+      0,
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.count({
+          where: {
+            status: StatusPublish.PUBLISHED,
+            createdAt: { gte: startOfPrevMonth, lt: startOfMonth },
+          },
+        }),
+      0,
+    ),
+    safeQuery(() => prisma.kuliner.count(), 0),
+    safeQuery(() => prisma.profilUkm.count(), 0),
+    safeQuery(
+      () =>
+        prisma.destinasi.findMany({
+          where: { status: StatusPublish.PUBLISHED },
+          orderBy: [
+            { rating: "desc" },
+            { jumlahReview: "desc" },
+            { createdAt: "desc" },
+          ],
+          take: 5,
+          select: { nama: true, rating: true, jumlahReview: true, slug: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.findMany({
+          where: { status: StatusPublish.PUBLISHED },
+          orderBy: [
+            { views: "desc" },
+            { publishedAt: "desc" },
+            { createdAt: "desc" },
+          ],
+          take: 5,
+          select: { judul: true, views: true, slug: true, publishedAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.event.findMany({
+          where: {
+            status: StatusPublish.PUBLISHED,
+            tanggalMulai: { gte: now },
+          },
+          orderBy: { tanggalMulai: "asc" },
+          take: 5,
+          select: { nama: true, slug: true, tanggalMulai: true, lokasi: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.destinasi.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: { nama: true, slug: true, createdAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.event.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: { nama: true, slug: true, createdAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: { judul: true, slug: true, createdAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.galeri.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: { judul: true, id: true, createdAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.profilUkm.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 3,
+          select: { namaUsaha: true, slug: true, createdAt: true },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.findMany({
+          where: { status: StatusPublish.PUBLISHED },
+          orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+          take: 5,
+          select: {
+            judul: true,
+            slug: true,
+            publishedAt: true,
+            createdAt: true,
+          },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.destinasiReview.findMany({
+          orderBy: { createdAt: "desc" },
+          take: 6,
+          select: {
+            id: true,
+            rating: true,
+            comment: true,
+            userName: true,
+            createdAt: true,
+            destinasi: { select: { nama: true, slug: true } },
+          },
+        }),
+      [],
+    ),
   ]);
 
   const recentActivities: ActivityItem[] = [

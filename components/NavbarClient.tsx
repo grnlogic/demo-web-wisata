@@ -4,13 +4,15 @@ import { usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import CardNav, { CardNavItem } from "./CardNav";
 
-
 interface NavbarClientProps {
   items: CardNavItem[];
   logoSubtext: string;
 }
 
-export default function NavbarClient({ items, logoSubtext }: NavbarClientProps) {
+export default function NavbarClient({
+  items,
+  logoSubtext,
+}: NavbarClientProps) {
   const pathname = usePathname();
   const { data: session, status } = useSession();
 
@@ -29,9 +31,9 @@ export default function NavbarClient({ items, logoSubtext }: NavbarClientProps) 
   return (
     <div className="relative">
       <CardNav
-        logo="/logo.png"
-        logoAlt="Logo Wisata Pangandaran"
-        logoText="Pangandaran"
+        logo="/logo-dummy.svg"
+        logoAlt="Logo Demo Portfolio"
+        logoText="Wisata Demo"
         logoSubtext={logoSubtext}
         items={items}
         baseColor="#ffffff"
@@ -42,7 +44,6 @@ export default function NavbarClient({ items, logoSubtext }: NavbarClientProps) 
         userName={displayName}
         onLogout={async () => await signOut({ callbackUrl: `/` })}
         onLogin={() => (window.location.href = "/admin/login")}
-
       />
     </div>
   );

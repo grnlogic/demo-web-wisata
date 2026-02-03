@@ -23,7 +23,7 @@ import {
 import VideoBackground from "@/components/VideoBackground";
 import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
 import SafeImage from "@/components/SafeImage";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 import { createBackgroundImageStyle } from "@/lib/utils";
 import ToolkitSection from "@/components/Toolkit";
 import { translateText, translateObject } from "@/lib/translation";
@@ -35,38 +35,62 @@ export default async function Home() {
   const cookieStore = await cookies();
   const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
 
-  // 1. Fetch Real Data
-  let rekomendasi = await prisma.rekomendasi.findMany({
-    where: { status: "PUBLISHED" },
-    orderBy: [{ featured: "desc" }, { urutan: "asc" }, { createdAt: "desc" }],
-    take: 3,
-  });
+  // 1. Fetch Real Data with fallback to empty arrays (Demo mode)
+  let rekomendasi = await safeQuery(
+    () =>
+      prisma.rekomendasi.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: [
+          { featured: "desc" },
+          { urutan: "asc" },
+          { createdAt: "desc" },
+        ],
+        take: 3,
+      }),
+    [],
+  );
 
-  const hotels = await prisma.hotelListing.findMany({
-    orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
-    take: 24,
-  });
+  const hotels = await safeQuery(
+    () =>
+      prisma.hotelListing.findMany({
+        orderBy: [
+          { rating: "desc" },
+          { reviews: "desc" },
+          { fetchedAt: "desc" },
+        ],
+        take: 24,
+      }),
+    [],
+  );
 
-  let latestNews = await prisma.berita.findMany({
-    where: { status: "PUBLISHED" },
-    orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-    take: 5,
-    select: { judul: true, slug: true, publishedAt: true, createdAt: true },
-  });
+  let latestNews = await safeQuery(
+    () =>
+      prisma.berita.findMany({
+        where: { status: "PUBLISHED" },
+        orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+        take: 5,
+        select: { judul: true, slug: true, publishedAt: true, createdAt: true },
+      }),
+    [],
+  );
 
-  const allGaleri = await prisma.galeri.findMany({
-    where: { tipeMedia: "IMAGE" },
-    orderBy: [{ urutan: "asc" }, { createdAt: "desc" }],
-    select: {
-      id: true,
-      judul: true,
-      deskripsi: true,
-      url: true,
-      thumbnail: true,
-      kategori: true,
-      tags: true,
-    },
-  });
+  const allGaleri = await safeQuery(
+    () =>
+      prisma.galeri.findMany({
+        where: { tipeMedia: "IMAGE" },
+        orderBy: [{ urutan: "asc" }, { createdAt: "desc" }],
+        select: {
+          id: true,
+          judul: true,
+          deskripsi: true,
+          url: true,
+          thumbnail: true,
+          kategori: true,
+          tags: true,
+        },
+      }),
+    [],
+  );
 
   let dailyHotels = pickDailySubset(hotels, 3);
   let galeriMoodboard = pickDailySubset(allGaleri, 3);
@@ -77,47 +101,49 @@ export default async function Home() {
       location: "Pangandaran, Jawa Barat",
       titleMain: "Jelajahi",
       titleSub: "Pangandaran",
-      description: "Rasakan pesona pantai eksotis, jelajahi Green Canyon yang memukau, dan nikmati kuliner laut segar langsung dari nelayan lokal.",
+      description:
+        "Rasakan pesona pantai eksotis, jelajahi Green Canyon yang memukau, dan nikmati kuliner laut segar langsung dari nelayan lokal.",
       badges: {
         sunset: "Sunset Spot",
         pantai: "Pantai Eksotis",
         adventure: "Adventure",
-        ig: "Instagramable"
+        ig: "Instagramable",
       },
       cta: {
         start: "Mulai Petualangan",
-        gallery: "Lihat Galeri"
+        gallery: "Lihat Galeri",
       },
       stats: {
         dest: "Destinasi",
         foto: "Foto & Video",
         event: "Event/Tahun",
-        rating: "Rating"
-      }
+        rating: "Rating",
+      },
     },
     quickPlan: {
       title: "Rencana Instan",
       subtitle: "Siap pakai, tinggal berangkat",
-      tag: "GRATIS"
+      tag: "GRATIS",
     },
     dailyHotels: {
       tag: "Pilihan hotel hari ini",
       title: "3 pilihan terbaik hari ini",
       desc: "Rekomendasi hotel berubah setiap hari, jadi kamu selalu punya pilihan segar untuk menginap.",
       badge: "Kurasi otomatis harian",
-      empty: "Data hotel belum tersedia. Jalankan POST /api/hotels untuk memuat snapshot, lalu coba lagi.",
+      empty:
+        "Data hotel belum tersedia. Jalankan POST /api/hotels untuk memuat snapshot, lalu coba lagi.",
       price: "Lihat harga",
       details: "Lihat detail harga dan ketersediaan di penyedia.",
       reviews: "ulasan",
       noReviews: "Ulasan belum ada",
       visit: "Kunjungi halaman",
-      noLink: "Link tidak tersedia"
+      noLink: "Link tidak tersedia",
     },
     quickAccess: {
       tag: "Akses cepat",
       title: "Jalur singkat buat langsung aksi",
       desc: "Tanpa scroll panjang. Pilih portal yang sesuai kebutuhanmu.",
-      cta: "Lihat"
+      cta: "Lihat",
     },
     news: {
       tag: "Berita terkini",
@@ -125,7 +151,7 @@ export default async function Home() {
       desc: "Informasi terkini seputar Pangandaran, diperbarui setiap hari.",
       badge: "Live feed",
       empty: "Belum ada berita terbit hari ini.",
-      dailyUpdate: "Update harian"
+      dailyUpdate: "Update harian",
     },
     rekomendasi: {
       tag: "Itinerary pilihan",
@@ -133,7 +159,8 @@ export default async function Home() {
       desc: "Tema disusun bareng warga dan pegiat lokal. Lengkap dengan durasi, estimasi budget, dan vibe unik tiap perjalanan.",
       cta: "Lihat daftar lengkap",
       detail: "Detail perjalanan",
-      empty: "Belum ada paket rekomendasi siap tampil. Kembali lagi sebentar lagi."
+      empty:
+        "Belum ada paket rekomendasi siap tampil. Kembali lagi sebentar lagi.",
     },
     mood: {
       tag: "Moodboard",
@@ -141,20 +168,20 @@ export default async function Home() {
       desc: "Semua gambar tersedia sebagai referensi untuk membantu Anda mengenal tempat lebih dekat.",
       badge: "Kurasi ekspres",
       empty: "Belum ada galeri tersedia. Silakan upload galeri di panel admin.",
-      viewMore: "Lihat galeri untuk lebih detail"
+      viewMore: "Lihat galeri untuk lebih detail",
     },
     planner: {
       tag: "Rencana 48 jam",
       title: "Dua hari penuh cerita, tanpa detour.",
       desc: "Blok jadwal ini tinggal diikuti. Sesuaikan tempo, tapi jangan skip bagian sunset.",
-      day: "Hari"
+      day: "Hari",
     },
     footerCta: {
       title: "Siap merapat? Bawa rasa penasaranmu.",
       desc: "Mulai dari event terkini atau jelajahi cerita kota. Kamu tentukan alur, kami siapkan jalurnya.",
       event: "Lihat event terbaru",
-      about: "Kenali Pangandaran"
-    }
+      about: "Kenali Pangandaran",
+    },
   };
 
   // Re-define arrays that need translation inside Home scope or modify them
@@ -206,38 +233,50 @@ export default async function Home() {
       trHotels,
       trNews,
       trRekomendasi,
-      trGaleri
+      trGaleri,
     ] = await Promise.all([
       translateObject(content, "id", "en"),
       translateObject(moodTripsData, "id", "en"),
       translateObject(quickStepsData, "id", "en"),
       translateObject(quickAccessItems, "id", "en"),
       // Dynamic Data
-      Promise.all(dailyHotels.map(async (h) => ({
-        ...h,
-        description: await translateText(h.description || "", "id", "en"),
-        location: await translateText(h.location || "", "id", "en"),
-        source: await translateText(h.source || "", "id", "en"), // translate source e.g. "Google Hotels" -> might stay same, but safe to try
-      }))),
-      Promise.all(latestNews.map(async (n) => ({
-        ...n,
-        judul: await translateText(n.judul, "id", "en")
-      }))),
-      Promise.all(rekomendasi.map(async (r) => ({
-        ...r,
-        judul: await translateText(r.judul, "id", "en"),
-        deskripsi: await translateText(r.deskripsi, "id", "en"),
-        tema: await translateText(r.tema, "id", "en"),
-        durasi: await translateText(r.durasi || "", "id", "en"),
-        estimasiBudget: await translateText(r.estimasiBudget || "", "id", "en")
-      }))),
-      Promise.all(galeriMoodboard.map(async (g) => ({
-        ...g,
-        judul: await translateText(g.judul, "id", "en"),
-        deskripsi: await translateText(g.deskripsi || "", "id", "en"),
-        kategori: g.kategori, // Kategori biasanya enum, maybe skip? Or translate display name later.
-        tags: await translateObject(g.tags, "id", "en")
-      })))
+      Promise.all(
+        dailyHotels.map(async (h) => ({
+          ...h,
+          description: await translateText(h.description || "", "id", "en"),
+          location: await translateText(h.location || "", "id", "en"),
+          source: await translateText(h.source || "", "id", "en"), // translate source e.g. "Google Hotels" -> might stay same, but safe to try
+        })),
+      ),
+      Promise.all(
+        latestNews.map(async (n) => ({
+          ...n,
+          judul: await translateText(n.judul, "id", "en"),
+        })),
+      ),
+      Promise.all(
+        rekomendasi.map(async (r) => ({
+          ...r,
+          judul: await translateText(r.judul, "id", "en"),
+          deskripsi: await translateText(r.deskripsi, "id", "en"),
+          tema: await translateText(r.tema, "id", "en"),
+          durasi: await translateText(r.durasi || "", "id", "en"),
+          estimasiBudget: await translateText(
+            r.estimasiBudget || "",
+            "id",
+            "en",
+          ),
+        })),
+      ),
+      Promise.all(
+        galeriMoodboard.map(async (g) => ({
+          ...g,
+          judul: await translateText(g.judul, "id", "en"),
+          deskripsi: await translateText(g.deskripsi || "", "id", "en"),
+          kategori: g.kategori, // Kategori biasanya enum, maybe skip? Or translate display name later.
+          tags: await translateObject(g.tags, "id", "en"),
+        })),
+      ),
     ]);
 
     // Apply translations
@@ -267,12 +306,18 @@ export default async function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen overflow-hidden">
         <VideoBackground />
-        
+
         {/* Floating decorative elements */}
         <div className="absolute inset-0 pointer-events-none z-[1]">
           <div className="absolute top-1/4 left-10 w-2 h-2 bg-white/40 rounded-full animate-pulse" />
-          <div className="absolute top-1/3 right-20 w-3 h-3 bg-cyan-300/50 rounded-full animate-pulse" style={{ animationDelay: "0.5s" }} />
-          <div className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-blue-200/40 rounded-full animate-pulse" style={{ animationDelay: "1s" }} />
+          <div
+            className="absolute top-1/3 right-20 w-3 h-3 bg-cyan-300/50 rounded-full animate-pulse"
+            style={{ animationDelay: "0.5s" }}
+          />
+          <div
+            className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-blue-200/40 rounded-full animate-pulse"
+            style={{ animationDelay: "1s" }}
+          />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 min-h-screen flex items-center">
@@ -284,21 +329,32 @@ export default async function Home() {
                 <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
-                <span className="text-white font-medium tracking-wide">{content.hero.location}</span>
+                <span className="text-white font-medium tracking-wide">
+                  {content.hero.location}
+                </span>
               </div>
 
               {/* Main Heading */}
               <div className="space-y-6">
                 <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
-                  <span className="text-white drop-shadow-2xl" style={{ textShadow: "0 4px 30px rgba(0,0,0,0.3)" }}>
+                  <span
+                    className="text-white drop-shadow-2xl"
+                    style={{ textShadow: "0 4px 30px rgba(0,0,0,0.3)" }}
+                  >
                     {content.hero.titleMain}
                   </span>
                   <br />
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white" style={{ textShadow: "none" }}>
+                  <span
+                    className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white"
+                    style={{ textShadow: "none" }}
+                  >
                     {content.hero.titleSub}
                   </span>
                 </h1>
-                <p className="text-xl md:text-2xl text-white/95 max-w-xl leading-relaxed font-light" style={{ textShadow: "0 2px 15px rgba(0,0,0,0.2)" }}>
+                <p
+                  className="text-xl md:text-2xl text-white/95 max-w-xl leading-relaxed font-light"
+                  style={{ textShadow: "0 2px 15px rgba(0,0,0,0.2)" }}
+                >
                   {content.hero.description}
                 </p>
               </div>
@@ -332,10 +388,26 @@ export default async function Home() {
               {/* Stats Row */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
                 {[
-                  { label: content.hero.stats.dest, value: "25+", icon: MapPin },
-                  { label: content.hero.stats.foto, value: "500+", icon: ImageIcon },
-                  { label: content.hero.stats.event, value: "30+", icon: Calendar },
-                  { label: content.hero.stats.rating, value: "4.8", icon: Star },
+                  {
+                    label: content.hero.stats.dest,
+                    value: "25+",
+                    icon: MapPin,
+                  },
+                  {
+                    label: content.hero.stats.foto,
+                    value: "500+",
+                    icon: ImageIcon,
+                  },
+                  {
+                    label: content.hero.stats.event,
+                    value: "30+",
+                    icon: Calendar,
+                  },
+                  {
+                    label: content.hero.stats.rating,
+                    value: "4.8",
+                    icon: Star,
+                  },
                 ].map((item, idx) => (
                   <div
                     key={item.label}
@@ -358,7 +430,7 @@ export default async function Home() {
             <div className="relative hidden lg:block">
               {/* Glow effect behind cards */}
               <div className="absolute -inset-10 bg-gradient-to-br from-blue-500/30 via-cyan-400/20 to-transparent blur-3xl rounded-full" />
-              
+
               <div className="relative space-y-5">
                 {/* Quick Plan Card */}
                 <div className="rounded-3xl border border-white/30 bg-white/20 p-7 shadow-2xl backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/25">
@@ -368,8 +440,12 @@ export default async function Home() {
                         <Sparkles className="w-5 h-5 text-white" />
                       </div>
                       <div>
-                        <p className="text-white font-semibold">{content.quickPlan.title}</p>
-                        <p className="text-xs text-white/60">{content.quickPlan.subtitle}</p>
+                        <p className="text-white font-semibold">
+                          {content.quickPlan.title}
+                        </p>
+                        <p className="text-xs text-white/60">
+                          {content.quickPlan.subtitle}
+                        </p>
                       </div>
                     </div>
                     <div className="px-3 py-1 rounded-full bg-gradient-to-r from-emerald-400 to-teal-400 text-xs font-bold text-white shadow">
@@ -378,17 +454,28 @@ export default async function Home() {
                   </div>
                   <div className="space-y-4">
                     {quickStepsData.slice(0, 3).map((step, idx) => (
-                      <div key={idx} className="flex items-start gap-4 group/step">
+                      <div
+                        key={idx}
+                        className="flex items-start gap-4 group/step"
+                      >
                         <div className="flex flex-col items-center">
-                          <div className={`w-3 h-3 rounded-full ${idx === 0 ? 'bg-gradient-to-r from-cyan-400 to-blue-400' : 'bg-white/40'} shadow`} />
-                          {idx < 2 && <div className="w-0.5 h-8 bg-white/20 mt-1" />}
+                          <div
+                            className={`w-3 h-3 rounded-full ${idx === 0 ? "bg-gradient-to-r from-cyan-400 to-blue-400" : "bg-white/40"} shadow`}
+                          />
+                          {idx < 2 && (
+                            <div className="w-0.5 h-8 bg-white/20 mt-1" />
+                          )}
                         </div>
                         <div className="flex-1">
                           <p className="text-[10px] uppercase tracking-[0.2em] text-cyan-200 font-semibold">
                             {step.time}
                           </p>
-                          <p className="font-semibold text-white mt-0.5">{step.title}</p>
-                          <p className="text-sm text-white/70 line-clamp-1">{step.detail}</p>
+                          <p className="font-semibold text-white mt-0.5">
+                            {step.title}
+                          </p>
+                          <p className="text-sm text-white/70 line-clamp-1">
+                            {step.detail}
+                          </p>
                         </div>
                       </div>
                     ))}
@@ -406,7 +493,7 @@ export default async function Home() {
                         className="h-44"
                         style={createBackgroundImageStyle(
                           item.image,
-                          "linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.6) 70%)"
+                          "linear-gradient(180deg, rgba(37, 99, 235, 0.1) 0%, rgba(30, 64, 175, 0.6) 70%)",
                         )}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-blue-900/80 via-blue-900/20 to-transparent" />
@@ -416,9 +503,13 @@ export default async function Home() {
                           <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-white/20 backdrop-blur">
                             <item.icon className="w-4 h-4 text-white" />
                           </div>
-                          <span className="text-xs text-white/90 font-medium">{item.badge}</span>
+                          <span className="text-xs text-white/90 font-medium">
+                            {item.badge}
+                          </span>
                         </div>
-                        <p className="font-bold text-lg text-white group-hover:text-cyan-100 transition">{item.title}</p>
+                        <p className="font-bold text-lg text-white group-hover:text-cyan-100 transition">
+                          {item.title}
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -430,7 +521,9 @@ export default async function Home() {
 
         {/* Scroll indicator */}
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-2 animate-bounce">
-          <span className="text-white/60 text-xs font-medium tracking-wider uppercase">Scroll</span>
+          <span className="text-white/60 text-xs font-medium tracking-wider uppercase">
+            Scroll
+          </span>
           <div className="w-6 h-10 rounded-full border-2 border-white/40 flex items-start justify-center p-1">
             <div className="w-1.5 h-2.5 rounded-full bg-white/60 animate-pulse" />
           </div>
@@ -525,11 +618,13 @@ export default async function Home() {
                             target="_blank"
                             rel="noopener noreferrer"
                           >
-                            <Hotel className="w-4 h-4" /> {content.dailyHotels.visit}
+                            <Hotel className="w-4 h-4" />{" "}
+                            {content.dailyHotels.visit}
                           </a>
                         ) : (
                           <span className="inline-flex w-full items-center justify-center gap-2 rounded-full bg-slate-100 px-5 py-3 text-sm font-semibold text-slate-400">
-                            <Hotel className="w-4 h-4" /> {content.dailyHotels.noLink}
+                            <Hotel className="w-4 h-4" />{" "}
+                            {content.dailyHotels.noLink}
                           </span>
                         )}
                       </div>
@@ -564,11 +659,15 @@ export default async function Home() {
                   href={item.href}
                   className={`group rounded-2xl ${item.bg} border border-slate-200 p-5 shadow-sm transition-all duration-300 hover:-translate-y-2 hover:shadow-xl hover:border-blue-300`}
                 >
-                  <div className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${item.tone} text-white shadow-lg mb-4`}>
+                  <div
+                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl bg-gradient-to-br ${item.tone} text-white shadow-lg mb-4`}
+                  >
                     <item.icon className="w-6 h-6" />
                   </div>
                   <div className="text-sm text-slate-500 mb-1">{item.copy}</div>
-                  <div className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition">{item.title}</div>
+                  <div className="text-xl font-bold text-slate-800 group-hover:text-blue-600 transition">
+                    {item.title}
+                  </div>
                   <div className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-blue-600">
                     {content.quickAccess.cta}
                     <ArrowRight className="w-4 h-4 transition group-hover:translate-x-1" />
@@ -591,9 +690,7 @@ export default async function Home() {
               <h3 className="text-3xl md:text-4xl font-bold text-slate-800">
                 {content.news.title}
               </h3>
-              <p className="text-slate-600 text-lg">
-                {content.news.desc}
-              </p>
+              <p className="text-slate-600 text-lg">{content.news.desc}</p>
             </div>
             <span className="inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-orange-500 to-amber-500 px-5 py-2.5 text-sm font-semibold text-white shadow-lg">
               <Newspaper className="w-4 h-4" /> {content.news.badge}
@@ -668,7 +765,7 @@ export default async function Home() {
                     style={createBackgroundImageStyle(
                       pkg.gambarUtama ||
                         "https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?auto=format&fit=crop&w=1200&q=80",
-                      "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.4) 70%)"
+                      "linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.4) 70%)",
                     )}
                   >
                     <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
@@ -804,9 +901,7 @@ export default async function Home() {
               <h3 className="text-3xl md:text-5xl font-bold leading-tight">
                 {content.planner.title}
               </h3>
-              <p className="text-blue-100 text-lg">
-                {content.planner.desc}
-              </p>
+              <p className="text-blue-100 text-lg">{content.planner.desc}</p>
             </div>
             <QuickPlannerCalendar quickSteps={quickStepsData} />
           </div>
@@ -975,7 +1070,7 @@ function pickDailySubset<T>(items: T[], count: number) {
   const dayOfYear = Math.floor(
     (Date.UTC(today.getFullYear(), today.getMonth(), today.getDate()) -
       Date.UTC(today.getFullYear(), 0, 0)) /
-      86_400_000
+      86_400_000,
   );
 
   const start = dayOfYear % items.length;
@@ -1028,4 +1123,3 @@ function formatKategori(kategori: string) {
   };
   return mapping[kategori] || kategori;
 }
-

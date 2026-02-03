@@ -1,7 +1,7 @@
 {
-  "name": "Wisata Pangandaran - Portal Informasi Wisata",
-  "short_name": "Wisata Pangandaran",
-  "description": "Jelajahi keindahan alam, budaya, dan kuliner Pangandaran. Portal informasi wisata terpercaya untuk destinasi wisata terbaik di Pangandaran.",
+  "name": "Wisata Pangandaran - Demo Portfolio",
+  "short_name": "Wisata Demo",
+  "description": "Demo Portfolio: Platform wisata dengan multi-role admin system. Dummy data untuk showcase.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#020617",

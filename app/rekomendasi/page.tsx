@@ -12,75 +12,95 @@ import {
   Users2,
   TrendingUp,
 } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
 
 export default async function RekomendasiPage() {
   const [destinasiTop, hotelsTop, kulinerTop, newsTop] = await Promise.all([
-    prisma.destinasi.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: [
-        { featured: "desc" },
-        { rating: "desc" },
-        { jumlahReview: "desc" },
-        { createdAt: "desc" },
-      ],
-      take: 6,
-      select: {
-        id: true,
-        nama: true,
-        slug: true,
-        rating: true,
-        jumlahReview: true,
-        lokasi: true,
-        kategori: true,
-        images: {
-          orderBy: { isPrimary: "desc" },
-          take: 1,
-          select: { url: true },
-        },
-      },
-    }),
-    prisma.hotelListing.findMany({
-      orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
-      take: 6,
-      select: {
-        id: true,
-        name: true,
-        location: true,
-        price: true,
-        rating: true,
-        reviews: true,
-        thumbnail: true,
-        link: true,
-      },
-    }),
-    prisma.kuliner.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
-      take: 6,
-      select: {
-        id: true,
-        nama: true,
-        slug: true,
-        kategori: true,
-        lokasi: true,
-        rating: true,
-        gambar: true,
-      },
-    }),
-    prisma.berita.findMany({
-      where: { status: "PUBLISHED" },
-      orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
-      take: 6,
-      select: {
-        id: true,
-        judul: true,
-        slug: true,
-        ringkasan: true,
-        publishedAt: true,
-        createdAt: true,
-      },
-    }),
+    safeQuery(
+      () =>
+        prisma.destinasi.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: [
+            { featured: "desc" },
+            { rating: "desc" },
+            { jumlahReview: "desc" },
+            { createdAt: "desc" },
+          ],
+          take: 6,
+          select: {
+            id: true,
+            nama: true,
+            slug: true,
+            rating: true,
+            jumlahReview: true,
+            lokasi: true,
+            kategori: true,
+            images: {
+              orderBy: { isPrimary: "desc" },
+              take: 1,
+              select: { url: true },
+            },
+          },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.hotelListing.findMany({
+          orderBy: [
+            { rating: "desc" },
+            { reviews: "desc" },
+            { fetchedAt: "desc" },
+          ],
+          take: 6,
+          select: {
+            id: true,
+            name: true,
+            location: true,
+            price: true,
+            rating: true,
+            reviews: true,
+            thumbnail: true,
+            link: true,
+          },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.kuliner.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: [{ rating: "desc" }, { createdAt: "desc" }],
+          take: 6,
+          select: {
+            id: true,
+            nama: true,
+            slug: true,
+            kategori: true,
+            lokasi: true,
+            rating: true,
+            gambar: true,
+          },
+        }),
+      [],
+    ),
+    safeQuery(
+      () =>
+        prisma.berita.findMany({
+          where: { status: "PUBLISHED" },
+          orderBy: [{ publishedAt: "desc" }, { createdAt: "desc" }],
+          take: 6,
+          select: {
+            id: true,
+            judul: true,
+            slug: true,
+            ringkasan: true,
+            publishedAt: true,
+            createdAt: true,
+          },
+        }),
+      [],
+    ),
   ]);
 
   const featuredRecommendations = destinasiTop.slice(0, 2);

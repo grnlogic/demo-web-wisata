@@ -15,11 +15,125 @@ import {
   Eye,
   EyeOff,
   Chrome,
+  ChevronDown,
 } from "lucide-react";
+
+// Hardcoded dummy users untuk portofolio (tanpa database)
+const DUMMY_USERS = [
+  {
+    id: "superadmin",
+    username: "superadmin",
+    password: "demo123",
+    nama: "Super Admin",
+    role: "ADMIN",
+    divisi: "Full Access - Semua Modul",
+    email: "superadmin@demo.com",
+  },
+  {
+    id: "admin_destinasi",
+    username: "admin_destinasi",
+    password: "demo123",
+    nama: "Admin Destinasi",
+    role: "ADMIN",
+    divisi: "Destinasi Wisata & Pariwisata",
+    email: "destinasi@demo.com",
+  },
+  {
+    id: "admin_event",
+    username: "admin_event",
+    password: "demo123",
+    nama: "Admin Event",
+    role: "ADMIN",
+    divisi: "Event & Agenda Kegiatan",
+    email: "event@demo.com",
+  },
+  {
+    id: "admin_kuliner",
+    username: "admin_kuliner",
+    password: "demo123",
+    nama: "Admin Kuliner",
+    role: "ADMIN",
+    divisi: "Kuliner & Gastronomi",
+    email: "kuliner@demo.com",
+  },
+  {
+    id: "admin_berita",
+    username: "admin_berita",
+    password: "demo123",
+    nama: "Admin Berita",
+    role: "ADMIN",
+    divisi: "Berita & Publikasi",
+    email: "berita@demo.com",
+  },
+  {
+    id: "admin_ukm",
+    username: "admin_ukm",
+    password: "demo123",
+    nama: "Admin UKM",
+    role: "ADMIN",
+    divisi: "UKM & UMKM Lokal",
+    email: "ukm@demo.com",
+  },
+  {
+    id: "admin_galeri",
+    username: "admin_galeri",
+    password: "demo123",
+    nama: "Admin Galeri",
+    role: "ADMIN",
+    divisi: "Galeri & Media Visual",
+    email: "galeri@demo.com",
+  },
+  {
+    id: "admin_hotel",
+    username: "admin_hotel",
+    password: "demo123",
+    nama: "Admin Hotel",
+    role: "ADMIN",
+    divisi: "Hotel & Akomodasi",
+    email: "hotel@demo.com",
+  },
+  {
+    id: "admin_informasi",
+    username: "admin_informasi",
+    password: "demo123",
+    nama: "Admin Informasi",
+    role: "ADMIN",
+    divisi: "Informasi Umum & Panduan",
+    email: "informasi@demo.com",
+  },
+  {
+    id: "user_budi",
+    username: "budi@demo.com",
+    password: "demo123",
+    nama: "Budi Santoso",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "budi@demo.com",
+  },
+  {
+    id: "user_siti",
+    username: "siti@demo.com",
+    password: "demo123",
+    nama: "Siti Nurhaliza",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "siti@demo.com",
+  },
+  {
+    id: "user_ahmad",
+    username: "ahmad@demo.com",
+    password: "demo123",
+    nama: "Ahmad Wijaya",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "ahmad@demo.com",
+  },
+];
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register">("login");
+  const [selectedUser, setSelectedUser] = useState("");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -38,6 +152,15 @@ export default function AdminLoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
 
   const backgroundUrl = "/sunset_login%20page.jpg";
+
+  const handleUserSelect = (userId: string) => {
+    const user = DUMMY_USERS.find((u) => u.id === userId);
+    if (user) {
+      setSelectedUser(userId);
+      setIdentifier(user.username);
+      setPassword(user.password);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -150,9 +273,9 @@ export default function AdminLoginPage() {
               </div>
               <div>
                 <p className="text-sm uppercase tracking-[0.25em] text-white/60">
-                  Portal Wisata
+                  🎭 Demo Portfolio
                 </p>
-                <p className="text-sm text-white/60">Wisata Pangandaran</p>
+                <p className="text-sm text-white/60">Wisata Platform</p>
               </div>
             </div>
 
@@ -204,80 +327,159 @@ export default function AdminLoginPage() {
 
             {mode === "login" ? (
               <form onSubmit={handleSubmit} className="space-y-5">
-                <label className="block">
-                  <span className="text-xs uppercase tracking-wide text-white/50">
-                    Email atau Username
-                  </span>
-                  <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 focus-within:border-cyan-400/60 focus-within:bg-white/10 transition-all">
-                    <Mail className="w-5 h-5 text-white/60" />
-                    <input
-                      id="identifier"
-                      type="text"
-                      value={identifier}
-                      onChange={(e) => setIdentifier(e.target.value)}
-                      className="w-full bg-transparent text-white placeholder-white/40 focus:outline-none"
-                      placeholder="admin atau email"
-                      required
-                      autoComplete="username"
-                    />
-                  </div>
-                </label>
+                {/* Banner Demo */}
+                <div className="mb-4 p-3 bg-amber-500/10 border border-amber-400/40 rounded-2xl">
+                  <p className="text-xs text-amber-200 text-center">
+                    🎭 <strong>Demo Portfolio</strong> - Pilih role untuk login
+                    otomatis
+                  </p>
+                </div>
 
                 <label className="block">
                   <span className="text-xs uppercase tracking-wide text-white/50">
-                    Password
+                    Pilih Role / Divisi
                   </span>
-                  <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 focus-within:border-cyan-400/60 focus-within:bg-white/10 transition-all">
-                    <Lock className="w-5 h-5 text-white/60" />
-                    <input
-                      id="password"
-                      type={showLoginPassword ? "text" : "password"}
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      onPaste={(e) => e.preventDefault()}
-                      onCopy={(e) => e.preventDefault()}
-                      onCut={(e) => e.preventDefault()}
-                      className="w-full bg-transparent text-white placeholder-white/40 focus:outline-none"
-                      placeholder="••••••••"
-                      required
-                      autoComplete="current-password"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowLoginPassword((prev) => !prev)}
-                      className="text-white/60 hover:text-white transition"
-                      aria-label={
-                        showLoginPassword
-                          ? "Sembunyikan password"
-                          : "Lihat password"
-                      }
-                    >
-                      {showLoginPassword ? (
-                        <EyeOff className="w-5 h-5" />
-                      ) : (
-                        <Eye className="w-5 h-5" />
-                      )}
-                    </button>
+                  <div className="mt-2 relative">
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 focus-within:border-cyan-400/60 focus-within:bg-white/10 transition-all">
+                      <User className="w-5 h-5 text-white/60" />
+                      <select
+                        value={selectedUser}
+                        onChange={(e) => handleUserSelect(e.target.value)}
+                        className="w-full bg-transparent text-white focus:outline-none appearance-none cursor-pointer"
+                        required
+                      >
+                        <option value="" className="bg-slate-900">
+                          -- Pilih Role untuk Login --
+                        </option>
+                        <optgroup
+                          label="🔐 Admin Roles"
+                          className="bg-slate-900"
+                        >
+                          {DUMMY_USERS.filter((u) => u.role === "ADMIN").map(
+                            (user) => (
+                              <option
+                                key={user.id}
+                                value={user.id}
+                                className="bg-slate-900"
+                              >
+                                {user.nama} - {user.divisi}
+                              </option>
+                            ),
+                          )}
+                        </optgroup>
+                        <optgroup
+                          label="👤 Regular Users"
+                          className="bg-slate-900"
+                        >
+                          {DUMMY_USERS.filter((u) => u.role === "USER").map(
+                            (user) => (
+                              <option
+                                key={user.id}
+                                value={user.id}
+                                className="bg-slate-900"
+                              >
+                                {user.nama} - {user.divisi}
+                              </option>
+                            ),
+                          )}
+                        </optgroup>
+                      </select>
+                      <ChevronDown className="w-5 h-5 text-white/60" />
+                    </div>
                   </div>
                 </label>
+
+                {selectedUser && (
+                  <>
+                    <label className="block">
+                      <span className="text-xs uppercase tracking-wide text-white/50">
+                        Username / Email (Auto-filled)
+                      </span>
+                      <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 opacity-60">
+                        <Mail className="w-5 h-5 text-white/60" />
+                        <input
+                          id="identifier"
+                          type="text"
+                          value={identifier}
+                          className="w-full bg-transparent text-white placeholder-white/40 focus:outline-none"
+                          readOnly
+                          autoComplete="username"
+                        />
+                      </div>
+                    </label>
+
+                    <label className="block">
+                      <span className="text-xs uppercase tracking-wide text-white/50">
+                        Password (Auto-filled)
+                      </span>
+                      <div className="mt-2 flex items-center gap-3 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 opacity-60">
+                        <Lock className="w-5 h-5 text-white/60" />
+                        <input
+                          id="password"
+                          type={showLoginPassword ? "text" : "password"}
+                          value={password}
+                          className="w-full bg-transparent text-white placeholder-white/40 focus:outline-none"
+                          readOnly
+                          autoComplete="current-password"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowLoginPassword((prev) => !prev)}
+                          className="text-white/60 hover:text-white transition"
+                          aria-label={
+                            showLoginPassword
+                              ? "Sembunyikan password"
+                              : "Lihat password"
+                          }
+                        >
+                          {showLoginPassword ? (
+                            <EyeOff className="w-5 h-5" />
+                          ) : (
+                            <Eye className="w-5 h-5" />
+                          )}
+                        </button>
+                      </div>
+                    </label>
+                  </>
+                )}
 
                 <div className="flex items-center justify-between text-sm text-white/60">
                   <a href="/" className="hover:text-white">
                     Kembali ke beranda
                   </a>
-                  <span className="inline-flex items-center gap-2 rounded-full bg-white/5 px-3 py-1 border border-white/10 text-xs">
-                    Aman dengan enkripsi
+                  <span className="inline-flex items-center gap-2 rounded-full bg-emerald-500/10 px-3 py-1 border border-emerald-400/40 text-xs text-emerald-200">
+                    🎭 Demo Mode
                   </span>
                 </div>
 
                 <button
                   type="submit"
-                  disabled={loading}
+                  disabled={loading || !selectedUser}
                   className="group w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-500 to-cyan-400 py-3.5 font-semibold text-white shadow-lg shadow-cyan-500/20 transition-transform duration-300 hover:-translate-y-0.5 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                  {loading ? "Memproses..." : "Masuk"}
+                  {loading
+                    ? "Memproses..."
+                    : "Masuk sebagai " +
+                      (selectedUser
+                        ? DUMMY_USERS.find((u) => u.id === selectedUser)?.nama
+                        : "...")}
                   <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
                 </button>
+
+                <div className="mt-4 p-4 bg-blue-500/10 border border-blue-400/40 rounded-2xl">
+                  <p className="text-xs text-blue-200 mb-2">
+                    <strong>ℹ️ Info Portfolio:</strong>
+                  </p>
+                  <ul className="text-xs text-blue-100 space-y-1 list-disc list-inside">
+                    <li>Semua data adalah dummy untuk demonstrasi</li>
+                    <li>Tidak menggunakan database real</li>
+                    <li>
+                      Password otomatis terisi:{" "}
+                      <code className="bg-white/10 px-1 rounded">demo123</code>
+                    </li>
+                    <li>Pilih role untuk melihat dashboard yang sesuai</li>
+                  </ul>
+                </div>
 
                 <div className="relative py-2 text-center text-white/50 text-xs">
                   <span
@@ -296,7 +498,7 @@ export default function AdminLoginPage() {
                   <Chrome className="w-5 h-5 text-amber-300" />
                   {googleLoading
                     ? "Menghubungkan ke Google..."
-                    : "Masuk dengan Google"}
+                    : "Masuk dengan Google (Disabled di Demo)"}
                 </button>
               </form>
             ) : (
@@ -491,15 +693,23 @@ export default function AdminLoginPage() {
               />
               <div className="absolute bottom-0 left-0 right-0 p-10 text-white/90">
                 <p className="text-sm uppercase tracking-[0.25em] text-cyan-200/80">
-                  Pangandaran
+                  Demo Portfolio
                 </p>
                 <h3 className="mt-2 text-3xl font-semibold">
-                  Keindahan pesisir dan alam
+                  Platform Wisata Pangandaran
                 </h3>
                 <p className="mt-2 text-sm text-white/70">
-                  Login untuk mengakses dan mengelola konten destinasi, event,
-                  kuliner, dan berita di portal wisata.
+                  Multi-role admin system dengan 9 divisi berbeda untuk
+                  mengelola konten wisata, event, kuliner, berita, dan lainnya.
                 </p>
+                <div className="mt-4 p-3 bg-white/10 backdrop-blur rounded-lg">
+                  <p className="text-xs text-white/80 mb-1">
+                    <strong>Quick Login:</strong> Pilih role dari dropdown
+                  </p>
+                  <p className="text-xs text-white/70">
+                    Username & password otomatis terisi saat memilih role
+                  </p>
+                </div>
               </div>
             </div>
           </div>

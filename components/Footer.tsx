@@ -64,8 +64,8 @@ export default function Footer() {
             <div className="flex items-center space-x-3 mb-4">
               <div className="w-12 h-12 rounded-lg overflow-hidden shadow-md flex items-center justify-center">
                 <Image
-                  src="/logo.png"
-                  alt="Logo Wisata Pangandaran"
+                  src="/logo-dummy.svg"
+                  alt="Logo Demo Portfolio"
                   width={48}
                   height={48}
                   className="w-full h-full object-contain"
@@ -73,13 +73,13 @@ export default function Footer() {
                 />
               </div>
               <div>
-                <h3 className="font-bold text-xl">Pangandaran</h3>
-                <p className="text-sm text-slate-300">Portal Wisata</p>
+                <h3 className="font-bold text-xl">Wisata Demo</h3>
+                <p className="text-sm text-slate-300">🎭 Demo Portfolio</p>
               </div>
             </div>
             <p className="text-slate-300 text-sm mb-4">
               {settings.site_about ||
-                "Portal informasi wisata Pangandaran hasil kolaborasi dengan KKN 126. Menjelajahi keindahan Pangandaran, dari pantai hingga budaya lokal."}
+                "Platform wisata demo dengan multi-role admin system, i18n, dan modern tech stack. Menggunakan dummy data untuk portfolio showcase."}
             </p>
             <Link
               href="/akomodasi"
@@ -186,7 +186,7 @@ export default function Footer() {
                 <Mail className="w-5 h-5 text-slate-400 mt-0.5" />
                 <div>
                   <p className="text-sm text-slate-300">
-                    {settings.site_email || "info@wisatapangandaran.com"}
+                    {settings.site_email || "demo@portfolio.com"}
                   </p>
                 </div>
               </div>
@@ -208,8 +208,7 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-2 md:space-y-0">
             <p className="text-sm text-slate-400">
-              © {new Date().getFullYear()} Pangandaran Tourism Portal - A KKN
-              126 PANGANDARAN Project
+              © {new Date().getFullYear()} Wisata Demo - Portfolio Project
             </p>
             <div className="flex space-x-6">
               <Link

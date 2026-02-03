@@ -4,6 +4,118 @@ import GoogleProvider from 'next-auth/providers/google'
 import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
+// Hardcoded dummy users untuk portofolio (tanpa database)
+const DUMMY_USERS = [
+  {
+    id: "superadmin",
+    username: "superadmin",
+    password: "demo123",
+    nama: "Super Admin",
+    role: "ADMIN",
+    divisi: "Full Access - Semua Modul",
+    email: "superadmin@demo.com",
+  },
+  {
+    id: "admin_destinasi",
+    username: "admin_destinasi",
+    password: "demo123",
+    nama: "Admin Destinasi",
+    role: "ADMIN",
+    divisi: "Destinasi Wisata & Pariwisata",
+    email: "destinasi@demo.com",
+  },
+  {
+    id: "admin_event",
+    username: "admin_event",
+    password: "demo123",
+    nama: "Admin Event",
+    role: "ADMIN",
+    divisi: "Event & Agenda Kegiatan",
+    email: "event@demo.com",
+  },
+  {
+    id: "admin_kuliner",
+    username: "admin_kuliner",
+    password: "demo123",
+    nama: "Admin Kuliner",
+    role: "ADMIN",
+    divisi: "Kuliner & Gastronomi",
+    email: "kuliner@demo.com",
+  },
+  {
+    id: "admin_berita",
+    username: "admin_berita",
+    password: "demo123",
+    nama: "Admin Berita",
+    role: "ADMIN",
+    divisi: "Berita & Publikasi",
+    email: "berita@demo.com",
+  },
+  {
+    id: "admin_ukm",
+    username: "admin_ukm",
+    password: "demo123",
+    nama: "Admin UKM",
+    role: "ADMIN",
+    divisi: "UKM & UMKM Lokal",
+    email: "ukm@demo.com",
+  },
+  {
+    id: "admin_galeri",
+    username: "admin_galeri",
+    password: "demo123",
+    nama: "Admin Galeri",
+    role: "ADMIN",
+    divisi: "Galeri & Media Visual",
+    email: "galeri@demo.com",
+  },
+  {
+    id: "admin_hotel",
+    username: "admin_hotel",
+    password: "demo123",
+    nama: "Admin Hotel",
+    role: "ADMIN",
+    divisi: "Hotel & Akomodasi",
+    email: "hotel@demo.com",
+  },
+  {
+    id: "admin_informasi",
+    username: "admin_informasi",
+    password: "demo123",
+    nama: "Admin Informasi",
+    role: "ADMIN",
+    divisi: "Informasi Umum & Panduan",
+    email: "informasi@demo.com",
+  },
+  {
+    id: "user_budi",
+    username: "budi@demo.com",
+    password: "demo123",
+    nama: "Budi Santoso",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "budi@demo.com",
+  },
+  {
+    id: "user_siti",
+    username: "siti@demo.com",
+    password: "demo123",
+    nama: "Siti Nurhaliza",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "siti@demo.com",
+  },
+  {
+    id: "user_ahmad",
+    username: "ahmad@demo.com",
+    password: "demo123",
+    nama: "Ahmad Wijaya",
+    role: "USER",
+    divisi: "Regular User (Visitor)",
+    email: "ahmad@demo.com",
+  },
+];
+
 export const authOptions: NextAuthOptions = {
   session: {
     strategy: 'jwt',
@@ -26,50 +138,76 @@ export const authOptions: NextAuthOptions = {
         const identifier = credentials.identifier.trim()
         const password = credentials.password
 
-        const maybeUser = await prisma.user.findUnique({
-          where: { email: identifier.toLowerCase() },
-        })
+        // PRIORITAS 1: Cek hardcoded dummy users dulu
+        const dummyUser = DUMMY_USERS.find(
+          (u) => u.username === identifier || u.email === identifier
+        );
 
-        if (maybeUser) {
-          if (!maybeUser.password) {
+        if (dummyUser) {
+          // Simple password check untuk demo
+          if (password === dummyUser.password) {
+            return {
+              id: dummyUser.id,
+              username: dummyUser.username,
+              name: dummyUser.nama,
+              email: dummyUser.email,
+              role: dummyUser.role as 'ADMIN' | 'USER',
+            };
+          }
+          return null;
+        }
+
+        // PRIORITAS 2: Cek database (jika ada)
+        try {
+          const maybeUser = await prisma.user.findUnique({
+            where: { email: identifier.toLowerCase() },
+          })
+
+          if (maybeUser) {
+            if (!maybeUser.password) {
+              return null
+            }
+
+            const isPasswordValid = await compare(password, maybeUser.password)
+            if (!isPasswordValid) {
+              return null
+            }
+
+            return {
+              id: maybeUser.id,
+              name: maybeUser.name || maybeUser.email,
+              email: maybeUser.email,
+              role: 'USER',
+            }
+          }
+
+          const admin = await prisma.admin.findUnique({
+            where: {
+              username: identifier,
+            },
+          })
+
+          if (!admin) {
             return null
           }
 
-          const isPasswordValid = await compare(password, maybeUser.password)
+          const isPasswordValid = await compare(password, admin.password)
+
           if (!isPasswordValid) {
             return null
           }
 
           return {
-            id: maybeUser.id,
-            name: maybeUser.name || maybeUser.email,
-            email: maybeUser.email,
-            role: 'USER',
+            id: admin.id,
+            username: admin.username,
+            name: admin.nama,
+            email: admin.email,
+            role: 'ADMIN',
           }
-        }
-
-        const admin = await prisma.admin.findUnique({
-          where: {
-            username: identifier,
-          },
-        })
-
-        if (!admin) {
-          return null
-        }
-
-        const isPasswordValid = await compare(password, admin.password)
-
-        if (!isPasswordValid) {
-          return null
-        }
-
-        return {
-          id: admin.id,
-          username: admin.username,
-          name: admin.nama,
-          email: admin.email,
-          role: 'ADMIN',
+        } catch (error) {
+          // Jika database error, return null (demo mode tetap jalan)
+          console.warn('Database error, using demo mode only:', error);
+          return null;
         }
       }
     }),
