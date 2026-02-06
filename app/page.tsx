@@ -20,7 +20,6 @@ import {
   Store,
   Newspaper,
 } from "lucide-react";
-import VideoBackground from "@/components/VideoBackground";
 import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
 import SafeImage from "@/components/SafeImage";
 import { prisma, safeQuery } from "@/lib/prisma";
@@ -322,30 +321,37 @@ export default async function Home() {
         <div className="absolute left-1/2 bottom-0 h-64 w-64 -translate-x-1/2 bg-blue-300/10 blur-[100px] rounded-full" />
       </div>
 
-      {/* Hero Section */}
+      {/* Hero Section - solid gradient (tanpa video) */}
       <section className="relative min-h-screen overflow-hidden">
-        <VideoBackground />
-
-        {/* Floating decorative elements */}
-        <div className="absolute inset-0 pointer-events-none z-[1]">
-          <div className="absolute top-1/4 left-10 w-2 h-2 bg-white/40 rounded-full animate-pulse" />
-          <div
-            className="absolute top-1/3 right-20 w-3 h-3 bg-cyan-300/50 rounded-full animate-pulse"
-            style={{ animationDelay: "0.5s" }}
-          />
-          <div
-            className="absolute bottom-1/3 left-1/4 w-2 h-2 bg-blue-200/40 rounded-full animate-pulse"
-            style={{ animationDelay: "1s" }}
-          />
+        {/* Solid gradient background - biru laut Pangandaran */}
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "linear-gradient(160deg, #0f172a 0%, #1e3a8a 25%, #0369a1 50%, #0e7490 75%, #155e75 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 opacity-90"
+          style={{
+            background:
+              "linear-gradient(180deg, rgba(15,23,42,0.4) 0%, transparent 50%, rgba(6,78,59,0.2) 100%)",
+          }}
+        />
+        {/* Orbs halus */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className="absolute -left-32 top-1/4 h-96 w-96 bg-cyan-500/20 rounded-full blur-[100px]" />
+          <div className="absolute right-0 top-1/3 h-80 w-80 bg-blue-500/15 rounded-full blur-[90px]" />
+          <div className="absolute bottom-1/4 left-1/2 h-64 w-64 -translate-x-1/2 bg-teal-400/10 rounded-full blur-[80px]" />
         </div>
 
         <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-20 min-h-screen flex items-center">
           <div className="grid lg:grid-cols-2 gap-16 items-center w-full">
             {/* Left Content */}
-            <div className="space-y-10">
+            <div className="relative space-y-8">
               {/* Location Badge */}
-              <div className="inline-flex items-center gap-3 rounded-full border border-white/40 bg-white/25 px-5 py-2.5 text-sm shadow-xl backdrop-blur-xl">
-                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-cyan-400 shadow-lg">
+              <div className="inline-flex items-center gap-3 rounded-full border border-white/40 bg-white/15 px-5 py-2.5 text-sm shadow-lg backdrop-blur-md">
+                <div className="flex items-center justify-center w-8 h-8 rounded-full bg-white/20 shadow">
                   <MapPin className="w-4 h-4 text-white" />
                 </div>
                 <span className="text-white font-medium tracking-wide">
@@ -354,32 +360,22 @@ export default async function Home() {
               </div>
 
               {/* Main Heading */}
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <h1 className="text-5xl md:text-7xl font-bold leading-[1.1] tracking-tight">
-                  <span
-                    className="text-white drop-shadow-2xl"
-                    style={{ textShadow: "0 4px 30px rgba(0,0,0,0.3)" }}
-                  >
+                  <span className="block text-white">
                     {content.hero.titleMain}
                   </span>
-                  <br />
-                  <span
-                    className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-200 to-white"
-                    style={{ textShadow: "none" }}
-                  >
+                  <span className="block mt-1 text-white">
                     {content.hero.titleSub}
                   </span>
                 </h1>
-                <p
-                  className="text-xl md:text-2xl text-white/95 max-w-xl leading-relaxed font-light"
-                  style={{ textShadow: "0 2px 15px rgba(0,0,0,0.2)" }}
-                >
+                <p className="text-lg md:text-xl text-slate-200 max-w-xl leading-relaxed">
                   {content.hero.description}
                 </p>
               </div>
 
               {/* Feature Badges */}
-              <div className="flex flex-wrap items-center gap-3">
+              <div className="relative flex flex-wrap items-center gap-3">
                 <Badge icon={Sun} label={content.hero.badges.sunset} />
                 <Badge icon={Waves} label={content.hero.badges.pantai} />
                 <Badge icon={Compass} label={content.hero.badges.adventure} />
