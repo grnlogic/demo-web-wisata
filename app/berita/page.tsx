@@ -1,4 +1,5 @@
 import { prisma, safeQuery } from "@/lib/prisma";
+import { dummyBerita } from "@/lib/dummy-data";
 import { cookies } from "next/headers";
 import { translateText, translateObject } from "@/lib/translation";
 import BeritaClient from "@/components/BeritaClient";
@@ -28,7 +29,7 @@ export default async function BeritaPage() {
           },
         },
       }),
-    [],
+    dummyBerita.map((b) => ({ ...b, admin: b.admin })),
   );
 
   // 2. Define Static Content

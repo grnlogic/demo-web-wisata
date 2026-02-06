@@ -1,4 +1,5 @@
 import { prisma, safeQuery } from "@/lib/prisma";
+import { dummyDestinasiForList } from "@/lib/dummy-data";
 import { cookies } from "next/headers";
 import { translateText, translateObject } from "@/lib/translation";
 import DestinasiClient from "@/components/DestinasiClient";
@@ -10,7 +11,7 @@ export default async function DestinasiPage() {
   const cookieStore = await cookies();
   const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
 
-  // 1. Initial Data Fetch
+  // 1. Initial Data Fetch (fallback dummy saat tanpa DB)
   let destinasi = await safeQuery(
     () =>
       prisma.destinasi.findMany({
@@ -35,9 +36,9 @@ export default async function DestinasiPage() {
         orderBy: {
           createdAt: "desc",
         },
-        take: 12, // Initial load limit
+        take: 12,
       }),
-    [],
+    dummyDestinasiForList.slice(0, 12),
   );
 
   // 2. Define Static Content

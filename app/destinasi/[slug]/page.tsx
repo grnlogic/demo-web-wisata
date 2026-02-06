@@ -2,13 +2,14 @@ import Link from "next/link";
 import { MapPin, Star, Navigation, ChevronLeft, Check } from "lucide-react";
 import { notFound } from "next/navigation";
 import { prisma, safeQuery } from "@/lib/prisma";
+import { dummyDestinasi } from "@/lib/dummy-data";
 import { KategoriDestinasi } from "@prisma/client";
 import DestinasiReviews from "@/components/DestinasiReviews";
 import PriceList from "@/components/PriceList";
 import ImageGallery from "@/components/ImageGallery";
 
 async function getDestinasiBySlug(slug: string) {
-  const destinasi = await safeQuery(
+  const fromDb = await safeQuery(
     () =>
       prisma.destinasi.findUnique({
         where: { slug, status: "PUBLISHED" },
@@ -22,12 +23,12 @@ async function getDestinasiBySlug(slug: string) {
       }),
     null,
   );
+  if (fromDb) return fromDb;
 
-  if (!destinasi) {
-    return null;
-  }
+  const dummy = dummyDestinasi.find((d) => d.slug === slug);
+  if (dummy) return dummy;
 
-  return destinasi;
+  return null;
 }
 
 import { translateText } from "@/lib/translation";

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbConnected } from "@/lib/prisma";
+import { dummyHotelListing } from "@/lib/dummy-data";
 
 const SERPAPI_ENDPOINT = "https://serpapi.com/search";
 const DEFAULT_QUERY = "Pangandaran hotels";
@@ -19,30 +20,34 @@ function pickFirst<T>(items: T[] | undefined | null): T | null {
 
 export async function GET() {
   try {
-    const hotels = await prisma.hotelListing.findMany({
-      orderBy: [
-        { rating: "desc" },
-        { reviews: "desc" },
-        { fetchedAt: "desc" },
-      ],
-      take: 12,
-    });
+    if (dbConnected && prisma) {
+      const hotels = await prisma.hotelListing.findMany({
+        orderBy: [
+          { rating: "desc" },
+          { reviews: "desc" },
+          { fetchedAt: "desc" },
+        ],
+        take: 12,
+      });
+      return NextResponse.json(
+        { hotels },
+        {
+          headers: {
+            "Cache-Control": "public, s-maxage=300, stale-while-revalidate=900",
+          },
+        }
+      );
+    }
+  } catch (_) {}
 
-    return NextResponse.json(
-      { hotels },
-      {
-        headers: {
-          "Cache-Control": "public, s-maxage=300, stale-while-revalidate=900",
-        },
-      }
-    );
-  } catch (error) {
-    console.error("Failed to read hotel listings", error);
-    return NextResponse.json(
-      { error: "Failed to load hotels" },
-      { status: 500 }
-    );
-  }
+  return NextResponse.json(
+    { hotels: dummyHotelListing.slice(0, 12) },
+    {
+      headers: {
+        "Cache-Control": "public, s-maxage=300, stale-while-revalidate=900",
+      },
+    }
+  );
 }
 
 export async function POST(req: NextRequest) {

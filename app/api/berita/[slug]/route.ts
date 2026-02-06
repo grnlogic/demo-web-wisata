@@ -1,47 +1,46 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbConnected } from "@/lib/prisma";
+import { dummyBerita } from "@/lib/dummy-data";
 
 export async function GET(
   request: NextRequest,
   context: { params: Promise<{ slug: string }> }
 ) {
+  const { slug } = await context.params;
+
   try {
-    const { slug } = await context.params;
-
-    const berita = await prisma.berita.findUnique({
-      where: {
-        slug,
-        status: "PUBLISHED",
-      },
-      include: {
-        admin: {
-          select: {
-            nama: true,
-            username: true,
-          },
+    if (dbConnected && prisma) {
+      const berita = await prisma.berita.findUnique({
+        where: { slug, status: "PUBLISHED" },
+        include: {
+          admin: { select: { nama: true, username: true } },
         },
-      },
-    });
-
-    if (!berita) {
-      return NextResponse.json(
-        { error: "Berita tidak ditemukan" },
-        { status: 404 }
-      );
+      });
+      if (berita) {
+        await prisma.berita.update({
+          where: { id: berita.id },
+          data: { views: { increment: 1 } },
+        });
+        return NextResponse.json(berita);
+      }
     }
+  } catch (_) {}
 
-    // Increment views
-    await prisma.berita.update({
-      where: { id: berita.id },
-      data: { views: { increment: 1 } },
+  const dummy = dummyBerita.find((b) => b.slug === slug && b.status === "PUBLISHED");
+  if (dummy) {
+    const toIso = (d: Date | null | undefined) =>
+      d instanceof Date ? d.toISOString() : (d ?? null);
+    return NextResponse.json({
+      ...dummy,
+      publishedAt: toIso(dummy.publishedAt ?? null),
+      expiresAt: toIso(dummy.expiresAt ?? null),
+      createdAt: toIso(dummy.createdAt as Date),
+      updatedAt: toIso(dummy.updatedAt as Date),
     });
-
-    return NextResponse.json(berita);
-  } catch (error) {
-    console.error("Error fetching berita:", error);
-    return NextResponse.json(
-      { error: "Gagal mengambil data berita" },
-      { status: 500 }
-    );
   }
+
+  return NextResponse.json(
+    { error: "Berita tidak ditemukan" },
+    { status: 404 }
+  );
 }

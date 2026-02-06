@@ -13,6 +13,12 @@ import {
   TrendingUp,
 } from "lucide-react";
 import { prisma, safeQuery } from "@/lib/prisma";
+import {
+  dummyDestinasiForRekomendasi,
+  dummyHotelListing,
+  dummyKuliner,
+  dummyBerita,
+} from "@/lib/dummy-data";
 
 export default async function RekomendasiPage() {
   const [destinasiTop, hotelsTop, kulinerTop, newsTop] = await Promise.all([
@@ -42,7 +48,7 @@ export default async function RekomendasiPage() {
             },
           },
         }),
-      [],
+      dummyDestinasiForRekomendasi.slice(0, 6),
     ),
     safeQuery(
       () =>
@@ -64,7 +70,16 @@ export default async function RekomendasiPage() {
             link: true,
           },
         }),
-      [],
+      dummyHotelListing.slice(0, 6).map((h) => ({
+        id: h.id,
+        name: h.name,
+        location: h.location,
+        price: h.price,
+        rating: h.rating,
+        reviews: h.reviews,
+        thumbnail: h.thumbnail,
+        link: h.link,
+      })),
     ),
     safeQuery(
       () =>
@@ -82,7 +97,15 @@ export default async function RekomendasiPage() {
             gambar: true,
           },
         }),
-      [],
+      dummyKuliner.slice(0, 6).map((k) => ({
+        id: k.id,
+        nama: k.nama,
+        slug: k.slug,
+        kategori: k.kategori,
+        lokasi: k.lokasi,
+        rating: k.rating,
+        gambar: k.gambar,
+      })),
     ),
     safeQuery(
       () =>
@@ -99,7 +122,14 @@ export default async function RekomendasiPage() {
             createdAt: true,
           },
         }),
-      [],
+      dummyBerita.slice(0, 6).map((b) => ({
+        id: b.id,
+        judul: b.judul,
+        slug: b.slug,
+        ringkasan: b.ringkasan,
+        publishedAt: b.publishedAt,
+        createdAt: b.createdAt,
+      })),
     ),
   ]);
 

@@ -24,6 +24,12 @@ import VideoBackground from "@/components/VideoBackground";
 import QuickPlannerCalendar from "@/components/QuickPlannerCalendar";
 import SafeImage from "@/components/SafeImage";
 import { prisma, safeQuery } from "@/lib/prisma";
+import {
+  dummyRekomendasi,
+  dummyHotelListing,
+  dummyBerita,
+  dummyGaleri,
+} from "@/lib/dummy-data";
 import { createBackgroundImageStyle } from "@/lib/utils";
 import ToolkitSection from "@/components/Toolkit";
 import { translateText, translateObject } from "@/lib/translation";
@@ -35,7 +41,7 @@ export default async function Home() {
   const cookieStore = await cookies();
   const lang = (cookieStore.get("NEXT_LOCALE")?.value as "id" | "en") || "id";
 
-  // 1. Fetch Real Data with fallback to empty arrays (Demo mode)
+  // 1. Fetch Real Data with fallback to dummy (Demo/Vercel tanpa DB)
   let rekomendasi = await safeQuery(
     () =>
       prisma.rekomendasi.findMany({
@@ -47,7 +53,7 @@ export default async function Home() {
         ],
         take: 3,
       }),
-    [],
+    dummyRekomendasi.slice(0, 3),
   );
 
   const hotels = await safeQuery(
@@ -60,7 +66,7 @@ export default async function Home() {
         ],
         take: 24,
       }),
-    [],
+    dummyHotelListing,
   );
 
   let latestNews = await safeQuery(
@@ -71,7 +77,12 @@ export default async function Home() {
         take: 5,
         select: { judul: true, slug: true, publishedAt: true, createdAt: true },
       }),
-    [],
+    dummyBerita.slice(0, 5).map((b) => ({
+      judul: b.judul,
+      slug: b.slug,
+      publishedAt: b.publishedAt,
+      createdAt: b.createdAt,
+    })),
   );
 
   const allGaleri = await safeQuery(
@@ -89,7 +100,15 @@ export default async function Home() {
           tags: true,
         },
       }),
-    [],
+    dummyGaleri.map((g) => ({
+      id: g.id,
+      judul: g.judul,
+      deskripsi: g.deskripsi,
+      url: g.url,
+      thumbnail: g.thumbnail,
+      kategori: g.kategori,
+      tags: g.tags,
+    })),
   );
 
   let dailyHotels = pickDailySubset(hotels, 3);

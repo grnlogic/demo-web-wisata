@@ -4,6 +4,17 @@ import GoogleProvider from 'next-auth/providers/google'
 import { compare } from 'bcryptjs'
 import { prisma } from '@/lib/prisma'
 
+// Default env untuk Vercel/demo tanpa .env (tanpa database)
+if (typeof process !== 'undefined') {
+  if (!process.env.NEXTAUTH_URL?.trim()) {
+    process.env.NEXTAUTH_URL =
+      process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000'
+  }
+  if (!process.env.NEXTAUTH_SECRET?.trim()) {
+    process.env.NEXTAUTH_SECRET = 'demo-wisata-pangandaran-secret-min-32-chars'
+  }
+}
+
 // Hardcoded dummy users untuk portofolio (tanpa database)
 const DUMMY_USERS = [
   {

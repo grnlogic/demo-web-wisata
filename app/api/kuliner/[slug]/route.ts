@@ -1,36 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbConnected } from "@/lib/prisma";
+import { dummyKuliner } from "@/lib/dummy-data";
 
 interface RouteParams {
-  params: Promise<{
-    slug: string;
-  }>;
+  params: Promise<{ slug: string }>;
 }
 
 // GET - Fetch single kuliner by slug for public
 export async function GET(request: NextRequest, { params }: RouteParams) {
+  const { slug } = await params;
+
   try {
-    const { slug } = await params;
-    const kuliner = await prisma.kuliner.findUnique({
-      where: {
-        slug,
-        status: "PUBLISHED",
-      },
-    });
-
-    if (!kuliner) {
-      return NextResponse.json(
-        { error: "Kuliner tidak ditemukan" },
-        { status: 404 }
-      );
+    if (dbConnected && prisma) {
+      const kuliner = await prisma.kuliner.findUnique({
+        where: { slug, status: "PUBLISHED" },
+      });
+      if (kuliner) return NextResponse.json(kuliner);
     }
+  } catch (_) {}
 
-    return NextResponse.json(kuliner);
-  } catch (error) {
-    console.error("Error fetching kuliner:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch kuliner" },
-      { status: 500 }
-    );
-  }
+  const dummy = dummyKuliner.find((k) => k.slug === slug && k.status === "PUBLISHED");
+  if (dummy) return NextResponse.json(dummy);
+  return NextResponse.json(
+    { error: "Kuliner tidak ditemukan" },
+    { status: 404 }
+  );
 }

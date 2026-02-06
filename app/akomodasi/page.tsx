@@ -7,7 +7,8 @@ import {
   Wifi,
   MapPin,
 } from "lucide-react";
-import { prisma } from "@/lib/prisma";
+import { prisma, safeQuery } from "@/lib/prisma";
+import { dummyHotelListing } from "@/lib/dummy-data";
 
 const stays = [
   {
@@ -41,10 +42,14 @@ const checklist = [
 ];
 
 export default async function AkomodasiPage() {
-  const hotels = await prisma.hotelListing.findMany({
-    orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
-    take: 12,
-  });
+  const hotels = await safeQuery(
+    () =>
+      prisma.hotelListing.findMany({
+        orderBy: [{ rating: "desc" }, { reviews: "desc" }, { fetchedAt: "desc" }],
+        take: 12,
+      }),
+    dummyHotelListing.slice(0, 12),
+  );
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900">

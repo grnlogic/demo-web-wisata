@@ -1,32 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { prisma, dbConnected } from "@/lib/prisma";
+import { dummySettings } from "@/lib/dummy-data";
 
 // GET - Fetch public settings for frontend
 export async function GET(request: NextRequest) {
   try {
-    const settings = await prisma.settings.findMany({
-      select: {
-        key: true,
-        value: true,
-      },
-    });
+    if (dbConnected && prisma) {
+      const settings = await prisma.settings.findMany({
+        select: { key: true, value: true },
+      });
+      const settingsObject: Record<string, string> = {};
+      settings.forEach((s) => { settingsObject[s.key] = s.value; });
+      return NextResponse.json(settingsObject, {
+        headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+      });
+    }
+  } catch (_) {}
 
-    // Convert array to object for easier frontend consumption
-    const settingsObject: Record<string, string> = {};
-    settings.forEach((setting) => {
-      settingsObject[setting.key] = setting.value;
-    });
-
-    return NextResponse.json(settingsObject, {
-      headers: {
-        "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300",
-      },
-    });
-  } catch (error) {
-    console.error("Error fetching settings:", error);
-    return NextResponse.json(
-      { error: "Failed to fetch settings" },
-      { status: 500 }
-    );
-  }
+  const settingsObject: Record<string, string> = {};
+  dummySettings.forEach((s) => { settingsObject[s.key] = s.value; });
+  return NextResponse.json(settingsObject, {
+    headers: { "Cache-Control": "public, s-maxage=60, stale-while-revalidate=300" },
+  });
 }
